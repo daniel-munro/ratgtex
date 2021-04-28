@@ -30,11 +30,8 @@ def geno_matrix(ids):
     return mat
 
 
-genes = pd.read_csv("gene.txt", sep="\t", index_col="gencodeId").fillna("")
+genes = pd.read_csv("../data/gene.txt", sep="\t", index_col="gencodeId").fillna("")
 
-# tpm_file = "/Users/dan/Dropbox (Scripps Research)/HS-RNASeq/quantitation/EnsemblGene_v2/ensembl-gene_raw-tpm.txt"
-# tpm = pd.read_csv(tpm_file, sep="\t")
-# samples = pd.read_csv("/Users/dan/br/data/samples.txt", sep="\t")
 tissues = ["Acbc", "IL", "LHB", "PL", "VoLo"]
 # med_expr = []
 # for tissue in tissues:
@@ -45,30 +42,28 @@ tissues = ["Acbc", "IL", "LHB", "PL", "VoLo"]
 # med_expr["gencodeId"] = med_expr.index
 iqn = {}
 for tissue in tissues:
-    iqn_dir = "/Users/dan/Dropbox (Scripps Research)/HS-RNASeq/quantitation/EnsemblGene_v2/inv_quant/"
-    iqn_file = f"ensembl-gene_inv-quant_{tissue}.txt"
-    iqn[tissue] = pd.read_csv(iqn_dir + iqn_file, sep="\t")
+    iqn_file = f"../data/expr/ensembl-gene_inv-quant_PCresiduals_{tissue}.txt"
+    iqn[tissue] = pd.read_csv(iqn_file, sep="\t")
 
-vcf_file = "/Users/dan/br/data/genotype/P50.rnaseq.88.unpruned.vcf.gz"
-vcf = pysam.VariantFile(vcf_file)
+vcf = pysam.VariantFile("../data/P50.rnaseq.88.unpruned.vcf.gz")
 
 # Load all significant pairs for singleTissueEqtl
-all_sig = pd.read_csv("singleTissueEqtl.txt.gz", sep="\t")
+all_sig = pd.read_csv("../data/singleTissueEqtl.txt.gz", sep="\t")
 
-exons = pd.read_csv("exon.txt", sep="\t")
+exons = pd.read_csv("../data/exon.txt", sep="\t")
 
 api = Flask(__name__)
 
 
 @api.route("/tissueInfo", methods=["GET"])
 def tissue_info():
-    return open("tissueInfo.json", "r").read()
+    return open("../data/tissueInfo.json", "r").read()
 
 
 @api.route("/topExpressedGene", methods=["GET"])
 def top_expressed_gene():
     tissue = request.args.get("tissueSiteDetailId")
-    return open(f"top_expressed_gene/{tissue}.json", "r").read()
+    return open(f"../data/topExpressedGene/{tissue}.json", "r").read()
 
 
 @api.route("/gene", methods=["GET"])
@@ -96,7 +91,7 @@ def med_gene_exp():
     # return json.dumps()
     ## Instead, precompute for each tissue. edit BatchGeneExpression.js to pass tissue name instead of gene list.
     tissue = request.args.get("tissue")
-    return open(f"med_gene_exp/{tissue}.json", "r").read()
+    return open(f"../data/medianGeneExpression/{tissue}.json", "r").read()
 
 
 @api.route("/variant", methods=["GET"])
