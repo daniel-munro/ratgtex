@@ -53,20 +53,21 @@ vcf = pysam.VariantFile("../data/P50.rnaseq.88.unpruned.vcf.gz")
 exons = pd.read_csv("../data/exon.txt", sep="\t")
 
 api = Flask(__name__)
+# api.config["APPLICATION_ROOT"] = "/api/v1" # doesn't work??
 
 
-@api.route("/tissueInfo", methods=["GET"])
+@api.route("/api/v1/tissueInfo", methods=["GET"])
 def tissue_info():
     return open("../data/tissueInfo.json", "r").read()
 
 
-@api.route("/topExpressedGene", methods=["GET"])
+@api.route("/api/v1/topExpressedGene", methods=["GET"])
 def top_expressed_gene():
     tissue = request.args.get("tissueSiteDetailId")
     return open(f"../data/topExpressedGene/{tissue}.json", "r").read()
 
 
-@api.route("/gene", methods=["GET"])
+@api.route("/api/v1/gene", methods=["GET"])
 def gene():
     ids = request.args.get("geneId").split(",")
     # info = [{"gencodeId": x, "geneSymbol": x} for x in ids]
@@ -79,7 +80,7 @@ def gene():
     return json.dumps({"gene": info})
 
 
-@api.route("/medianGeneExpression", methods=["GET"])
+@api.route("/api/v1/medianGeneExpression", methods=["GET"])
 def med_gene_exp():
     # ids = request.args.get("gencodeId").split(",")
     # d = med_expr.loc[ids, :]
@@ -94,7 +95,7 @@ def med_gene_exp():
     return open(f"../data/medianGeneExpression/{tissue}.json", "r").read()
 
 
-@api.route("/variant", methods=["GET"])
+@api.route("/api/v1/variant", methods=["GET"])
 def variant():
     ids = request.args.get("variantId").split(",")
     infos = []
@@ -113,7 +114,7 @@ def variant():
     return json.dumps({"variant": infos})
 
 
-@api.route("/dyneqtl", methods=["GET"])
+@api.route("/api/v1/dyneqtl", methods=["GET"])
 def dyneqtl():
     variant = request.args.get("variantId")
     gene = request.args.get("gencodeId")
@@ -145,7 +146,7 @@ def dyneqtl():
     return json.dumps(info)
 
 
-@api.route("/singleTissueEqtl", methods=["GET"])
+@api.route("/api/v1/singleTissueEqtl", methods=["GET"])
 def single_tissue_eqtl():
     gene = request.args.get("gencodeId")
     # ignoring datasetId, snpId
@@ -158,7 +159,7 @@ def single_tissue_eqtl():
     return json.dumps({"singleTissueEqtl": info})
 
 
-@api.route("/ld", methods=["GET"])
+@api.route("/api/v1/ld", methods=["GET"])
 def ld():
     gene = request.args.get("gencodeId")
     # d = all_sig.loc[all_sig["gencodeId"] == gene, :].copy()
@@ -175,7 +176,7 @@ def ld():
     return json.dumps({"ld": lds})
 
 
-@api.route("/exon", methods=["GET"])
+@api.route("/api/v1/exon", methods=["GET"])
 def exon():
     gene = request.args.get("gencodeId")
     # ignoring: gencodeVersion, genomeBuild
