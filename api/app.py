@@ -48,7 +48,7 @@ for tissue in tissues:
 vcf = pysam.VariantFile("../data/P50.rnaseq.88.unpruned.vcf.gz")
 
 # Load all significant pairs for singleTissueEqtl
-all_sig = pd.read_csv("../data/singleTissueEqtl.txt.gz", sep="\t")
+# all_sig = pd.read_csv("../data/singleTissueEqtl.txt.gz", sep="\t")
 
 exons = pd.read_csv("../data/exon.txt", sep="\t")
 
@@ -150,7 +150,8 @@ def single_tissue_eqtl():
     gene = request.args.get("gencodeId")
     # ignoring datasetId, snpId
     # chromosome, gencodeId, geneSymbol, geneSymbolUpper, nes, pValue, pos, tissueSiteDetailId, variantId
-    d = all_sig.loc[all_sig["gencodeId"] == gene, :].copy()
+    # d = all_sig.loc[all_sig["gencodeId"] == gene, :].copy()
+    d = pd.read_csv(f"../data/singleTissueEqtl/{gene}.txt.gz", sep="\t")
     d["geneSymbol"] = d["gencodeId"]
     d["geneSymbolUpper"] = d["gencodeId"]
     info = d.to_dict(orient="records")
@@ -160,8 +161,8 @@ def single_tissue_eqtl():
 @api.route("/ld", methods=["GET"])
 def ld():
     gene = request.args.get("gencodeId")
-    # {"ld":[["chr5_150313965_T_A_b38,chr5_150323195_G_A_b38",0.990242],["chr5 ...
-    d = all_sig.loc[all_sig["gencodeId"] == gene, :].copy()
+    # d = all_sig.loc[all_sig["gencodeId"] == gene, :].copy()
+    d = pd.read_csv(f"../data/singleTissueEqtl/{gene}.txt.gz", sep="\t")
     d["pos"] = [int(x.split(":")[1]) for x in d["variantId"]]
     d = d.sort_values(by="pos")
     ids = d["variantId"].unique()
