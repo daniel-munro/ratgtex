@@ -63,7 +63,7 @@ export default class Toolbar {
      */
     createButton(id, icon='fa-download'){
         const $button = $('<a/>').attr('id', id)
-            .addClass('btn btn-default').appendTo(this.bar);
+            .addClass('btn btn-outline-secondary').appendTo(this.bar);
         $('<i/>').addClass(`fa ${icon}`).appendTo($button);
         this.buttons[id] = $button;
         return $button;

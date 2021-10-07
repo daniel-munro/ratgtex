@@ -11,9 +11,9 @@ export function getGtexUrls(){
     return {
         // gene-eqtl visualizer specific
         // singleTissueEqtl: host + 'association/singleTissueEqtl?format=json&datasetId=gtex_v8&gencodeId=',
-        singleTissueEqtl: host + 'singleTissueEqtl?gencodeId=',
+        singleTissueEqtl: host + 'singleTissueEqtl?geneId=',
         // ld: host + 'dataset/ld?format=json&datasetId=gtex_v8&gencodeId=',
-        ld: host + 'ld?gencodeId=',
+        ld: host + 'ld?geneId=',
 
         // eqtl Dashboard specific
         // dyneqtl: host + 'association/dyneqtl',
@@ -23,29 +23,30 @@ export function getGtexUrls(){
         variantId: host + 'variant?variantId=',
 
         // transcript, exon, junction expression specific
-        exonExp: host + 'expression/medianExonExpression?datasetId=gtex_v8&hcluster=true&gencodeId=',
-        transcriptExp: host + 'expression/medianTranscriptExpression?datasetId=gtex_v8&hcluster=true&gencodeId=',
-        junctionExp: host + 'expression/medianJunctionExpression?datasetId=gtex_v8&hcluster=true&gencodeId=',
-        transcript: host + 'reference/transcript?datasetId=gtex_v8&gencodeId=',
+        // exonExp: host + 'expression/medianExonExpression?datasetId=gtex_v8&hcluster=true&gencodeId=',
+        // transcriptExp: host + 'expression/medianTranscriptExpression?datasetId=gtex_v8&hcluster=true&gencodeId=',
+        // junctionExp: host + 'expression/medianJunctionExpression?datasetId=gtex_v8&hcluster=true&gencodeId=',
+        // transcript: host + 'reference/transcript?datasetId=gtex_v8&gencodeId=',
         // exon: host + 'reference/exon?datasetId=gtex_v8&gencodeId=',
-        exon: host + 'exon?gencodeId=',
-        geneModel: host + 'dataset/collapsedGeneModelExon?datasetId=gtex_v8&gencodeId=',
-        geneModelUnfiltered: host + 'dataset/fullCollapsedGeneModelExon?datasetId=gtex_v8&gencodeId=',
+        exon: host + 'exon?geneId=',
+        // geneModel: host + 'dataset/collapsedGeneModelExon?datasetId=gtex_v8&gencodeId=',
+        // geneModelUnfiltered: host + 'dataset/fullCollapsedGeneModelExon?datasetId=gtex_v8&gencodeId=',
 
         // gene expression violin plot specific
-        geneExp: host + 'expression/geneExpression?datasetId=gtex_v8&gencodeId=',
+        // geneExp: host + 'expression/geneExpression?datasetId=gtex_v8&gencodeId=',
+        geneExp: host + 'geneExpression?geneId=',
 
         // gene expression heat map specific
         // medGeneExp: host + 'expression/medianGeneExpression?datasetId=gtex_v8&hcluster=true&pageSize=10000',
         medGeneExp: host + 'medianGeneExpression?',
 
         // gene expression boxplot specific
-        geneExpBoxplot: host + 'expression/geneExpression?datasetId=gtex_v8&boxplotDetail=full&gencodeId=',
+        // geneExpBoxplot: host + 'expression/geneExpression?datasetId=gtex_v8&boxplotDetail=full&gencodeId=',
 
         // top expressed gene expression specific
         // topInTissueFiltered: host + 'expression/topExpressedGene?datasetId=gtex_v8&filterMtGene=true&sortBy=median&sortDirection=desc&pageSize=50&tissueSiteDetailId=',
         // topInTissue: host + 'expression/topExpressedGene?datasetId=gtex_v8&sortBy=median&sortDirection=desc&pageSize=50&tissueSiteDetailId=',
-        topInTissueFiltered: host + 'topExpressedGene?tissueSiteDetailId=',
+        topInTissueFiltered: host + 'topExpressedGene?filterMtGene=true&tissueSiteDetailId=',
         topInTissue: host + 'topExpressedGene?tissueSiteDetailId=',
 
         // geneId: host + 'reference/gene?format=json&gencodeVersion=v26&genomeBuild=GRCh38%2Fhg38&geneId=',
@@ -56,14 +57,14 @@ export function getGtexUrls(){
         tissue: host + 'tissueInfo',
 
         // local static files
-        sample: 'tmpSummaryData/gtex.Sample.csv',
-        rnaseqCram: 'tmpSummaryData/rnaseq_cram_files_v7_dbGaP_011516.txt',
-        wgsCram: 'tmpSummaryData/wgs_cram_files_v7_hg38_dbGaP_011516.txt',
+        // sample: 'tmpSummaryData/gtex.Sample.csv',
+        // rnaseqCram: 'tmpSummaryData/rnaseq_cram_files_v7_dbGaP_011516.txt',
+        // wgsCram: 'tmpSummaryData/wgs_cram_files_v7_hg38_dbGaP_011516.txt',
 
         // fireCloud
-        fcBilling: 'https://api.firecloud.org/api/profile/billing',
-        fcWorkSpace: 'https://api.firecloud.org/api/workspaces',
-        fcPortalWorkSpace: 'https://portal.firecloud.org/#workspaces'
+        // fcBilling: 'https://api.firecloud.org/api/profile/billing',
+        // fcWorkSpace: 'https://api.firecloud.org/api/workspaces',
+        // fcPortalWorkSpace: 'https://portal.firecloud.org/#workspaces'
     }
 }
 
@@ -144,14 +145,14 @@ export function parseGenes(data, single=false, geneId=null){
     const attr = 'gene';
     if(!data.hasOwnProperty(attr)) throw "Parsing Error: attribute gene doesn't exist.";
     if (data.gene.length==0){
-         alert("No gene is found");
+         alert("Gene not found");
          throw "Fatal Error: gene(s) not found";
      }
     if (single){
         if (geneId === null) throw "Please provide a gene ID for search results validation";
         if (data.gene.length>1) { // when a single gene ID has multiple matches
              let filtered = data.gene.filter((g)=>{
-                 return g.geneSymbolUpper==geneId.toUpperCase() || g.gencodeId == geneId.toUpperCase()
+                 return g.geneSymbolUpper==geneId.toUpperCase() || g.geneId == geneId.toUpperCase()
              });
              if (filtered.length > 1) {
                  alert("Fatal Error: input gene ID is not unique.");
@@ -382,150 +383,150 @@ export function parseTranscripts(json){
     });
 }
 
-/**
- * parse final (masked) gene model exon expression
- * expression is normalized to reads per kb
- * @param data {JSON} of exon expression web service
- * @param exons {List} of exons with positions
- * @returns {List} of exon objects
- */
-export function parseExonExpression(data, exons){
-    const exonDict = exons.reduce((a, d)=>{a[d.exonId] = d; return a;}, {});
-    const attr = 'medianExonExpression';
-    if(!data.hasOwnProperty(attr)) throw('parseExonExpression input error');
+// /**
+//  * parse final (masked) gene model exon expression
+//  * expression is normalized to reads per kb
+//  * @param data {JSON} of exon expression web service
+//  * @param exons {List} of exons with positions
+//  * @returns {List} of exon objects
+//  */
+// export function parseExonExpression(data, exons){
+//     const exonDict = exons.reduce((a, d)=>{a[d.exonId] = d; return a;}, {});
+//     const attr = 'medianExonExpression';
+//     if(!data.hasOwnProperty(attr)) throw('parseExonExpression input error');
 
-    const exonObjects = data[attr];
-    // error-checking
-    ['median', 'exonId', 'tissueSiteDetailId'].forEach((d)=>{
-        if (!exonObjects[0].hasOwnProperty(d)) throw 'Fatal Error: parseExonExpression attr not found: ' + d;
-    });
-    // parse GTEx median exon counts
-    exonObjects.forEach((d) => {
-        const exon = exonDict[d.exonId]; // for retrieving exon positions
-        // error-checking
-        ['end', 'start'].forEach((p)=>{
-            if (!exon.hasOwnProperty(p)) throw 'Fatal Error: parseExonExpression position attr not found: ' + p;
-        });
-        d.l = exon.end - exon.start + 1;
-        d.value = Number(d.median)/d.l;
-        d.displayValue = Number(d.median)/d.l;
-        d.x = d.exonId;
-        d.y = d.tissueSiteDetailId;
-        d.id = d.gencodeId;
-        d.chromStart = exon.start;
-        d.chromEnd = exon.end;
-        d.unit = 'median ' + d.unit + ' per base';
-        d.tissueId = d.tissueSiteDetailId;
-    });
-    return exonObjects.sort((a,b)=>{
-        if (a.chromStart<b.chromStart) return -1;
-        if (a.chromStart>b.chromStart) return 1;
-        return 0;
-    }); // sort by genomic location in ascending order
-}
+//     const exonObjects = data[attr];
+//     // error-checking
+//     ['median', 'exonId', 'tissueSiteDetailId'].forEach((d)=>{
+//         if (!exonObjects[0].hasOwnProperty(d)) throw 'Fatal Error: parseExonExpression attr not found: ' + d;
+//     });
+//     // parse GTEx median exon counts
+//     exonObjects.forEach((d) => {
+//         const exon = exonDict[d.exonId]; // for retrieving exon positions
+//         // error-checking
+//         ['end', 'start'].forEach((p)=>{
+//             if (!exon.hasOwnProperty(p)) throw 'Fatal Error: parseExonExpression position attr not found: ' + p;
+//         });
+//         d.l = exon.end - exon.start + 1;
+//         d.value = Number(d.median)/d.l;
+//         d.displayValue = Number(d.median)/d.l;
+//         d.x = d.exonId;
+//         d.y = d.tissueSiteDetailId;
+//         d.id = d.gencodeId;
+//         d.chromStart = exon.start;
+//         d.chromEnd = exon.end;
+//         d.unit = 'median ' + d.unit + ' per base';
+//         d.tissueId = d.tissueSiteDetailId;
+//     });
+//     return exonObjects.sort((a,b)=>{
+//         if (a.chromStart<b.chromStart) return -1;
+//         if (a.chromStart>b.chromStart) return 1;
+//         return 0;
+//     }); // sort by genomic location in ascending order
+// }
 
-/**
- * Parse junction median read count data
- * @param data {JSON} of the junction expression web service
- * @returns {List} of junction objects
- */
-export function parseJunctionExpression(data){
-    const attr = 'medianJunctionExpression';
-    if(!data.hasOwnProperty(attr)) throw('parseJunctionExpression input error');
+// /**
+//  * Parse junction median read count data
+//  * @param data {JSON} of the junction expression web service
+//  * @returns {List} of junction objects
+//  */
+// export function parseJunctionExpression(data){
+//     const attr = 'medianJunctionExpression';
+//     if(!data.hasOwnProperty(attr)) throw('parseJunctionExpression input error');
 
-    const junctions = data[attr];
+//     const junctions = data[attr];
 
-    // error-checking
-    if (junctions === undefined || junctions.length == 0) {
-        console.warn('No junction data found');
-        return undefined;
-    }
+//     // error-checking
+//     if (junctions === undefined || junctions.length == 0) {
+//         console.warn('No junction data found');
+//         return undefined;
+//     }
 
 
-    // parse GTEx median junction read counts
-    junctions.forEach((d) => {
-        ['tissueSiteDetailId', 'junctionId', 'median', 'gencodeId'].forEach((k)=>{
-            if (!d.hasOwnProperty(k)) {
-                console.error(d);
-                throw 'Parsingr Error: parseJunctionExpression attr not found: ' + k;
-            }
-        });
-        let median = d.median;
-        let tissueId = d.tissueSiteDetailId;
-        d.tissueId = tissueId;
-        d.id = d.gencodeId;
-        d.x = d.junctionId;
-        d.y = tissueId;
-        d.value = Number(median);
-        d.displayValue = Number(median);
-    });
+//     // parse GTEx median junction read counts
+//     junctions.forEach((d) => {
+//         ['tissueSiteDetailId', 'junctionId', 'median', 'gencodeId'].forEach((k)=>{
+//             if (!d.hasOwnProperty(k)) {
+//                 console.error(d);
+//                 throw 'Parsingr Error: parseJunctionExpression attr not found: ' + k;
+//             }
+//         });
+//         let median = d.median;
+//         let tissueId = d.tissueSiteDetailId;
+//         d.tissueId = tissueId;
+//         d.id = d.gencodeId;
+//         d.x = d.junctionId;
+//         d.y = tissueId;
+//         d.value = Number(median);
+//         d.displayValue = Number(median);
+//     });
 
-    // sort by genomic location in ascending order
-    return junctions.sort((a,b)=>{
-        if (a.junctionId>b.junctionId) return 1;
-        else if (a.junctionId<b.junctionId) return -1;
-        return 0;
-    });
-}
+//     // sort by genomic location in ascending order
+//     return junctions.sort((a,b)=>{
+//         if (a.junctionId>b.junctionId) return 1;
+//         else if (a.junctionId<b.junctionId) return -1;
+//         return 0;
+//     });
+// }
 
-/**
- * parse transcript expression
- * @param data
- * @returns {*}
- */
-export function parseTranscriptExpression(data){
-    const attr = 'medianTranscriptExpression';
-    if(!data.hasOwnProperty(attr)) throw('Parsing Error: parseTranscriptExpression input error');
-    // parse GTEx isoform median TPM
-    data[attr].forEach((d) => {
-        ['median', 'transcriptId', 'tissueSiteDetailId', 'gencodeId'].forEach((k)=>{
-            if(!d.hasOwnProperty(k)) {
-                console.error(d);
-                throw('Parsing Error: required transcipt attribute is missing: ' + k);
-            }
-        });
-        d.value = Number(d.median);
-        d.displayValue = Number(d.median);
-        d.x = d.transcriptId;
-        d.y = d.tissueSiteDetailId;
-        d.id = d.gencodeId;
-        d.tissueId = d.tissueSiteDetailId;
-    });
+// /**
+//  * parse transcript expression
+//  * @param data
+//  * @returns {*}
+//  */
+// export function parseTranscriptExpression(data){
+//     const attr = 'medianTranscriptExpression';
+//     if(!data.hasOwnProperty(attr)) throw('Parsing Error: parseTranscriptExpression input error');
+//     // parse GTEx isoform median TPM
+//     data[attr].forEach((d) => {
+//         ['median', 'transcriptId', 'tissueSiteDetailId', 'gencodeId'].forEach((k)=>{
+//             if(!d.hasOwnProperty(k)) {
+//                 console.error(d);
+//                 throw('Parsing Error: required transcipt attribute is missing: ' + k);
+//             }
+//         });
+//         d.value = Number(d.median);
+//         d.displayValue = Number(d.median);
+//         d.x = d.transcriptId;
+//         d.y = d.tissueSiteDetailId;
+//         d.id = d.gencodeId;
+//         d.tissueId = d.tissueSiteDetailId;
+//     });
 
-    return data[attr];
-}
+//     return data[attr];
+// }
 
-/**
- * parse transcript expression, and transpose the matrix
- * @param data
- * @returns {*}
- */
-export function parseTranscriptExpressionTranspose(data){
-    const attr = 'medianTranscriptExpression';
-    if(!data.hasOwnProperty(attr)) {
-        console.error(data);
-        throw('Parsing Error: parseTranscriptExpressionTranspose input error.');
-    }
-    // parse GTEx isoform median TPM
-    data[attr].forEach((d) => {
-        ['median', 'transcriptId', 'tissueSiteDetailId', 'gencodeId'].forEach((k)=>{
-            if(!d.hasOwnProperty(k)) {
-                console.error(d);
-                throw('Parsing Error: Required transcript attribute is missing: ' + k);
-            }
-        });
-        const median = d.median;
-        const tissueId = d.tissueSiteDetailId;
-        d.value = Number(median);
-        d.displayValue = Number(median);
-        d.y = d.transcriptId;
-        d.x = tissueId;
-        d.id = d.gencodeId;
-        d.tissueId = tissueId;
-    });
+// /**
+//  * parse transcript expression, and transpose the matrix
+//  * @param data
+//  * @returns {*}
+//  */
+// export function parseTranscriptExpressionTranspose(data){
+//     const attr = 'medianTranscriptExpression';
+//     if(!data.hasOwnProperty(attr)) {
+//         console.error(data);
+//         throw('Parsing Error: parseTranscriptExpressionTranspose input error.');
+//     }
+//     // parse GTEx isoform median TPM
+//     data[attr].forEach((d) => {
+//         ['median', 'transcriptId', 'tissueSiteDetailId', 'gencodeId'].forEach((k)=>{
+//             if(!d.hasOwnProperty(k)) {
+//                 console.error(d);
+//                 throw('Parsing Error: Required transcript attribute is missing: ' + k);
+//             }
+//         });
+//         const median = d.median;
+//         const tissueId = d.tissueSiteDetailId;
+//         d.value = Number(median);
+//         d.displayValue = Number(median);
+//         d.y = d.transcriptId;
+//         d.x = tissueId;
+//         d.id = d.gencodeId;
+//         d.tissueId = tissueId;
+//     });
 
-    return data[attr];
-}
+//     return data[attr];
+// }
 
 /**
  * parse median gene expression
@@ -539,7 +540,7 @@ export function parseMedianExpression(data){
     // parse GTEx median gene expression
     // error-checking the required attributes:
     if (data[attr].length == 0) throw 'parseMedianExpression finds no data.';
-    ['median', 'tissueSiteDetailId', 'gencodeId'].forEach((d)=>{
+    ['median', 'tissueSiteDetailId', 'geneId'].forEach((d)=>{
         if (!data[attr][0].hasOwnProperty(d)) {
             console.error(data[attr][0]);
             throw `Parsing Error: required json attribute is missingp: ${d}`;
@@ -549,9 +550,9 @@ export function parseMedianExpression(data){
     results.forEach(function(d){
         d.value = Number(d.median);
         d.x = d.tissueSiteDetailId;
-        d.y = d.gencodeId;
+        d.y = d.geneId;
         d.displayValue = Number(d.median);
-        d.id = d.gencodeId;
+        d.id = d.geneId;
     });
 
     return results;
@@ -566,7 +567,7 @@ export function parseGeneExpressionForViolin(data, useLog=true, colors=undefined
     const attr = 'geneExpression';
     if(!data.hasOwnProperty(attr)) throw 'Parsing Error: required json attribute is missing: ' + attr;
     data[attr].forEach((d)=>{
-        ['data', 'tissueSiteDetailId', 'geneSymbol', 'gencodeId'].forEach((k)=>{
+        ['data', 'tissueSiteDetailId', 'geneSymbol', 'geneId'].forEach((k)=>{
             if(!d.hasOwnProperty(k)){
                 console.error(d);
                 throw 'Parsing Error: required json attribute is missing: ' + k;
@@ -575,7 +576,7 @@ export function parseGeneExpressionForViolin(data, useLog=true, colors=undefined
         d.values = useLog?d.data.map((dd)=>{return Math.log10(+dd+1)}):d.data;
         d.group = d.tissueSiteDetailId;
         d.label = d.geneSymbol;
-        d.color = colors===undefined?'#90c1c1':colors[d.gencodeId];
+        d.color = colors===undefined?'#90c1c1':colors[d.geneId];
     });
     return data[attr];
 }
@@ -591,24 +592,41 @@ export function parseLD(data) {
     let parsed = [];
     let unique = {};
     data[attr].forEach((d) => {
-        let labels = d[0].split(",").sort(); // sort the variant IDs
-        unique[labels[0]] = true;
-        unique[labels[1]] = true;
+        // let labels = d[0].split(",").sort(); // sort the variant IDs
+        // Assume variants are sorted to save time -DM
+        // let labels = d[0].split(","); // sort the variant IDs
+        // Actually, save more time by passing IDs as separate list items -DM
+        // unique[labels[0]] = true;
+        // unique[labels[1]] = true;
+        unique[d[0]] = true;
+        unique[d[1]] = true;
         parsed.push({
-            x: labels[0],
-            displayX: generateShortVariantId(labels[0]),
-            y: labels[1],
-            displayY: generateShortVariantId(labels[1]),
-            value: parseFloat(d[1]),
-            displayValue: parseFloat(d[1]).toPrecision(3) // toPrecision() returns a string
+            // x: labels[0],
+            x: d[0],
+            // displayX: generateShortVariantId(labels[0]),
+            // displayX: labels[0],
+            displayX: d[0],
+            // y: labels[1],
+            y: d[1],
+            // displayY: generateShortVariantId(labels[1]),
+            // displayY: labels[1],
+            displayY: d[1],
+            // value: parseFloat(d[2]),
+            // It's already a float -DM
+            value: d[2],
+            // displayValue: parseFloat(d[1]).toPrecision(3) // toPrecision() returns a string
+            // Use given precision to save time -DM
+            displayValue: d[2] // toPrecision() returns a string
         })
     });
     Object.keys(unique).forEach((d)=>{
         parsed.push({
             x: d,
-            displayX: generateShortVariantId(d),
+            // displayX: generateShortVariantId(d),
+            displayX: d,
             y: d,
-            displayY: generateShortVariantId(d),
+            // displayY: generateShortVariantId(d),
+            displayY: d,
             value: 1,
             displayValue: "1"
         })
@@ -627,7 +645,7 @@ export function parseGeneExpressionForBoxplot(data, tissues=undefined, colors=un
     if(!data.hasOwnProperty(attr)) throw(`Parsing error: required JSON attribute ${attr} missing.`);
 
     data[attr].forEach((d)=>{
-        ['data', 'gencodeId', 'geneSymbol', 'tissueSiteDetailId'].forEach((k)=>{
+        ['data', 'geneId', 'geneSymbol', 'tissueSiteDetailId'].forEach((k)=>{
             if (!d.hasOwnProperty(k)) {
                 console.error(d);
                 throw `Parsing error: required JSON attribute ${k} is missing from a record.`;

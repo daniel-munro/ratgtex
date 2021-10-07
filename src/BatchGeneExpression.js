@@ -59,11 +59,11 @@ export function launchTopExpressed(tissueId, heatmapRootId, violinRootId, urls=g
                 throw 'Parse Error: required json attribute is missing: ' + attr;
             }
             const topGeneList = results[attr].map((d)=>{
-                if(!d.hasOwnProperty('gencodeId')){
+                if(!d.hasOwnProperty('geneId')){
                     console.error(d);
-                    throw 'Parse Error: required json attribute is missing: gencodeId';
+                    throw 'Parse Error: required json attribute is missing: geneId';
                 }
-                return d.gencodeId
+                return d.geneId
             });
             const callback = function(){
                 _styleSelectedTissue(tissueId);
@@ -111,7 +111,9 @@ export function launch(formId, menuId, submitId, heatmapRootId, violinRootId, ur
                 ////////// NEXT //////////
                 searchById(heatmapRootId, violinRootId, glist, queryTissueIds, urls);
             });
-
+            // Check all tissues by default since there aren't that many -DM
+            $('.tissueGroup').prop('checked', true);
+            $('.tissueSubGroup').prop('checked', true);
         })
         .catch(function(err){
             console.error(err);
@@ -151,11 +153,11 @@ export function searchById(heatmapRootId, violinRootId, glist, tlist=undefined, 
 
 
            // get median expression data and clusters of the input genes in all tissues
-           const gQuery = genes.map((g)=>g.gencodeId).join(",");
+           const gQuery = genes.map((g)=>g.geneId).join(",");
            const tQuery = tlist===undefined?undefined:tlist.join(",");
-           // const fetchUrl = tQuery === undefined? urls.medGeneExp + "&gencodeId=" + gQuery: urls.medGeneExp + "&gencodeId=" + gQuery + "&tissueSiteDetailId=" + tQuery;
-           // Instead, load precomputed data for query tissue:
-           const fetchUrl = urls.medGeneExp + "tissue=" + qTissue;
+           const fetchUrl = tQuery === undefined? urls.medGeneExp + "&geneId=" + gQuery: urls.medGeneExp + "&geneId=" + gQuery + "&tissueSiteDetailId=" + tQuery;
+        //    // Instead, load precomputed data for query tissue:
+        //    const fetchUrl = urls.medGeneExp + "tissue=" + qTissue;
            json(fetchUrl, {credentials: 'include'})
                .then(function(eData){
                    $('#spinner').hide();
@@ -213,8 +215,8 @@ export function searchById(heatmapRootId, violinRootId, glist, tlist=undefined, 
                         }, {});
 
                         const geneDict = dmap.data.heatmap.reduce((a, d, i)=>{
-                            if (!d.hasOwnProperty("gencodeId")) throw "gene has no attr gencodeId";
-                            a[d.gencodeId]=d;
+                            if (!d.hasOwnProperty("geneId")) throw "gene has no attr geneId";
+                            a[d.geneId]=d;
                             return a;
                         }, {});
 
@@ -263,7 +265,7 @@ function _validateGenes(domId, genes, input){
             let allIds = [];
             genes.forEach((g)=>{
                 // compile a list of all known IDs
-                allIds.push(g.gencodeId);
+                allIds.push(g.geneId);
                 allIds.push(g.geneSymbolUpper);
             });
             let missingGenes = input.filter((g)=>!allIds.includes(g.toLowerCase())&&!allIds.includes(g.toUpperCase()));
@@ -334,7 +336,7 @@ function _addTissueColors(dmap, tissueDict){
  * dependencies: CSS classes from expressMap.css
  * @param dmap {DendroHeatmap}
  * @param tissueDict {Dictionary}: tissue objects indexed by tissue_id, with attr: tissue_name
- * @param geneDict {Dictionary}: gene objects indexed by gencode ID, with attr: geneSymbol
+ * @param geneDict {Dictionary}: gene objects indexed by gene ID, with attr: geneSymbol
  */
 function _customizeMouseEvents(dmap, tissueDict, geneDict, urls=getGtexUrls()) {
     const svg = dmap.visualComponents.svg;
@@ -389,8 +391,8 @@ function _customizeMouseEvents(dmap, tissueDict, geneDict, urls=getGtexUrls()) {
 /**
  * renders the gene expression violin plot
  * @param action {ENUM} add, new, or delete
- * @param gene {String} gencode ID
- * @param geneDict {Dictionary} gencode ID => gene object with attribute: index
+ * @param gene {String} gene ID
+ * @param geneDict {Dictionary} gene ID => gene object with attribute: index
  * @param tissueDict {Dictionary} tissue objects indexed by tissue ID
  * @param dmap {DendroHeatmap}
  */
@@ -398,7 +400,7 @@ function _renderViolinPlot(action, gene, geneDict, tissueDict, dmap, urls=getGte
     // action
     switch(action) {
         case "delete": {
-            dmap.data.external = dmap.data.external.filter((d)=>d.gencodeId!=gene);
+            dmap.data.external = dmap.data.external.filter((d)=>d.geneId!=gene);
             _renderViolinHelper(dmap.data.external, dmap, tissueDict);
             break;
         }

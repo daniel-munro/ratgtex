@@ -22,7 +22,8 @@ export default class HalfMap{
      * @param tooltipId
      */
     constructor(data, cutoff = 0.0, useLog=true, logBase=10, colorScheme="Greys", colorScaleDomain=[0,1]){
-        this.data= this._unique(data); // remove redundancy
+        // this.data= this._unique(data); // remove redundancy
+        this.data = data; // Assume unique pairs to save time -DM
         this.dataDict = {};
         this.cutoff = cutoff;
         this.filteredData = this._filter(this.data, this.cutoff);
@@ -243,7 +244,8 @@ export default class HalfMap{
         let dict = {};
         data.forEach((d)=>{
             dict[d.x+d.y] = d;
-            dict[d.y+d.x] = d;
+            // Ignore reverse to cut time in half, I don't think it's actually used -DM
+            // dict[d.y+d.x] = d;
         });
         return dict;
     }

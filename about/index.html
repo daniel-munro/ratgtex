@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="/css/jquery-ui.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css"
+        integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/main.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+        integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
+        crossorigin="anonymous"></script>
+    <script src="/src/main.js"></script>
+
+    <title>About | RatGTEx</title>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <!-- <a class="navbar-brand" href="/">RatGTEx Portal</a> -->
+            <a class="navbar-brand" href="/">
+                <img src="/images/RatGTExPortal2.png" width="200px" alt="RatGTEx Portal">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/download/">Download</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">Browse</a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li>
+                                <h6 class="dropdown-header">Expression</h6>
+                            </li>
+                            <li><a class="dropdown-item" href="/top-expressed/">Top expressed genes</a></li>
+                            <li><a class="dropdown-item" href="/query-gene-expression/">Query gene expression</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li>
+                                <h6 class="dropdown-header">eQTLs</h6>
+                            </li>
+                            <li><a class="dropdown-item" href="/eqtl-dashboard/">eQTL violin plots</a></li>
+                            <li><a class="dropdown-item" href="/gene-eqtl-visualizer/">Gene eQTL Visualizer</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="/about/">About</a>
+                    </li>
+                </ul>
+                <form class="d-flex col-md-4 mb-0" id="gene-search">
+                    <div class="input-group">
+                        <input class="form-control basicAutoComplete" id="search-input" type="text" autocomplete="off"
+                            placeholder="Gene Search (symbol or Ensembl ID)">
+                        <button class="btn btn-outline-secondary" type="submit">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1>About RatGTEx</h1>
+
+        <h3>Associated Studies</h3>
+        <p><em>Manuscripts in preparation.</em></p>
+
+        <h3>Contact</h3>
+        <p>
+            For questions or comments related to the data or website, email Daniel Munro at <a
+                href="mailto:dmunro@scripps.edu">dmunro@scripps.edu</a>.
+        </p>
+
+        <h3>Acknowledgments</h3>
+        <p>
+            Code for visualizations was adapted from the <a href="https://github.com/broadinstitute/gtex-viz">GTEx
+                portal viz tools</a>, and additional design considerations were inspired by the <a
+                href="https://gtexportal.org/">GTEx portal</a>.
+        </p>
+
+        <h3>Data Specifications</h3>
+        <p>
+            The datasets provided in this portal conform to the following specifications to facilitate comparisons across tissues.
+        </p>
+
+        <h4>Processing</h4>
+        <ul>
+            <li>Genome assembly: Rnor_6.0 (GCA_000001895.4)</li>
+            <!-- <li>Genotypes: ???</li> -->
+            <li>Annotations: <a href="https://www.ensembl.org/Rattus_norvegicus/Info/Index">Ensembl Rat</a></li>
+            <li>RNA-Seq read counts, transformed as log<sub>2</sub>(count+1), were used to compute cis-eQTL effect sizes (allelic fold change).</li>
+            <li>Inverse-quantile normalized expression values were used for eQTL mapping.</li>
+            <li>eQTL mapping: <a href="https://github.com/broadinstitute/tensorqtl">tensorQTL</a>. cis-eQTL mapping tested cis-windows +/- 1 Mb from each gene's transcription start site.</li>
+        </ul>
+
+        <h4>Formats</h4>
+
+        <h5>Gene expression</h5>
+        <p>Expression tables are provided in BED format, with four columns describing the gene plus one column per sample.Only the transcription start sites are specified, not the whole gene length.</p>
+        <ul>
+            <li><strong>#chr</strong> Chromosome name, e.g. '1'</li>
+            <li><strong>start</strong> Transcription start site. Coordinates in BED format are 0-based, so this is one less than the position as it is typically represented.</li>
+            <li><strong>end</strong> One higher than the start value. Thus, this would be the typical coordinate to represent the TSS.</li>
+            <li><strong>gene_id</strong> Ensembl gene ID</li>
+            <li><strong>{sample}</strong> Each additional column is labeled with the sample or rat ID and contains log2(count+1), TPM, or inverse-quantile normalized values.</li>
+        </ul>
+
+        <h5>All significant cis-eQTL gene-SNP pairs (*.cis_qtl_signif.txt.gz)</h5>
+        <p>A compressed tab-separated table.</p>
+        <!-- <dt>phenotype_id</dt><dd>Ensembl gene ID</dd>
+        <dt>variant_id</dt><dd>SNP ID (e.g. chr1:669562)</dd> -->
+        <ul>
+            <li><strong>gene_id</strong> Ensembl gene ID</li>
+            <li><strong>variant_id</strong> SNP ID (e.g. chr1:669562)</li>
+            <li><strong>tss_distance</strong> SNP position - TSS position, oriented on the gene's strand</li>
+            <li><strong>af</strong> Alternative allele frequency</li>
+            <li><strong>ma_samples</strong> Number of samples with minor allele</li>
+            <li><strong>ma_count</strong> Total number of minor alleles (i.e. no. het. + 2 * no. hom. alt.)</li>
+            <li><strong>pval_nominal</strong> Nominal p-value</li>
+            <li><strong>slope</strong> Coefficient for the SNP genotype in the linear model</li>
+            <li><strong>slope_se</strong> Standard error of the slope</li>
+            <li><strong>pval_nominal_threhsold</strong> Gene-tissue-specific nominal p-value significance threshold as determined by permutations and transcriptome-wide FDR</li>
+        </ul>
+
+        <h5>Strong associations from trans-eQTL mapping (*.trans_qtl_pairs.txt.gz)</h5>
+        <p>All measured SNPs genome-wide were tested against expression of each gene, and pairs with p-value &lt; 1e-5 and > 5 Mb TSS distance are included here. Rows are sorted by variant location.</p>
+        <ul>
+            <li><strong>variant_id</strong> SNP ID (e.g. chr1:669562)</li>
+            <li><strong>gene_id</strong> Ensembl gene ID</li>
+            <li><strong>pval</strong> Nominal p-value</li>
+            <li><strong>slope</strong> Coefficient (slope) for the SNP genotype in the linear model</li>
+            <li><strong>slope_se</strong> Standard error of the slope</li>
+            <li><strong>af</strong> Alternative allele frequency</li>
+        </ul>
+
+    </div>
+</body>
+
+</html>

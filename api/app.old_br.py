@@ -71,20 +71,22 @@ def validate_genes(ids, genes):
     return valid
 
 
-# def load_tpm(path):
-#     tpm = {}
-#     expr = pd.read_csv(path, sep="\t")
-#     samples = pd.read_csv("../data/ref/metadata.csv")
-#     samples = samples.loc[samples["QC_pass"] == "pass", :]
-#     expr = expr.loc[:, expr.columns.isin(samples["library"])]
-#     tis_conv = {"Acbc": "NAcc", "IL": "IL", "LHB": "LHb", "PL": "PL", "VoLo": "OFC"}
-#     tis = pd.Series([tis_conv[x.split("_")[1]] for x in expr.columns])
-#     for tissue in tis.unique():
-#         tpm[tissue] = expr.loc[:, list(tis == tissue)]
-#     return tpm
+def load_tpm(path):
+    tpm = {}
+    expr = pd.read_csv(path, sep="\t")
+    samples = pd.read_csv("../data/ref/metadata.csv")
+    samples = samples.loc[samples["QC_pass"] == "pass", :]
+    expr = expr.loc[:, expr.columns.isin(samples["library"])]
+    tis_conv = {"Acbc": "NAcc", "IL": "IL", "LHB": "LHb", "PL": "PL", "VoLo": "OFC"}
+    tis = pd.Series([tis_conv[x.split("_")[1]] for x in expr.columns])
+    for tissue in tis.unique():
+        tpm[tissue] = expr.loc[:, list(tis == tissue)]
+    return tpm
 
 
 def cis_pval(tissue, gene, variant):
+    # g.db = sqlite3.connect("../data/cis_pvals.db")
+    # res = g.db.execute(f'SELECT * FROM {tissue} WHERE gene_id = "{gene}" AND variant_id = "{variant}"')
     with zipfile.ZipFile(f"../data/cis_pvals/{tissue}.zip", "r") as archive:
         fname = f"{tissue}/{gene}.txt"
         if fname in archive.namelist():
@@ -111,29 +113,42 @@ topExpr = pd.read_csv("../data/topExpressedGene.txt", sep="\t")
 
 genes = pd.read_csv("../data/gene.txt", sep="\t", index_col="geneId").fillna("")
 
-tissues = ["Eye", "IL", "LHb", "NAcc", "OFC", "PL"]
+tissues = ["IL", "LHb", "NAcc", "OFC", "PL"]
+# med_expr = []
+# for tissue in tissues:
+#     tissue_sam = samples.library[samples.brain_region == tissue]
+#     med_expr.append(tpm[tissue_sam].median(axis=1))
+# med_expr = pd.concat(med_expr, axis=1)
+# med_expr.columns = tissues
+# med_expr["geneId"] = med_expr.index
 med_expr = pd.read_csv("../data/medianGeneExpression.txt.gz", sep="\t", index_col="geneId")
-# tpm = load_tpm("../data/expr/ensembl-gene_raw-tpm.txt")
-
-tpm = {}
-for tissue in tissues:
-    tpm_file = f"../data/expr/{tissue}.expr.tpm.bed.gz"
-    tpm[tissue] = pd.read_csv(tpm_file, sep="\t", dtype={"#chr": str}, index_col="gene_id")
-    tpm[tissue].drop(columns=["#chr", "start", "end"], inplace=True)
+tpm = load_tpm("../data/expr/ensembl-gene_raw-tpm.txt")
 iqn = {}
 for tissue in tissues:
-    iqn_file = f"../data/expr/{tissue}.expr.iqn.bed.gz"
-    iqn[tissue] = pd.read_csv(iqn_file, sep="\t", dtype={"#chr": str}, index_col="gene_id")
+    # iqn_file = f"../data/expr/ensembl-gene_inv-quant_PCresiduals_{tissue}.txt.gz"
+    iqn_file = f"../data/expr/ensembl-gene_inv-quant_{tissue}.bed.gz"
+    iqn[tissue] = pd.read_csv(iqn_file, sep="\t", index_col="gene_id")
     iqn[tissue].drop(columns=["#chr", "start", "end"], inplace=True)
 
-vcf = pysam.VariantFile("../data/ratgtex.vcf.gz")
+vcf = pysam.VariantFile("../data/P50.rnaseq.88.unpruned.vcf.gz")
 
-exons = pd.read_csv("../data/exon.txt", sep="\t", dtype={"chromosome": str})
+# Load all significant pairs for singleTissueEqtl
+# all_sig = pd.read_csv("../data/singleTissueEqtl.txt.gz", sep="\t")
+
+exons = pd.read_csv("../data/exon.txt", sep="\t", low_memory=False)
 
 top_assoc = pd.read_csv("../data/eqtl/top_assoc.txt", sep="\t", index_col=["tissue", "gene_id"])  # Just for pval_nominal_threshold
 eqtls = pd.read_csv("../data/eqtl/eqtls_indep.txt", sep="\t")
-eqtls = eqtls[["tissue", "gene_id", "gene_name", "variant_id", "ref", "alt", "pval_beta", "log2_aFC"]]
+eqtls = eqtls[["tissue", "gene_id", "gene_name", "tss", "variant_id", "ref", "alt", "pval_beta", "log2_aFC"]]
 eqtls = eqtls.rename(columns={"tissue": "tissueSiteDetailId", "gene_id": "geneId", "gene_name": "geneSymbol", "variant_id": "variantId"})
+
+# cis_pvals = {}
+# for tissue in tissues:
+#     df = pd.read_csv(f"~/br/data/tensorqtl/all_cis_pvals/{tissue[0]}QCT.all_cis_pvals.txt.gz", sep="\t", index_col=["phenotype_id", "variant_id"])
+#     df = df.iloc[:5, :]
+#     x = {gene: {var: df.loc[(gene, var), 'pval_nominal'] for var in df.xs(gene).index.levels[0]} for gene in df.index.levels[0]}
+#     cis_pvals[tissue] = x
+# print(cis_pvals)
 
 api = Flask(__name__)
 CORS(api)
@@ -149,12 +164,27 @@ def dyneqtl():
     rec = variant_record(variant)
     assert len(rec.alts) == 1, f"Multiple alt alleles: {variant}"
     gt = rec.samples
-    # indivs = [x.split("_")[0] for x in expr.index]
-    geno = [genotype(gt[ind]["GT"]) for ind in expr.index]
+    indivs = [x.split("_")[0] for x in expr.index]
+    geno = [genotype(gt[ind]["GT"]) for ind in indivs]
     # ignoring error, nes, tStatistic, timing
     counts = [int(np.sum(np.array(geno) == x)) for x in [0, 1, 2]]
+    # pval = None
+    # if genes.loc[gene, "hasEqtl"]:
+    #     # print('a', variant, gene, tissue)
+    #     d = pd.read_csv(f"../data/singleTissueEqtl/{gene}.txt.gz", sep="\t")
+    #     d = d.loc[(d["tissueSiteDetailId"] == tissue) & (d["variantId"] == variant), :]
+    #     if d.shape[0] > 0:
+    #         pval = d["pValue"].iloc[0]
+    #     # print('b', variant, gene, tissue)
+    # if cis_pvals.index.contains((gene, variant)):
+    #     pval = cis_pvals[gene][varia]
+    # if gene in cis_pvals[tissue] and variant in cis_pvals[tissue][gene]:
+    #     pval = cis_pvals[tissue][gene][variant]
     pval = cis_pval(tissue, gene, variant)
+    # thresh = list(top_assoc["pval_nominal_threshold"].loc[(top_assoc["tissue"] == tissue) & (top_assoc["gene_id"] == gene)])[0]
+    # print('c', variant, gene, tissue)
     thresh = top_assoc.loc[(tissue, gene), "pval_nominal_threshold"]
+    # print('d', variant, gene, tissue)
     info = {
         "data": list(expr),
         "geneId": gene,
@@ -186,6 +216,16 @@ def exon():
 
 @api.route("/api/v1/gene", methods=["GET"])
 def gene():
+    # if request.args.get("geneId") is not None:
+    #     ids = request.args.get("geneId").split(",")
+    #     # TEMP:
+    #     ids = [x for x in ids if x in genes.index]
+    #     d = genes.loc[ids, :].reset_index() # Include geneId in dict
+    # else:
+    #     ids = request.args.get("geneSymbol").split(",")
+    #     genes2 = genes.reset_index().set_index("geneSymbol")
+    #     ids = [x for x in ids if x in genes2.index]
+    #     d = genes2.loc[ids, :].reset_index()
     ids = request.args.get("geneId").split(",")
     ids = validate_genes(ids, genes)
     d = genes.loc[ids, :].reset_index() # Include geneId in dict
@@ -214,6 +254,7 @@ def gene_exp():
 @api.route("/api/v1/ld", methods=["GET"])
 def ld():
     gene = request.args.get("geneId")
+    # d = pd.read_csv(f"../data/singleTissueEqtl/{gene}.txt.gz", sep="\t")
     d = single_tis(gene)
     if d is None:
         return jsonify({"ld": []})
@@ -221,13 +262,12 @@ def ld():
     d = d.sort_values(by="pos")
     ids = d["variantId"].unique()
     geno = geno_matrix(ids)
-    # ldmat = np.corrcoef(geno) ** 2
-    geno = pd.DataFrame(geno.T, dtype=float)  # Pandas corr allows missing values
-    ldmat = geno.corr().to_numpy() ** 2
+    ldmat = np.corrcoef(geno) ** 2
     ldmat = ldmat.round(3)
     lds = []
     for i in range(len(ids) - 1):
         for j in range(i + 1, len(ids)):
+            # lds.append([",".join([ids[i], ids[j]]), ldmat[i, j]])
             lds.append([ids[i], ids[j], ldmat[i, j]])
     return jsonify({"ld": lds})
 
@@ -253,6 +293,11 @@ def med_gene_exp():
 @api.route("/api/v1/singleTissueEqtl", methods=["GET"])
 def single_tissue_eqtl():
     gene = request.args.get("geneId")
+    # ignoring datasetId, snpId
+    # chromosome, geneId, geneSymbol, geneSymbolUpper, nes, pValue, pos, tissueSiteDetailId, variantId
+    # if not os.path.exists(f"../data/singleTissueEqtl/{gene}.txt.gz"):
+    #     return jsonify({"singleTissueEqtl": []})
+    # d = pd.read_csv(f"../data/singleTissueEqtl/{gene}.txt.gz", sep="\t", dtype={"chromosome": str})
     d = single_tis(gene)
     if d is None:
         return jsonify({"singleTissueEqtl": []})
@@ -272,6 +317,7 @@ def eqtl():
 
 @api.route("/api/v1/tissueInfo", methods=["GET"])
 def tissue_info():
+    # return open("../data/tissueInfo.json", "r").read()
     return jsonify({"tissueInfo": tissueInfo})
 
 
@@ -279,6 +325,7 @@ def tissue_info():
 def top_expressed_gene():
     tissue = request.args.get("tissueSiteDetailId")
     filterMt = request.args.get("filterMtGene", type=json.loads, default=False)
+    # return open(f"../data/topExpressedGene/{tissue}.json", "r").read()
     x = topExpr.loc[topExpr["tissueSiteDetailId"] == tissue, :]
     if filterMt:
         x = x.loc[~x["mtGene"], :]

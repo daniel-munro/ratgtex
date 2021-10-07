@@ -41,7 +41,9 @@ export function build(dashboardId, menuId, pairId, submitId, formId, messageBoxI
             let tissueGroups = parseTissueSites(data, forEqtl);
             createTissueGroupMenu(tissueGroups, menuId, forEqtl);
             $(`#${submitId}`).click(_submit(tissueGroups, dashboardId, menuId, pairId, submitId, formId, messageBoxId, urls));
-
+            // Check all tissues by default since there aren't that many -DM
+            $('.tissueGroup').prop('checked', true);
+            $('.tissueSubGroup').prop('checked', true);
         })
         .catch(function(err){
             console.error(err);
@@ -50,7 +52,7 @@ export function build(dashboardId, menuId, pairId, submitId, formId, messageBoxI
 
 /**
  *
- * @param gene {Object} with attr geneSymbol and gencodeId
+ * @param gene {Object} with attr geneSymbol and geneId
  * @param variant {Object} with attr variantId and snpId
  * @param mainId {String} the main DIV id
  * @param input {Object} the violin data
@@ -109,7 +111,8 @@ function _visualize(gene, variant, mainId, input, info){
 
     dom.append("text")
         .classed("ed-section-title", true)
-        .text(`${gene.geneSymbol} (${gene.gencodeId}) and ${variant.snpId||""} (${variant.variantId})`)
+        // .text(`${gene.geneSymbol} (${gene.geneId}) and ${variant.snpId||""} (${variant.variantId})`)
+        .text(`${gene.geneSymbol} (${gene.geneId}) and ${variant.variantId}`)
         .attr("x", 0)
         .attr("y", -margin.top + 16);
 
@@ -267,7 +270,8 @@ function _submit(tissueGroups, dashboardId, menuId, pairId, submitId, formId, me
 function _parseGene(gjson, id){
     const attr = 'gene';
     if(!gjson.hasOwnProperty(attr)) throw 'Fatal Error: parse gene error';
-    let genes = gjson[attr].filter((d) => {return d.geneSymbolUpper == id.toUpperCase() || d.gencodeId == id.toUpperCase()}); // find the exact match
+    // let genes = gjson[attr].filter((d) => {return d.geneSymbolUpper == id.toUpperCase() || d.geneId == id.toUpperCase()}); // find the exact match
+    let genes = gjson[attr];
     if (genes.length ==0) return null;
     return genes[0];
 }
@@ -314,8 +318,8 @@ function _renderEqtlPlot(tissueDict, dashboardId, gene, variant, tissues, i, url
     // queue up all tissue IDs
     tissues.forEach((tId) => {
         let urlRoot = urls['dyneqtl'];
-        // let url = `${urlRoot}?snp_id=${variant.variantId}&gene_id=${gene.gencodeId}&tissue=${tId}`; // use variant ID, gencode ID and tissue ID to query the dyneqtl
-        let url = `${urlRoot}?variantId=${variant.variantId}&gencodeId=${gene.gencodeId}&tissueSiteDetailId=${tId}`; // use variant ID, gencode ID and tissue ID to query the dyneqtl
+        // let url = `${urlRoot}?snp_id=${variant.variantId}&gene_id=${gene.geneId}&tissue=${tId}`; // use variant ID, gene ID and tissue ID to query the dyneqtl
+        let url = `${urlRoot}?variantId=${variant.variantId}&geneId=${gene.geneId}&tissueSiteDetailId=${tId}`; // use variant ID, gene ID and tissue ID to query the dyneqtl
         promises.push(_apiCall(url, tId));
     });
 
@@ -375,8 +379,8 @@ function _renderEqtlPlot(tissueDict, dashboardId, gene, variant, tissues, i, url
                     ]);
                     // additional info of the group goes here
                     info[group] = {
-                        "pvalue": d["pValue"]===null?1:parseFloat(d["pValue"]).toPrecision(3),
-                        "pvalueThreshold": d["pValueThreshold"]===null?0:parseFloat(d["pValueThreshold"]).toPrecision(3)
+                        "pvalue": d["pValue"]===null ? null : parseFloat(d["pValue"]).toPrecision(3),
+                        "pvalueThreshold": d["pValueThreshold"]===null ? 0 : parseFloat(d["pValueThreshold"]).toPrecision(3)
                     }
                 }
 

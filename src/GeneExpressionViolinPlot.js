@@ -11,11 +11,12 @@ import {getGtexUrls, parseTissues, parseTissueSites} from './modules/gtexDataPar
 import {createTissueGroupMenu, parseTissueGroupMenu} from './modules/gtexMenuBuilder';
 import GroupedViolin from './modules/GroupedViolin';
 
-export function launch(rootId, tooltipRootId, gencodeId, plotTitle="Gene Expression Violin Plot", urls=getGtexUrls(), margins=_setViolinPlotMargins(50,75,250,60), dimensions={w: window.innerWidth*0.8, h:250}) {
+// export function launch(rootId, tooltipRootId, geneId, plotTitle="Gene Expression Violin Plot", urls=getGtexUrls(), margins=_setViolinPlotMargins(50,75,250,60), dimensions={w: window.innerWidth*0.8, h:250}) {
+export function launch(rootId, tooltipRootId, geneId, plotTitle="Gene Expression", urls=getGtexUrls(), margins=_setViolinPlotMargins(50,75,250,60), dimensions={w: $(`#${rootId}`).innerWidth()*0.9, h: 250}) {
     const promises = [
         json(urls.tissue, {credentials: 'include'}),
-        json(urls.geneExp + gencodeId, {credentials: 'include'}),
-        json(urls.geneExp + gencodeId + '&attributeSubset=sex', {credentials: 'include'})
+        json(urls.geneExp + geneId, {credentials: 'include'}),
+        // json(urls.geneExp + geneId + '&attributeSubset=sex', {credentials: 'include'})
     ];
 
     const ids = {
@@ -83,7 +84,7 @@ export function launch(rootId, tooltipRootId, gencodeId, plotTitle="Gene Express
             const violinPlotData = _parseGeneExpressionForViolin(args[1], tissueIdNameMap, groupColorDict, false);
             if (!violinPlotData.length) {
                 $(`#${ids.toolbar}`).remove();
-                $(`<div id="gene-exp-vplot">No gene expression data found for ${gencodeId}</div>`).appendTo(`#${ids.root}`);
+                $(`<div id="gene-exp-vplot">No gene expression data found for ${geneId}</div>`).appendTo(`#${ids.root}`);
                 $(`#${ids.root} #${ids.spinner}`).hide();
                 return;
             }
@@ -93,13 +94,13 @@ export function launch(rootId, tooltipRootId, gencodeId, plotTitle="Gene Express
             // adding properties to keep track of sorting and filtering specifically for this plot
             violinPlot.sortData = violinPlot.data.map(d=>d); // sort any differentiated data by the aggregate data, too
             violinPlot.allData = violinPlot.data.map(d=>d);
-            violinPlot.gencodeId = gencodeId;
+            violinPlot.geneId = geneId;
             violinPlot.tIdNameMap = tissueIdNameMap;
             violinPlot.groupColorDict = groupColorDict;
             violinPlot.tissueDict = tissueDict;
             violinPlot.geneJson = {
                 allData: args[1],
-                subsetData: args[2]
+                // subsetData: args[2]
             };
             violinPlot.unit = violinPlotData.length > 0 ? ` ${violinPlotData[0].unit}` : '';
             // default plot options
@@ -112,7 +113,7 @@ export function launch(rootId, tooltipRootId, gencodeId, plotTitle="Gene Express
             };
 
             _drawViolinPlot(violinPlot, margins, dimensions, ids);
-            _createTissueFilter(violinPlot, ids.tissueFilter, ids, args[0]);
+            // _createTissueFilter(violinPlot, ids.tissueFilter, ids, args[0]);
             _addToolbar(violinPlot, tooltip, ids, urls);
             $(`#${ids.root} #${ids.spinner}`).hide();
         });
@@ -167,81 +168,99 @@ function _addToolbar(vplot, tooltip, ids, urls) {
     toolbar.createDownloadSvgButton(ids.buttons.download, ids.svg, 'gene-exp-plot.svg', ids.clone);
 
     // adding bootstrap classes to toolbar
-    $(`#${ids.toolbar}`).addClass('row');
-    $(`#${ids.toolbar} .btn-group`).addClass('col-xs-12 col-lg-1 text-nowrap').css('display', 'flex');
+    // $(`#${ids.toolbar}`).addClass('row');
+    $(`#${ids.toolbar}`).addClass('btn-toolbar');
+    // $(`#${ids.toolbar} .btn-group`).addClass('col-xs-12 col-lg-1 text-nowrap').css('display', 'flex');
 
     $('<div></div>').appendTo(`#${ids.toolbar}`)
-        .attr('id', `${ids.toolbar}-plot-options`)
-        .attr('class', 'col-lg-11 text-nowrap');
+        .attr('id', `${ids.toolbar}-plot-options`);
+    //     .attr('class', 'col-lg-11 text-nowrap');
     let plotOptions = $(`#${ids.toolbar}-plot-options`);
 
-    // subsetting options
-    $('<div/>').appendTo(plotOptions)
-        .attr('id', ids.plotOptionGroups.differentiation)
-        .attr('class', 'col-lg-2 col-xl-2');
-    $('<span/>').appendTo(`#${ids.plotOptionGroups.differentiation}`)
-        .attr('class', `${ids.root}-option-label`)
-        .html('Subset');
-    $('<div/>').appendTo(`#${ids.plotOptionGroups.differentiation}`)
-        .attr('class', 'btn-group btn-group-sm');
-    let subsetButtonGroup = $(`#${ids.plotOptionGroups.differentiation} .btn-group`);
-    $(`<button class="btn btn-default" id="${ids.buttons.noDiff}">None</button>`).appendTo(subsetButtonGroup);
-    $(`<button class="btn btn-default" id="${ids.buttons.sexDiff}">Sex</button>`).appendTo(subsetButtonGroup);
+    // // subsetting options
+    // $('<div/>').appendTo(plotOptions)
+    //     .attr('id', ids.plotOptionGroups.differentiation)
+    //     .attr('class', 'col-lg-2 col-xl-2');
+    // $('<span/>').appendTo(`#${ids.plotOptionGroups.differentiation}`)
+    //     .attr('class', `${ids.root}-option-label`)
+    //     .html('Subset');
+    // $('<div/>').appendTo(`#${ids.plotOptionGroups.differentiation}`)
+    //     .attr('class', 'btn-group btn-group-sm');
+    // let subsetButtonGroup = $(`#${ids.plotOptionGroups.differentiation} .btn-group`);
+    // $(`<button class="btn btn-outline-secondary" id="${ids.buttons.noDiff}">None</button>`).appendTo(subsetButtonGroup);
+    // $(`<button class="btn btn-outline-secondary" id="${ids.buttons.sexDiff}">Sex</button>`).appendTo(subsetButtonGroup);
 
     // scale options
-    $('<div/>').appendTo(plotOptions)
-        .attr('id', ids.plotOptionGroups.scale)
-        .attr('class', 'col-lg-2 col-xl-2');
-    $('<span/>').appendTo(`#${ids.plotOptionGroups.scale}`)
+    $('<label/>').appendTo(plotOptions)
         .attr('class', `${ids.root}-option-label`)
         .html('Scale');
-    $('<div/>').appendTo(`#${ids.plotOptionGroups.scale}`)
-        .attr('class', 'btn-group btn-group-sm');
-    let scaleButtonGroup = $(`#${ids.plotOptionGroups.scale} .btn-group`);
-    $(`<button class="btn btn-default" id="${ids.buttons.logScale}">Log</button>`).appendTo(scaleButtonGroup);
-    $(`<button class="btn btn-default" id="${ids.buttons.linearScale}">Linear</button>`).appendTo(scaleButtonGroup);
-
-    // sort options -- tissue name sorts
     $('<div/>').appendTo(plotOptions)
-        .attr('class', `${ids.plotOptionGroups.sort} col-lg-2 col-xl-2`)
-        .attr('id', `vplot-alpha-sorts`);
-    $('<span/>').appendTo(`.${ids.plotOptionGroups.sort}#vplot-alpha-sorts`)
-        .attr('class', `${ids.root}-option-label`)
-        .html('Tissue Sort');
-    $('<div/>').appendTo(`.${ids.plotOptionGroups.sort}#vplot-alpha-sorts`)
-        .attr('class', 'btn-group btn-group-sm')
-        .attr('id', `${ids.plotOptionGroups.sort}-alpha`);
-    let alphaSortButtonGroup = $(`#${ids.plotOptionGroups.sort}-alpha.btn-group`);
-    $(`<button class="btn btn-default fa fa-caret-up" id="${ids.buttons.ascAlphaSort}"></button>`).appendTo(alphaSortButtonGroup);
-    $(`<button class="btn btn-default fa fa-caret-down" id="${ids.buttons.descAlphaSort}"></button>`).appendTo(alphaSortButtonGroup);
+        .attr('id', ids.plotOptionGroups.scale)
+        .attr('class', 'btn-group btn-group-sm');
+        // .attr('class', 'col-lg-2 col-xl-2');
+    // $('<label/>').appendTo(`#${ids.plotOptionGroups.scale}`)
+    //     .attr('class', `${ids.root}-option-label`)
+    //     .html('Scale');
+    // $('<div/>').appendTo(`#${ids.plotOptionGroups.scale}`)
+    //     .attr('class', 'btn-group btn-group-sm');
+    // let scaleButtonGroup = $(`#${ids.plotOptionGroups.scale} .btn-group`);
+    let scaleButtonGroup = $(`#${ids.plotOptionGroups.scale}`);
+    $(`<button class="btn btn-outline-secondary" id="${ids.buttons.logScale}">Log</button>`).appendTo(scaleButtonGroup);
+    $(`<button class="btn btn-outline-secondary" id="${ids.buttons.linearScale}">Linear</button>`).appendTo(scaleButtonGroup);
+
+    // // sort options -- tissue name sorts
+    // $('<div/>').appendTo(plotOptions)
+    //     .attr('class', `${ids.plotOptionGroups.sort} col-lg-2 col-xl-2`)
+    //     .attr('id', `vplot-alpha-sorts`);
+    // $('<span/>').appendTo(`.${ids.plotOptionGroups.sort}#vplot-alpha-sorts`)
+    //     .attr('class', `${ids.root}-option-label`)
+    //     .html('Tissue Sort');
+    // $('<div/>').appendTo(`.${ids.plotOptionGroups.sort}#vplot-alpha-sorts`)
+    //     .attr('class', 'btn-group btn-group-sm')
+    //     .attr('id', `${ids.plotOptionGroups.sort}-alpha`);
+    // let alphaSortButtonGroup = $(`#${ids.plotOptionGroups.sort}-alpha.btn-group`);
+    // $(`<button class="btn btn-default fa fa-caret-up" id="${ids.buttons.ascAlphaSort}"></button>`).appendTo(alphaSortButtonGroup);
+    // $(`<button class="btn btn-default fa fa-caret-down" id="${ids.buttons.descAlphaSort}"></button>`).appendTo(alphaSortButtonGroup);
 
 
     // sort options -- median sorts
-    $('<div/>').appendTo(plotOptions)
-        .attr('class', `${ids.plotOptionGroups.sort} col-lg-2 col-xl-2`)
-        .attr('id', `vplot-num-sorts`);
-    $('<span/>').appendTo(`.${ids.plotOptionGroups.sort}#vplot-num-sorts`)
+    $('<label/>').appendTo(plotOptions)
         .attr('class', `${ids.root}-option-label`)
         .html('Median Sort');
-    $('<div/>').appendTo(`.${ids.plotOptionGroups.sort}#vplot-num-sorts`)
-        .attr('class', 'btn-group btn-group-sm')
-        .attr('id', `${ids.plotOptionGroups.sort}-num`);
-    let numSortButtonGroup = $(`#${ids.plotOptionGroups.sort}-num.btn-group`);
-    $(`<button class="btn btn-default fa fa-caret-up" id="${ids.buttons.ascSort}"></button>`).appendTo(numSortButtonGroup);
-    $(`<button class="btn btn-default fa fa-caret-down" id="${ids.buttons.descSort}"></button>`).appendTo(numSortButtonGroup);
+    $('<div/>').appendTo(plotOptions)
+        // .attr('class', `${ids.plotOptionGroups.sort} col-lg-2 col-xl-2`)
+        .attr('class', `${ids.plotOptionGroups.sort} btn-group btn-group-sm`)
+        .attr('id', `vplot-num-sorts`);
+    // $('<label/>').appendTo(`.${ids.plotOptionGroups.sort}#vplot-num-sorts`)
+    //     .attr('class', `${ids.root}-option-label`)
+    //     .html('Median Sort');
+    // $('<div/>').appendTo(`.${ids.plotOptionGroups.sort}#vplot-num-sorts`)
+    //     .attr('class', 'btn-group btn-group-sm')
+    //     .attr('id', `${ids.plotOptionGroups.sort}-num`);
+    // let numSortButtonGroup = $(`#${ids.plotOptionGroups.sort}-num.btn-group`);
+    let numSortButtonGroup = $(`.${ids.plotOptionGroups.sort}`);
+    $(`<button class="btn btn-outline-secondary fa fa-caret-up" id="${ids.buttons.ascSort}"></button>`).appendTo(numSortButtonGroup);
+    $(`<button class="btn btn-outline-secondary fa fa-caret-down" id="${ids.buttons.descSort}"></button>`).appendTo(numSortButtonGroup);
 
     // outlier display options
+    $('<label/>').appendTo(plotOptions)
+        .attr('class', `${ids.root}-option-label`)
+        .attr('for', ids.plotOptionGroups.outliers)
+        .html('Outliers');
     $('<div/>').appendTo(plotOptions)
         .attr('id', ids.plotOptionGroups.outliers)
-        .attr('class', 'col-lg-2 col-xl-2');
-    $('<span/>').appendTo(`#${ids.plotOptionGroups.outliers}`)
-        .attr('class', `${ids.root}-option-label`)
-        .html('Outliers');
-    $('<div/>').appendTo(`#${ids.plotOptionGroups.outliers}`)
+        // .attr('class', 'col-lg-2 col-xl-2');
         .attr('class', 'btn-group btn-group-sm');
-    let outliersButtonGroup = $(`#${ids.plotOptionGroups.outliers} .btn-group`);
-    $(`<button class="btn btn-default" id="${ids.buttons.outliersOn}">On</button>`).appendTo(outliersButtonGroup);
-    $(`<button class="btn btn-default" id="${ids.buttons.outliersOff}">Off</button>`).appendTo(outliersButtonGroup);
+    // $('<label/>').appendTo(`#${ids.plotOptionGroups.outliers}`)
+    //     .attr('class', `${ids.root}-option-label`)
+    //     .attr('for', ids.plotOptionGroups.outliers)
+    //     .html('Outliers');
+    // $('<div/>').appendTo(`#${ids.plotOptionGroups.outliers}`)
+    //     .attr('class', 'btn-group btn-group-sm');
+    // let outliersButtonGroup = $(`#${ids.plotOptionGroups.outliers} .btn-group`);
+    let outliersButtonGroup = $(`#${ids.plotOptionGroups.outliers}`);
+    $(`<button class="btn btn-outline-secondary" id="${ids.buttons.outliersOn}">On</button>`).appendTo(outliersButtonGroup);
+    $(`<button class="btn btn-outline-secondary" id="${ids.buttons.outliersOff}">Off</button>`).appendTo(outliersButtonGroup);
 
     selectAll(`#${ids.plotOptionsModal} .modal-body button`).classed('active', false);
 
@@ -251,14 +270,14 @@ function _addToolbar(vplot, tooltip, ids, urls) {
                #${ids.buttons.noDiff},
                #${ids.buttons.outliersOn}`).classed('active', true);
 
-    // filter
-    toolbar.createButton(ids.buttons.filter, 'fa-filter');
-    let tissueFilterButton = select(`#${ids.buttons.filter}`)
-        .on('mouseover', ()=>{toolbar.tooltip.show('Filter Tissues');})
-        .on('mouseout', ()=>{toolbar.tooltip.hide();});
-    tissueFilterButton.on('click', (d, i, nodes)=>{
-        $('#gene-expr-vplot-filter-modal').modal('show');
-    });
+    // // filter
+    // toolbar.createButton(ids.buttons.filter, 'fa-filter');
+    // let tissueFilterButton = select(`#${ids.buttons.filter}`)
+    //     .on('mouseover', ()=>{toolbar.tooltip.show('Filter Tissues');})
+    //     .on('mouseout', ()=>{toolbar.tooltip.hide();});
+    // tissueFilterButton.on('click', (d, i, nodes)=>{
+    //     $('#gene-expr-vplot-filter-modal').modal('show');
+    // });
 
 
     // sort events
@@ -329,7 +348,7 @@ function _parseGeneExpressionForViolin(data, idNameMap=undefined, colors=undefin
     const attr = 'geneExpression';
     if(!data.hasOwnProperty(attr)) throw 'Parse Error: required json attribute is missing: ' + attr;
     data[attr].forEach((d)=>{
-        ['data', 'tissueSiteDetailId', 'geneSymbol', 'gencodeId'].forEach((k)=>{
+        ['data', 'tissueSiteDetailId', 'geneSymbol', 'geneId'].forEach((k)=>{
             if(!d.hasOwnProperty(k)){
                 console.error(d);
                 throw 'Parse Error: required json attribute is missing: ' + k;
@@ -343,47 +362,47 @@ function _parseGeneExpressionForViolin(data, idNameMap=undefined, colors=undefin
     return data[attr];
 }
 
-/**
- * populates tissue filter modal with tissues
- * @param  vplot {GroupedViolin} violin plot object being modified
- * @param  domId {String} ID of modal whose body is to be populated
- * @param  ids {Dictionary} Dictionary of IDs relevant to plot
- * @param  tissues {Array} Array of tissues returned from GTEx tissueSiteDetail API
- * @private
- */
-function _createTissueFilter(vplot, domId, ids, tissues) {
-    const tissueGroups = parseTissueSites(tissues);
-    createTissueGroupMenu(tissueGroups, `${domId}-body`, false, true, 3);
-    _addTissueFilterEvent(vplot, domId, ids, tissueGroups);
-}
+// /**
+//  * populates tissue filter modal with tissues
+//  * @param  vplot {GroupedViolin} violin plot object being modified
+//  * @param  domId {String} ID of modal whose body is to be populated
+//  * @param  ids {Dictionary} Dictionary of IDs relevant to plot
+//  * @param  tissues {Array} Array of tissues returned from GTEx tissueSiteDetail API
+//  * @private
+//  */
+// function _createTissueFilter(vplot, domId, ids, tissues) {
+//     const tissueGroups = parseTissueSites(tissues);
+//     createTissueGroupMenu(tissueGroups, `${domId}-body`, false, true, 3);
+//     _addTissueFilterEvent(vplot, domId, ids, tissueGroups);
+// }
 
-/**
- * filters tissues displayed in the plot
- * @param vplot {GroupedViolin} violin plot object being modified
- * @param domId {String} modal ID
- * @param ids {Dictionary} Dictionary of IDs relevant to plot
- * @param tissues {Dictionary} Dictionary of tissue groups
- * @private
- */
-function _addTissueFilterEvent(vplot, domId, ids, tissues) {
-    $(`#${domId}`).on('hidden.bs.modal', (e) => {
-        let checkedTissues = parseTissueGroupMenu(tissues, `${domId}-body`, true);
-        _filterTissues(vplot, ids, checkedTissues);
-    });
-}
+// /**
+//  * filters tissues displayed in the plot
+//  * @param vplot {GroupedViolin} violin plot object being modified
+//  * @param domId {String} modal ID
+//  * @param ids {Dictionary} Dictionary of IDs relevant to plot
+//  * @param tissues {Dictionary} Dictionary of tissue groups
+//  * @private
+//  */
+// function _addTissueFilterEvent(vplot, domId, ids, tissues) {
+//     $(`#${domId}`).on('hidden.bs.modal', (e) => {
+//         let checkedTissues = parseTissueGroupMenu(tissues, `${domId}-body`, true);
+//         _filterTissues(vplot, ids, checkedTissues);
+//     });
+// }
 
-/**
- * Filters view to only specified tissues
- * @param vplot {GroupedViolin} violin plot object to be modified
- * @param ids {Dictionary} Dictionary of IDs relevant to plot
- * @param tissues {Array} List of tissues to filter down to
- * @private
- */
-function _filterTissues(vplot, ids, tissues) {
-    let filteredData = vplot.allData.filter(x => tissues.includes(x.group));
-    vplot.data = filteredData;
-    _redrawViolinPlot(vplot, ids);
-}
+// /**
+//  * Filters view to only specified tissues
+//  * @param vplot {GroupedViolin} violin plot object to be modified
+//  * @param ids {Dictionary} Dictionary of IDs relevant to plot
+//  * @param tissues {Array} List of tissues to filter down to
+//  * @private
+//  */
+// function _filterTissues(vplot, ids, tissues) {
+//     let filteredData = vplot.allData.filter(x => tissues.includes(x.group));
+//     vplot.data = filteredData;
+//     _redrawViolinPlot(vplot, ids);
+// }
 
 /**
  * Moves the x-axis down

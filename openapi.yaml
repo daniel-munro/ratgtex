@@ -1,0 +1,590 @@
+openapi: 3.0.0
+info:
+  title: RatGTEx REST API
+  version: '1.0.0'
+  description: This API provides data for the visualizations in the RatGTEx data portal.
+  contact:
+    name: Daniel Munro
+    x-role: responsible developer
+    email: dan@dmun.ro
+    url: https://danmun.ro
+    x-id: https://danmun.ro
+servers:
+- url: https://ratgtex.org/api/v1
+  description: RatGTEx data portal
+tags:
+- name: reference
+  description: Information on tissues, genes, and variants
+- name: expression
+  description: Gene expression data
+- name: eQTL
+  description: Data on gene-variant associations
+paths:
+  /dyneqtl:
+    get:
+      tags:
+      - eQTL
+      description: Fetch information for one gene-variant pair in one tissue
+      parameters:
+      - name: geneId
+        in: query
+        description: Ensembl gene ID
+        required: true
+        schema:
+          type: string
+          example: ENSRNOG00000021424
+        x-valueType: https://identifiers.org/ensembl
+      - name: tissueSiteDetailId
+        in: query
+        description: Tissue ID
+        required: true
+        schema:
+          type: string
+          example: IL
+      - name: variantId
+        in: query
+        description: Variant ID
+        required: true
+        schema:
+          type: string
+          example: chr10:104362850
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  alt:
+                    type: string
+                    example: A
+                  data:
+                    type: array
+                    items:
+                      type: number
+                    example: [-1.11134883833383, -0.314562734207873, 0.556543703618366, 0.522265760640944]
+                  geneId:
+                    type: string
+                    example: ENSRNOG00000021424
+                  geneSymbol:
+                    type: string
+                    example: Cd300lf
+                  genotypes:
+                    type: array
+                    items:
+                      type: integer
+                    example: [1, 0, 2, 1]
+                  hetCount:
+                    type: integer
+                    example: 34
+                  homoAltCount:
+                    type: integer
+                    example: 17
+                  homoRefCount:
+                    type: integer
+                    example: 30
+                  maf:
+                    type: number
+                    example: 0.41975308641975306
+                  pValue:
+                    type: number
+                    example: 0.0000203971
+                  pValueThreshold:
+                    type: number
+                    example: 0.00220875
+                  ref:
+                    type: string
+                    example: G
+                  tissueSiteDetailId:
+                    type: string
+                    example: IL
+                  variantId:
+                    type: string
+                    example: chr10:104362850
+          x-responseValueType:
+          - x-path: geneId
+            x-valueType: https://identifiers.org/ensembl
+  /eqtl:
+    get:
+      tags:
+      - eQTL
+      description: Fetch conditionally independent cis-eQTLs in any tissue for a gene
+      parameters:
+      - name: geneId
+        in: query
+        description: Ensembl gene ID
+        required: true
+        schema:
+          type: string
+          example: ENSRNOG00000021424
+        x-valueType: https://identifiers.org/ensembl
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  eqtl:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        alt:
+                          type: string
+                          example: T
+                        geneId:
+                          type: string
+                          example: ENSRNOG00000021424
+                        geneSymbol:
+                          type: string
+                          example: Cd300lf
+                        log2_aFC:
+                          type: number
+                          example: 0.401466
+                        pval_beta:
+                          type: number
+                          example: 0.000715545
+                        ref:
+                          type: string
+                          example: C
+                        tissueSiteDetailId:
+                          type: string
+                          example: IL
+                        variantId:
+                          type: string
+                          example: chr10:104378687
+          x-responseValueType:
+          - x-path: eqtl[0].geneId
+            x-valueType: https://identifiers.org/ensembl
+  /exon:
+    get:
+      tags:
+      - reference
+      description: Fetch a gene's exons
+      parameters:
+      - name: geneId
+        in: query
+        description: Ensembl gene ID
+        required: true
+        schema:
+          type: string
+          example: ENSRNOG00000021424
+        x-valueType: https://identifiers.org/ensembl
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  exon:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        chromosome:
+                          type: string
+                          example: "10"
+                        end:
+                          type: integer
+                          example: 103687425
+                        exonId:
+                          type: string
+                          example: ENSRNOG00000021424_1
+                        exonNumber:
+                          type: integer
+                          example: 1
+                        featureType:
+                          type: string
+                          example: exon
+                        geneId:
+                          type: string
+                          example: ENSRNOG00000021424
+                        geneSymbol:
+                          type: string
+                          example: Cd300lf
+                        start:
+                          type: integer
+                          example: 103687126
+                        strand:
+                          type: string
+                          enum: ['-', '+']
+                          example: '-'
+                        transcriptId:
+                          type: string
+                          example: ENSRNOG00000021424
+          x-responseValueType:
+          - x-path: exon[0].geneId
+            x-valueType: https://identifiers.org/ensembl
+          - x-path: transcriptId
+            x-valueType: https://identifiers.org/ensembl
+  /gene:
+    get:
+      tags:
+      - reference
+      description: Fetch metadata for one or more genes
+      parameters:
+      - name: geneId
+        in: query
+        description: One or more Ensembl gene IDs or gene symbols (they can be mixed)
+        required: true
+        schema:
+          type: array
+          items:
+            type: string
+          example: [ENSRNOG00000021424, Eno1]
+        style: form
+        explode: false
+        x-valueType: https://identifiers.org/ensembl
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  gene:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        chromosome:
+                          type: string
+                          example: '10'
+                        description:
+                          type: string
+                          example: Cd300 molecule-like family member F
+                        end:
+                          type: integer
+                          example: 103687425
+                        geneId:
+                          type: string
+                          example: ENSRNOG00000021424
+                        geneSymbol:
+                          type: string
+                          example: Cd300lf
+                        hasEqtl:
+                          type: boolean
+                          example: true
+                        start:
+                          type: string
+                          example: 103670027
+                        strand:
+                          type: string
+                          example: '-'
+                        tss:
+                          type: integer
+                          example: 103687425
+          x-responseValueType:
+          - x-path: gene[0].geneId
+            x-valueType: https://identifiers.org/ensembl
+  /ld:
+    get:
+      tags:
+      - reference
+      description: Fetch LD scores between all cis-window variants for a gene
+      parameters:
+      - name: geneId
+        in: query
+        description: Ensembl gene ID
+        required: true
+        schema:
+          type: string
+          example: ENSRNOG00000021424
+        x-valueType: https://identifiers.org/ensembl
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ld:
+                    type: array
+                    items:
+                      type: array
+                      items: {}
+                      example: [chr10:102827930, chr10:102868675, 0.6863]
+  /medianGeneExpression:
+    get:
+      tags:
+      - expression
+      description: Fetch median expression (TPM) for one or more genes in one or more tissues
+      parameters:
+      - name: geneId
+        in: query
+        description: One or more Ensembl gene IDs.
+        required: true
+        schema:
+          type: array
+          items:
+            type: string
+          example: [ENSRNOG00000017843, ENSRNOG00000027513, ENSRNOG00000017895]
+        style: form
+        explode: false
+        x-valueType: https://identifiers.org/ensembl
+      - name: tissueSiteDetailId
+        in: query
+        description: One or more tissue IDs. If omitted, all tissues are included.
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+          example: [IL, LHb, NAcc]
+        style: form
+        explode: false
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  clusters:
+                    type: object
+                    properties:
+                      gene:
+                        type: string
+                        example: '((ENSRNOG00000027513:209.196,ENSRNOG00000017843:209.196):759.14,ENSRNOG00000017895:968.336);'
+                      tissue:
+                        type: string
+                        example: '((IL:34.6518,LHb:34.6518):191.47,NAcc:226.121);'
+                  medianGeneExpression:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        geneId:
+                          type: string
+                          example: ENSRNOG00000017843
+                        geneSymbol:
+                          type: string
+                          example: Polr3k
+                        median:
+                          type: number
+                          example: 134.87
+                        tissueSiteDetailId:
+                          type: string
+                          example: IL
+          x-responseValueType:
+          - x-path: medianGeneExpression[0].geneId
+            x-valueType: https://identifiers.org/ensembl
+  /singleTissueEqtl:
+    get:
+      tags:
+      - eQTL
+      description: Fetch all significant cis-variants in all tissues for a gene
+      parameters:
+      - name: geneId
+        in: query
+        description: Ensembl gene ID
+        required: true
+        schema:
+          type: string
+          example: ENSRNOG00000016560
+        x-valueType: https://identifiers.org/ensembl
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  singleTissueEqtl:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        chromosome:
+                          type: string
+                          example: '17'
+                        geneId:
+                          type: string
+                          example: ENSRNOG00000016560
+                        geneSymbol:
+                          type: string
+                          example: Card19
+                        geneSymbolUpper:
+                          type: string
+                          example: Card19
+                        nes:
+                          type: number
+                          example: 1.19669
+                        pValue:
+                          type: number
+                          example: 0.00121899
+                        pos:
+                          type: integer
+                          example: 15221388
+                        tissueSiteDetailId:
+                          type: string
+                          example: NAcc
+                        variantId:
+                          type: string
+                          example: chr17:15221388
+          x-responseValueType:
+          - x-path: singleTissueEqtl[0].geneId
+            x-valueType: https://identifiers.org/ensembl
+  /tissueInfo:
+    get:
+      tags:
+      - reference
+      description: Fetch metadata for all tissues
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tissueInfo:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        colorHex:
+                          type: string
+                          example: 377eb8
+                        colorRgb:
+                          type: string
+                          example: '55,126,184'
+                        datasetId:
+                          type: string
+                          example: ratgtex_v1
+                        eGeneCount:
+                          type: integer
+                          example: 3949
+                        expressedGeneCount:
+                          type: integer
+                          example: 16563
+                        hasEgenes:
+                          type: boolean
+                          example: true
+                        rnaSeqAndGenotypeSampleCount:
+                          type: integer
+                          example: 81
+                        rnaSeqSampleCount:
+                          type: integer
+                          example: 81
+                        tissueSite:
+                          type: string
+                          example: Brain
+                        tissueSiteDetail:
+                          type: string
+                          example: Infralimbic cortex
+                        tissueSiteDetailAbbr:
+                          type: string
+                          example: IL
+                        tissueSiteDetailId:
+                          type: string
+                          example: IL
+  /topExpressedGene:
+    get:
+      tags:
+      - expression
+      description: Fetch 50 genes with highest median expression in a tissue
+      parameters:
+      - name: filterMtGene
+        in: query
+        description: Whether mitochondrial genes should be omitted from the top gene list
+        required: false
+        schema:
+          type: boolean
+          example: true
+      - name: tissueSiteDetailId
+        in: query
+        description: Tissue ID
+        required: true
+        schema:
+          type: string
+          example: IL
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  topExpressedGene:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        datasetId:
+                          type: string
+                          example: ratgtex_v1
+                        geneId:
+                          type: string
+                          example: ENSRNOG00000030478
+                        geneSymbol:
+                          type: string
+                          example: AY172581.9
+                        median:
+                          type: number
+                          example: 6068.27
+                        tissueSiteDetailId:
+                          type: string
+                          example: IL
+                        unit:
+                          type: string
+                          enum: [TPM]
+                          example: TPM
+          x-responseValueType:
+          - x-path: topExpressedGene[0].geneId
+            x-valueType: https://identifiers.org/ensembl
+  /variant:
+    get:
+      tags:
+      - reference
+      description: Fetch information for one or more variants
+      parameters:
+      - name: variantId
+        in: query
+        description: Variant ID
+        required: true
+        schema:
+          type: array
+          items:
+            type: string
+          example: [chr1:1675342, chr5:154001168]
+        style: form
+        explode: false
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  variant:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        alt:
+                          type: string
+                          example: A
+                        chromosome:
+                          type: string
+                          example: '1'
+                        pos:
+                          type: integer
+                          example: 1675342
+                        ref:
+                          type: string
+                          example: G
+                        variantId:
+                          type: string
+                          example: chr1:1675342
