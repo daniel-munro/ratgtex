@@ -23,7 +23,7 @@ To minify the bundled code, first set the environment variable NODE_ENV to "prod
 
 Then run rollup to recompile the code. All the demos are using the minified code of the tools.
 
-#### Dependencies
+### Dependencies
 RatGTEx Visualizations is distributed, in part, under and subject to the provisions of licenses for:
 
 D3.js (https://d3js.org/), Copyright (c) 2017 Mike Bostock. All rights reserved.

@@ -18,6 +18,9 @@
     <link rel="stylesheet" type="text/css" href="/css/halfMap.css">
     <link rel="stylesheet" type="text/css" href="/css/violin.css">
     <link rel="stylesheet" href="/css/main.css">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/images/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
 
     <title>Gene eQTL Visualizer | RatGTEx</title>
 </head>
@@ -43,9 +46,9 @@
                         <a class="nav-link" href="/download/">Download</a>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle active" href="#" id="navbarDropdown" role="button"
+                        <a class="nav-link dropdown-toggle active" href="#" id="browseDropdown" role="button"
                             data-bs-toggle="dropdown" aria-expanded="false">Browse</a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <ul class="dropdown-menu" aria-labelledby="browseDropdown">
                             <li>
                                 <h6 class="dropdown-header">Expression</h6>
                             </li>
@@ -61,10 +64,14 @@
                             <li><a class="dropdown-item" href="/gene-eqtl-visualizer/">Gene eQTL Visualizer</a></li>
                         </ul>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/about/">About</a>
-                    </li>
-                </ul>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="aboutDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">About</a>
+                        <ul class="dropdown-menu" aria-labelledby="aboutDropdown">
+                            <li><a class="dropdown-item" href="/about/">RatGTEx</a></li>
+                            <li><a class="dropdown-item" href="/about/api/">API</a></li>
+                        </ul>
+                    </li>                </ul>
                 <form class="d-flex col-md-4 mb-0" id="gene-search">
                     <div class="input-group">
                         <input class="form-control basicAutoComplete" id="search-input" type="text" autocomplete="off"

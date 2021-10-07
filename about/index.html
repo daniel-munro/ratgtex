@@ -11,6 +11,9 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css"
         integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
     <link rel="stylesheet" href="/css/main.css">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/images/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"
         integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
@@ -45,9 +48,9 @@
                         <a class="nav-link" href="/download/">Download</a>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                        <a class="nav-link dropdown-toggle" href="#" id="browseDropdown" role="button"
                             data-bs-toggle="dropdown" aria-expanded="false">Browse</a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <ul class="dropdown-menu" aria-labelledby="browseDropdown">
                             <li>
                                 <h6 class="dropdown-header">Expression</h6>
                             </li>
@@ -63,10 +66,14 @@
                             <li><a class="dropdown-item" href="/gene-eqtl-visualizer/">Gene eQTL Visualizer</a></li>
                         </ul>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="/about/">About</a>
-                    </li>
-                </ul>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle active" href="#" id="aboutDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">About</a>
+                        <ul class="dropdown-menu" aria-labelledby="aboutDropdown">
+                            <li><a class="dropdown-item" href="/about/" aria-current="page">RatGTEx</a></li>
+                            <li><a class="dropdown-item" href="/about/api/">API</a></li>
+                        </ul>
+                    </li>                </ul>
                 <form class="d-flex col-md-4 mb-0" id="gene-search">
                     <div class="input-group">
                         <input class="form-control basicAutoComplete" id="search-input" type="text" autocomplete="off"

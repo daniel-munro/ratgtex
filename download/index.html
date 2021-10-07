@@ -11,6 +11,9 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css"
         integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
     <link rel="stylesheet" href="/css/main.css">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/images/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"
         integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
@@ -20,6 +23,7 @@
         integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
         crossorigin="anonymous"></script>
     <script src="/src/main.js"></script>
+
 
     <title>Download | RatGTEx</title>
 </head>
@@ -45,9 +49,9 @@
                         <a class="nav-link active" aria-current="page" href="/download/">Download</a>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                        <a class="nav-link dropdown-toggle" href="#" id="browseDropdown" role="button"
                             data-bs-toggle="dropdown" aria-expanded="false">Browse</a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <ul class="dropdown-menu" aria-labelledby="browseDropdown">
                             <li>
                                 <h6 class="dropdown-header">Expression</h6>
                             </li>
@@ -63,10 +67,14 @@
                             <li><a class="dropdown-item" href="/gene-eqtl-visualizer/">Gene eQTL Visualizer</a></li>
                         </ul>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/about/">About</a>
-                    </li>
-                </ul>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="aboutDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">About</a>
+                        <ul class="dropdown-menu" aria-labelledby="aboutDropdown">
+                            <li><a class="dropdown-item" href="/about/">RatGTEx</a></li>
+                            <li><a class="dropdown-item" href="/about/api/">API</a></li>
+                        </ul>
+                    </li>                </ul>
                 <form class="d-flex col-md-4 mb-0" id="gene-search">
                     <div class="input-group">
                         <input class="form-control basicAutoComplete" id="search-input" type="text" autocomplete="off"
@@ -85,7 +93,13 @@
 
         <!-- <p><a href="/data/ref/metadata.csv">Sample metadata</a></p> -->
 
+        <p>See the <a href="/about/">About page</a> for processing and data format specifications.</p>
+
         <p><a href="/data/gene.txt">Gene info</a></p>
+
+        <h2>Raw data</h2>
+
+        <p>RNA-Seq reads for the IL, LHb, NAcc, OFC, and PL brain regions are available in SRA and can be accessed from GEO accession <a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE173141">GSE173141</a>.</p>
 
         <h2>Gene expression</h2>
 
