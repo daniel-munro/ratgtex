@@ -1,7 +1,9 @@
 
-# ![RatGTEx](/images/RatGTExPortal2.png)
+# ![RatGTEx](/images/RatGTExPortal.png)
 
 This repository contains code for the [RatGTEx web portal](https://ratgtex.org), which provides gene expression and eQTL data for different rat tissues.
+
+There are also repositories for the RatGTEx [data pipeline](https://github.com/daniel-munro/ratgtex-pipeline) and to [process those results](https://github.com/daniel-munro/ratgtex-server-data) for this site's API and visualizations.
 
 ---
 
