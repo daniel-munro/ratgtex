@@ -104,6 +104,10 @@
     </nav>
 
     <div class="container">
+        <h3 id="gene-not-found"></h3>
+    </div>
+
+    <div id="gene-info" class="container">
         <h3 id="gene-title"></h3>
         <p id="gene-description"></p>
 
@@ -191,7 +195,8 @@
                 url: `/api/v1/gene?geneId=${gene}`,
                 success: function (data) {
                     if (data.gene.length == 0) {
-                        $('#gene-title').text(`Gene not found: ${gene}`);
+                        $('#gene-not-found').text(`Gene not found: ${gene}`);
+                        $('#gene-info').hide();
                     } else {
                         loadGene(data.gene[0]);
                     }
