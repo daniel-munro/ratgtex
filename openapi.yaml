@@ -262,6 +262,20 @@ paths:
                         end:
                           type: integer
                           example: 103687425
+                        statusInTissue:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              tissueSiteDetailId:
+                                type: string
+                                example: IL
+                              expressed:
+                                type: boolean
+                                example: true
+                              eqtl:
+                                type: boolean
+                                example: true
                         geneId:
                           type: string
                           example: ENSRNOG00000021424

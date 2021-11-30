@@ -792,10 +792,6 @@
             "type" : "string",
             "example" : "IL"
           },
-          "tss" : {
-            "type" : "integer",
-            "example" : 103687426
-          },
           "variantId" : {
             "type" : "string",
             "example" : "chr10:104378687"
@@ -878,6 +874,26 @@
           "end" : {
             "type" : "integer",
             "example" : 103687425
+          },
+          "statusInTissue" : {
+            "type" : "array",
+            "items" : {
+              "type" : "object",
+              "properties" : {
+                "tissueSiteDetailId" : {
+                  "type" : "string",
+                  "example" : "IL"
+                },
+                "expressed" : {
+                  "type" : "boolean",
+                  "example" : true
+                },
+                "eqtl" : {
+                  "type" : "boolean",
+                  "example" : true
+                }
+              }
+            }
           },
           "geneId" : {
             "type" : "string",
@@ -5364,6 +5380,11 @@ except ApiException as e:
       this.open = open;
       this.options = options;
       this.isCollapsed = open <= 0;
+  
+      if (this.schema.type == undefined && this.schema.$ref) {
+        const elements = this.schema.$ref.split('/');
+        this.schema = defs[elements.pop()];
+      }
   
       // if schema is an empty object which means any JOSN
       this.isAny = typeof schema === 'object' && !Array.isArray(schema) && !Object.keys(schema).filter(function (k) {

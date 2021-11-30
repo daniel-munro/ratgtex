@@ -9,10 +9,12 @@ import zipfile
 
 
 def genotype(gt: tuple) -> int:
+    """Convert genotype tuple to dosage (0/1/2)"""
     return None if gt == (None, None) else gt[0] + gt[1]
 
 
 def variant_record(variant_id):
+    """Get record for one variant from VCF"""
     chrom, pos = variant_id.split(":")
     chrom = chrom.replace("chr", "")
     pos = int(pos)
@@ -22,7 +24,9 @@ def variant_record(variant_id):
 
 
 def geno_matrix(ids):
-    """Assumes SNPs are in close proximity on a chromosome, e.g. in a cis-window."""
+    """Get genotype matrix for a list of SNPs
+    Assumes SNPs are in close proximity on a chromosome, e.g. in a cis-window.
+    """
     chrom = ids[0].split(":")[0].replace("chr", "")
     pos = [int(x.split(":")[1]) for x in ids]
     genos = {}
@@ -34,27 +38,30 @@ def geno_matrix(ids):
 
 
 def get_newick(node, newick, parentdist, leaf_names):
-    """from https://stackoverflow.com/questions/28222179/save-dendrogram-to-newick-format/31878514#31878514"""
+    """Save dendrogram in Newick format
+    from https://stackoverflow.com/questions/28222179/save-dendrogram-to-newick-format/31878514#31878514
+    """
     if node.is_leaf():
         return "%s:%g%s" % (leaf_names[node.id], parentdist - node.dist, newick)
+    if len(newick) > 0:
+        newick = "):%g%s" % (parentdist - node.dist, newick)
     else:
-        if len(newick) > 0:
-            newick = "):%g%s" % (parentdist - node.dist, newick)
-        else:
-            newick = ");"
-        newick = get_newick(node.get_left(), newick, node.dist, leaf_names)
-        newick = get_newick(node.get_right(), ",%s" % (newick), node.dist, leaf_names)
-        newick = "(%s" % (newick)
-        return newick
+        newick = ");"
+    newick = get_newick(node.get_left(), newick, node.dist, leaf_names)
+    newick = get_newick(node.get_right(), ",%s" % (newick), node.dist, leaf_names)
+    newick = "(%s" % (newick)
+    return newick
 
 
 def row_tree(d):
+    """Get Newick representation of matrix for clustering"""
     clust = linkage(d, method="average", optimal_ordering=True)
     tree = to_tree(clust)
     return get_newick(tree, "", tree.dist, d.index)
 
 
 def validate_genes(ids, genes):
+    """Return valid gene IDs for a list of gene IDs/names"""
     valid = []
     for id in ids:
         if id in genes.index:
@@ -71,6 +78,21 @@ def validate_genes(ids, genes):
     return valid
 
 
+def format_per_tissue_gene_info(info: list, tissues: list):
+    """Collect per-tissue expression and eQTL indicators into a list"""
+    for gene in info:
+        gene["statusInTissue"] = []
+        for tissue in tissues:
+            item = {
+                "tissueSiteDetailId": tissue,
+                "expressed": gene["expr_" + tissue],
+                "eqtl": gene["eqtl_" + tissue],
+            }
+            gene["statusInTissue"].append(item)
+            del gene["expr_" + tissue]
+            del gene["eqtl_" + tissue]
+
+
 # def load_tpm(path):
 #     tpm = {}
 #     expr = pd.read_csv(path, sep="\t")
@@ -85,6 +107,7 @@ def validate_genes(ids, genes):
 
 
 def cis_pval(tissue, gene, variant):
+    """Return nominal p-value for a given cis-window variant"""
     with zipfile.ZipFile(f"../data/cis_pvals/{tissue}.zip", "r") as archive:
         fname = f"{tissue}/{gene}.txt"
         if fname in archive.namelist():
@@ -95,6 +118,7 @@ def cis_pval(tissue, gene, variant):
 
 
 def single_tis(gene):
+    """Return table of significant cis-eSNPs for a gene"""
     with zipfile.ZipFile(f"../data/singleTissueEqtl.zip", "r") as archive:
         fname = f"singleTissueEqtl/{gene}.txt"
         if fname in archive.namelist():
@@ -112,28 +136,54 @@ topExpr = pd.read_csv("../data/topExpressedGene.txt", sep="\t")
 genes = pd.read_csv("../data/gene.txt", sep="\t", index_col="geneId").fillna("")
 
 tissues = ["Eye", "IL", "LHb", "NAcc", "OFC", "PL"]
-med_expr = pd.read_csv("../data/medianGeneExpression.txt.gz", sep="\t", index_col="geneId")
+med_expr = pd.read_csv(
+    "../data/medianGeneExpression.txt.gz", sep="\t", index_col="geneId"
+)
 # tpm = load_tpm("../data/expr/ensembl-gene_raw-tpm.txt")
 
 tpm = {}
 for tissue in tissues:
     tpm_file = f"../data/expr/{tissue}.expr.tpm.bed.gz"
-    tpm[tissue] = pd.read_csv(tpm_file, sep="\t", dtype={"#chr": str}, index_col="gene_id")
+    tpm[tissue] = pd.read_csv(
+        tpm_file, sep="\t", dtype={"#chr": str}, index_col="gene_id"
+    )
     tpm[tissue].drop(columns=["#chr", "start", "end"], inplace=True)
 iqn = {}
 for tissue in tissues:
     iqn_file = f"../data/expr/{tissue}.expr.iqn.bed.gz"
-    iqn[tissue] = pd.read_csv(iqn_file, sep="\t", dtype={"#chr": str}, index_col="gene_id")
+    iqn[tissue] = pd.read_csv(
+        iqn_file, sep="\t", dtype={"#chr": str}, index_col="gene_id"
+    )
     iqn[tissue].drop(columns=["#chr", "start", "end"], inplace=True)
 
 vcf = pysam.VariantFile("../data/ratgtex.vcf.gz")
 
 exons = pd.read_csv("../data/exon.txt", sep="\t", dtype={"chromosome": str})
 
-top_assoc = pd.read_csv("../data/eqtl/top_assoc.txt", sep="\t", index_col=["tissue", "gene_id"])  # Just for pval_nominal_threshold
+top_assoc = pd.read_csv(
+    "../data/eqtl/top_assoc.txt", sep="\t", index_col=["tissue", "gene_id"]
+)  # Just for pval_nominal_threshold
 eqtls = pd.read_csv("../data/eqtl/eqtls_indep.txt", sep="\t")
-eqtls = eqtls[["tissue", "gene_id", "gene_name", "variant_id", "ref", "alt", "pval_beta", "log2_aFC"]]
-eqtls = eqtls.rename(columns={"tissue": "tissueSiteDetailId", "gene_id": "geneId", "gene_name": "geneSymbol", "variant_id": "variantId"})
+eqtls = eqtls[
+    [
+        "tissue",
+        "gene_id",
+        "gene_name",
+        "variant_id",
+        "ref",
+        "alt",
+        "pval_beta",
+        "log2_aFC",
+    ]
+]
+eqtls = eqtls.rename(
+    columns={
+        "tissue": "tissueSiteDetailId",
+        "gene_id": "geneId",
+        "gene_name": "geneSymbol",
+        "variant_id": "variantId",
+    }
+)
 
 api = Flask(__name__)
 CORS(api)
@@ -177,8 +227,6 @@ def dyneqtl():
 @api.route("/api/v1/exon", methods=["GET"])
 def exon():
     gene = request.args.get("geneId")
-    # ignoring: gencodeVersion, genomeBuild
-    # chromosome, end, exonId, exonNumber, featureType, geneId, geneSymbol, start, strand, transcriptId
     d = exons.loc[exons["geneId"] == gene, :]
     d = d.to_dict(orient="records")
     return jsonify({"exon": d})
@@ -188,8 +236,9 @@ def exon():
 def gene():
     ids = request.args.get("geneId").split(",")
     ids = validate_genes(ids, genes)
-    d = genes.loc[ids, :].reset_index() # Include geneId in dict
+    d = genes.loc[ids, :].reset_index()  # Include geneId in dict
     info = d.to_dict(orient="records")
+    format_per_tissue_gene_info(info, tissues)
     return jsonify({"gene": info})
 
 
@@ -205,7 +254,7 @@ def gene_exp():
             "geneId": gene,
             "geneSymbol": symbol,
             "tissueSiteDetailId": tissue,
-            "unit": "TPM"
+            "unit": "TPM",
         }
         infos.append(info)
     return jsonify({"geneExpression": infos})
@@ -243,10 +292,15 @@ def med_gene_exp():
         d = med_expr.loc[ids, tissues]
     gene_tree = row_tree(d)
     tissue_tree = row_tree(d.T)
-    d = d.reset_index().melt(id_vars="geneId", var_name="tissueSiteDetailId", value_name="median")
+    d = d.reset_index().melt(
+        id_vars="geneId", var_name="tissueSiteDetailId", value_name="median"
+    )
     d = d.merge(genes["geneSymbol"].reset_index(), how="left", on="geneId")
     d = d.to_dict(orient="records")
-    info = {"clusters": {"gene": gene_tree, "tissue": tissue_tree}, "medianGeneExpression": d}
+    info = {
+        "clusters": {"gene": gene_tree, "tissue": tissue_tree},
+        "medianGeneExpression": d,
+    }
     return jsonify(info)
 
 

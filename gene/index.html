@@ -111,7 +111,15 @@
         <h3 id="gene-title"></h3>
         <p id="gene-description"></p>
 
+        <h5>Gene status per tissue</h5>
+        <span id="gene-status"></span>
+
+        <hr class="my-4">
+
+        <h5>Expression per tissue</h5>
         <div id="gene-expr-vplot" style="max-width: 800px;"></div>
+
+        <hr class="my-4">
 
         <p>
             <a id="gev-link" href=""><button class="btn btn-primary">Visualize cis-eQTLs</button></a>
@@ -138,6 +146,21 @@
             var desc = `${info.description}, ${info.geneId}, chr${info.chromosome}:${info.start} - ${info.end} (${info.strand})`;
             $('#gene-description').text(desc);
             $('#gev-link').attr('href', '/gene-eqtl-visualizer/#' + info.geneId);
+            info.statusInTissue.forEach(function(tissue) {
+                var status = `<p><strong>${tissue.tissueSiteDetailId}:</strong>`;
+                if (tissue.expressed) {
+                    status += ' <span class="badge bg-primary">Expressed</span>';
+                    if (tissue.eqtl) { // assumes same tissue order
+                        status += ' <span class="badge bg-success">At least one cis-eQTL</span>';
+                    } else {
+                        status += ' <span class="badge bg-secondary">No significant cis-eQTLs</span>';
+                    }
+                } else {
+                    status += ' <span class="badge bg-secondary">Not expressed</span>';
+                }
+                status += `</p>`;
+                $('#gene-status').append(status);
+            });
 
             GeneExpressionViolinPlot.launch('gene-expr-vplot', 'gene-expr-vplot-tooltip', info.geneId);
 
