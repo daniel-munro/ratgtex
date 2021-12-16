@@ -2,3 +2,4 @@
 .DS_Store
 data
 deploy.sh
+api/__pycache__
