@@ -13,7 +13,7 @@ def genotype(gt: tuple) -> int:
     return None if gt == (None, None) else gt[0] + gt[1]
 
 
-def variant_record(variant_id):
+def variant_record(variant_id, vcf):
     """Get record for one variant from VCF"""
     chrom, pos = variant_id.split(":")
     chrom = chrom.replace("chr", "")
@@ -23,7 +23,7 @@ def variant_record(variant_id):
     return recs[0]
 
 
-def geno_matrix(ids):
+def geno_matrix(ids, vcf):
     """Get genotype matrix for a list of SNPs
     Assumes SNPs are in close proximity on a chromosome, e.g. in a cis-window.
     """
@@ -33,7 +33,7 @@ def geno_matrix(ids):
     for rec in vcf.fetch(chrom, min(pos) - 1, max(pos) + 1):
         if rec.id in ids:
             genos[rec.id] = [genotype(rec.samples[s]["GT"]) for s in vcf.header.samples]
-    mat = np.array([genos[id] for id in ids])
+    mat = np.array([genos[id] if id in genos else [None] * len(vcf.header.samples) for id in ids])
     return mat
 
 
@@ -117,7 +117,7 @@ def cis_pval(tissue, gene, variant):
         return None
 
 
-def single_tis(gene):
+def single_tissue(gene):
     """Return table of significant cis-eSNPs for a gene"""
     with zipfile.ZipFile(f"../data/singleTissueEqtl.zip", "r") as archive:
         fname = f"singleTissueEqtl/{gene}.txt"
@@ -135,7 +135,19 @@ topExpr = pd.read_csv("../data/topExpressedGene.txt", sep="\t")
 
 genes = pd.read_csv("../data/gene.txt", sep="\t", index_col="geneId").fillna("")
 
-tissues = ["Eye", "IL", "LHb", "NAcc", "OFC", "PL"]
+tissues = ["BLA", "Eye", "IL", "LHb", "NAcc", "NAcc2", "OFC", "PL", "PL2"]
+dataset = {
+    "BLA": "BLA_NAcc2_PL2",
+    "Eye": "Eye",
+    "IL": "IL_LHb_NAcc_OFC_PL",
+    "LHb": "IL_LHb_NAcc_OFC_PL",
+    "NAcc": "IL_LHb_NAcc_OFC_PL",
+    "NAcc2": "BLA_NAcc2_PL2",
+    "OFC": "IL_LHb_NAcc_OFC_PL",
+    "PL": "IL_LHb_NAcc_OFC_PL",
+    "PL2": "BLA_NAcc2_PL2",
+}
+
 med_expr = pd.read_csv(
     "../data/medianGeneExpression.txt.gz", sep="\t", index_col="geneId"
 )
@@ -156,7 +168,11 @@ for tissue in tissues:
     )
     iqn[tissue].drop(columns=["#chr", "start", "end"], inplace=True)
 
-vcf = pysam.VariantFile("../data/ratgtex.vcf.gz")
+# vcf = pysam.VariantFile("../data/ratgtex.vcf.gz")
+vcf = {}
+for dset in set(dataset.values()):
+    vcf[dset] = pysam.VariantFile(f"../data/geno/{dset}.vcf.gz")
+ref_vcf = vcf["BLA_NAcc2_PL2"]
 
 exons = pd.read_csv("../data/exon.txt", sep="\t", dtype={"chromosome": str})
 
@@ -196,7 +212,7 @@ def dyneqtl():
     gene = request.args.get("geneId")
     tissue = request.args.get("tissueSiteDetailId")
     expr = iqn[tissue].loc[gene, :]
-    rec = variant_record(variant)
+    rec = variant_record(variant, vcf[dataset[tissue]])
     assert len(rec.alts) == 1, f"Multiple alt alleles: {variant}"
     gt = rec.samples
     # indivs = [x.split("_")[0] for x in expr.index]
@@ -263,13 +279,13 @@ def gene_exp():
 @api.route("/api/v1/ld", methods=["GET"])
 def ld():
     gene = request.args.get("geneId")
-    d = single_tis(gene)
+    d = single_tissue(gene)
     if d is None:
         return jsonify({"ld": []})
     d["pos"] = [int(x.split(":")[1]) for x in d["variantId"]]
     d = d.sort_values(by="pos")
     ids = d["variantId"].unique()
-    geno = geno_matrix(ids)
+    geno = geno_matrix(ids, ref_vcf)
     # ldmat = np.corrcoef(geno) ** 2
     geno = pd.DataFrame(geno.T, dtype=float)  # Pandas corr allows missing values
     ldmat = geno.corr().to_numpy() ** 2
@@ -277,7 +293,8 @@ def ld():
     lds = []
     for i in range(len(ids) - 1):
         for j in range(i + 1, len(ids)):
-            lds.append([ids[i], ids[j], ldmat[i, j]])
+            ld = ldmat[i, j] if not np.isnan(ldmat[i, j]) else None
+            lds.append([ids[i], ids[j], ld])
     return jsonify({"ld": lds})
 
 
@@ -307,7 +324,7 @@ def med_gene_exp():
 @api.route("/api/v1/singleTissueEqtl", methods=["GET"])
 def single_tissue_eqtl():
     gene = request.args.get("geneId")
-    d = single_tis(gene)
+    d = single_tissue(gene)
     if d is None:
         return jsonify({"singleTissueEqtl": []})
     d["geneSymbol"] = genes.loc[gene, "geneSymbol"]
@@ -348,7 +365,7 @@ def variant():
     infos = []
     for variant in ids:
         # Ignoring b37VariantId, datasetId, maf01, shorthand, snpId
-        rec = variant_record(variant)
+        rec = variant_record(variant, ref_vcf)
         assert len(rec.alts) == 1, f"Multiple alt alleles: {variant}"
         info = {
             "alt": rec.alts[0],
