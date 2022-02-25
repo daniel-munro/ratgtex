@@ -184,7 +184,7 @@
         <p>
             <strong><a href="/data/eqtl/eqtls_indep.txt">Conditionally independent cis-eQTLs</a></strong>
             <br>
-            A table of cis-eQTLs from all brain regions.
+            A table of cis-eQTLs from all tissues.
         </p>
 
         <strong>All significant cis-eQTL variant-gene pairs</strong>
@@ -204,11 +204,11 @@
         <p>
             <strong><a href="/data/eqtl/top_assoc.txt">Top association per gene</a></strong>
             <br>
-            A table of the strongest variant-gene association per gene per brain region, even if not significant. A
-            q-value threshold of 0.05 was used to determine significant eQTLs in the original study.
+            A table of the strongest variant-gene association per gene per tissue, even if not significant. A
+            q-value threshold of 0.05 was used to determine significant eQTLs.
         </p>
 
-        <strong>top trans associations</strong>
+        <strong>trans-eQTLs</strong>
         <br>
         All SNP-gene associations genome-wide with TSS distance &gt; 5 Mb and with an arbitrary cutoff of p &lt; 1e-5
         <p>
@@ -221,6 +221,25 @@
             <a href="/data/eqtl/OFC.trans_qtl_pairs.txt.gz">OFC</a> |
             <a href="/data/eqtl/PL.trans_qtl_pairs.txt.gz">PL</a> |
             <a href="/data/eqtl/PL2.trans_qtl_pairs.txt.gz">PL2</a>
+        </p>
+
+        <h2>sQTLs</h2>
+
+        <p>
+            Splice QTLs are currently available for only IL, LHb, NAcc, OFC, and PL tissues.
+        </p>
+
+        <p>
+            <strong><a href="/data/sqtl/sqtls_indep.txt">Conditionally independent cis-sQTLs</a></strong>
+            <br>
+            A table of cis-sQTLs from all tissues.
+        </p>
+
+        <p>
+            <strong><a href="/data/sqtl/top_assoc_splice.txt">Top splice association per gene</a></strong>
+            <br>
+            A table of the strongest variant-gene splice association per intron cluster per tissue, even if not significant. A
+            q-value threshold of 0.05 was used to determine significant sQTLs, grouped by gene for the purposes of multiple testing.
         </p>
 
         <h2>API</h2>
