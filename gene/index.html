@@ -150,10 +150,15 @@
                 var status = `<p><strong>${tissue.tissueSiteDetailId}:</strong>`;
                 if (tissue.expressed) {
                     status += ' <span class="badge bg-primary">Expressed</span>';
-                    if (tissue.eqtl) { // assumes same tissue order
-                        status += ' <span class="badge bg-success">At least one cis-eQTL</span>';
+                    if (tissue.tested) {
+                        status += ' <span class="badge bg-info">Tested for cis-eQTLs</span>';
+                        if (tissue.eqtl) {
+                            status += ' <span class="badge bg-success">At least one cis-eQTL</span>';
+                        } else {
+                            status += ' <span class="badge bg-secondary">No significant cis-eQTLs</span>';
+                        }
                     } else {
-                        status += ' <span class="badge bg-secondary">No significant cis-eQTLs</span>';
+                        status += ' <span class="badge bg-secondary">Not tested for cis-eQTLs</span>';
                     }
                 } else {
                     status += ' <span class="badge bg-secondary">Not expressed</span>';

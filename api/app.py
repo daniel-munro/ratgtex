@@ -86,10 +86,12 @@ def format_per_tissue_gene_info(info: list, tissues: list):
             item = {
                 "tissueSiteDetailId": tissue,
                 "expressed": gene["expr_" + tissue],
+                "tested": gene["tested_" + tissue],
                 "eqtl": gene["eqtl_" + tissue],
             }
             gene["statusInTissue"].append(item)
             del gene["expr_" + tissue]
+            del gene["tested_" + tissue]
             del gene["eqtl_" + tissue]
 
 
