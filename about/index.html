@@ -164,6 +164,7 @@
         </p>
 
         <h4>Processing</h4>
+        <p>The <a href="https://github.com/daniel-munro/ratgtex-pipeline">ratgtex-pipeline</a> repository contains all RNA-Seq and eQTL mapping pipeline code. The <a href="https://github.com/daniel-munro/ratgtex-server-data">ratgtex-server-data</a> repository contains code that processes those results into additional data files for download and for the API.</p>
         <ul>
             <li>Genome assembly: Rnor_6.0 (GCA_000001895.4)</li>
             <!-- <li>Genotypes: ???</li> -->
@@ -175,8 +176,8 @@
 
         <h4>Formats</h4>
 
-        <h5>Gene expression</h5>
-        <p>Expression tables are provided in BED format, with four columns describing the gene plus one column per sample.Only the transcription start sites are specified, not the whole gene length.</p>
+        <h5>Gene expression <em style="color: gray;">({tissue}.expr.{units}.bed.gz)</em></h5>
+        <p>Expression tables are provided in BED format, with four columns describing the gene plus one column per sample. Only the transcription start sites are specified, not the whole gene length.</p>
         <ul>
             <li><strong>#chr</strong> Chromosome name, e.g. '1'</li>
             <li><strong>start</strong> Transcription start site. Coordinates in BED format are 0-based, so this is one less than the position as it is typically represented.</li>
@@ -185,7 +186,7 @@
             <li><strong>{sample}</strong> Each additional column is labeled with the sample or rat ID and contains log2(count+1), TPM, or inverse-quantile normalized values.</li>
         </ul>
 
-        <h5>All significant cis-eQTL gene-SNP pairs (*.cis_qtl_signif.txt.gz)</h5>
+        <h5>All significant cis-eQTL gene-SNP pairs <em style="color: gray;">({tissue}.cis_qtl_signif.txt.gz)</em></h5>
         <p>A compressed tab-separated table.</p>
         <!-- <dt>phenotype_id</dt><dd>Ensembl gene ID</dd>
         <dt>variant_id</dt><dd>SNP ID (e.g. chr1:669562)</dd> -->
@@ -199,11 +200,11 @@
             <li><strong>pval_nominal</strong> Nominal p-value</li>
             <li><strong>slope</strong> Coefficient for the SNP genotype in the linear model</li>
             <li><strong>slope_se</strong> Standard error of the slope</li>
-            <li><strong>pval_nominal_threhsold</strong> Gene-tissue-specific nominal p-value significance threshold as determined by permutations and transcriptome-wide FDR</li>
+            <li><strong>pval_nominal_threshold</strong> Gene-tissue-specific nominal p-value significance threshold as determined by permutations and transcriptome-wide FDR</li>
         </ul>
 
-        <h5>Strong associations from trans-eQTL mapping (*.trans_qtl_pairs.txt.gz)</h5>
-        <p>All measured SNPs genome-wide were tested against expression of each gene, and pairs with p-value &lt; 1e-5 and > 5 Mb TSS distance are included here. Rows are sorted by variant location.</p>
+        <h5>Strong associations from trans-eQTL mapping <em style="color: gray;">({tissue}.trans_qtl_pairs.txt.gz)</em></h5>
+        <p>All measured SNPs genome-wide were tested against expression of each gene, and pairs with p-value &lt; 1e-5 and &gt; 5 Mb TSS distance are included here. Rows are sorted by variant location.</p>
         <ul>
             <li><strong>variant_id</strong> SNP ID (e.g. chr1:669562)</li>
             <li><strong>gene_id</strong> Ensembl gene ID</li>
@@ -211,6 +212,51 @@
             <li><strong>slope</strong> Coefficient (slope) for the SNP genotype in the linear model</li>
             <li><strong>slope_se</strong> Standard error of the slope</li>
             <li><strong>af</strong> Alternative allele frequency</li>
+        </ul>
+
+        <h5>Conditionally independent cis-eQTLs <em style="color: gray;">(eqtls_indep.txt)</em></h5>
+        <p>A table of cis-eQTLs from all tissues. Stepwise regression was used to test for cis-eQTLs beyond and uncorrelated with the top cis-eQTL per gene.</p>
+        <ul>
+            <li><strong>tissue</strong> Tissue abbreviation</li>
+            <li><strong>gene_id</strong> Ensembl gene ID</li>
+            <li><strong>gene_name</strong> Ensembl gene name</li>
+            <li><strong>num_var</strong> Number of cis-window variants tested for the specified gene in this tissue</li>
+            <li><strong>variant_id</strong> SNP ID (e.g. chr1:669562) for the top eQTL SNP (eSNP). In cases of tied top SNPs that are in 100% LD, one was randomly chosen among them.</li>
+            <li><strong>chrom</strong> Chromosome of the top SNP (e.g. "1")</li>
+            <li><strong>pos</strong> Position of the top SNP (bp)</li>
+            <li><strong>ref</strong> Reference allele for the top SNP</li>
+            <li><strong>alt</strong> Alternative allele for the top SNP</li>
+            <li><strong>af</strong> Alternative allele frequency</li>
+            <li><strong>tss_distance</strong> SNP position - TSS position, oriented on the gene's strand</li>
+            <li><strong>pval_nominal</strong> Nominal p-value</li>
+            <li><strong>slope</strong> Coefficient for the SNP genotype in the linear model</li>
+            <li><strong>slope_se</strong> Standard error of the slope</li>
+            <li><strong>pval_beta</strong> Empirical beta-approximated p-value</li>
+            <li><strong>rank</strong> The strongest cis-eQTL found per gene-tissue has rank 1, next-strongest has rank 2, etc.</li>
+            <li><strong>log2_aFC</strong> eQTL effect size measured as allelic fold change</li>
+        </ul>
+
+        <h5>Top association per gene <em style="color: gray;">(top_assoc.txt)</em></h5>
+        <p>A table of the strongest variant-gene association per gene per tissue, even if not significant.</p>
+        <ul>
+            <li><strong>tissue</strong> Tissue abbreviation</li>
+            <li><strong>gene_id</strong> Ensembl gene ID</li>
+            <li><strong>gene_name</strong> Ensembl gene name</li>
+            <li><strong>num_var</strong> Number of cis-window variants tested for the specified gene in this tissue</li>
+            <li><strong>variant_id</strong> SNP ID (e.g. chr1:669562) for the top eQTL SNP (eSNP). In cases of tied top SNPs that are in 100% LD, one was randomly chosen among them.</li>
+            <li><strong>chrom</strong> Chromosome of the top SNP (e.g. "1")</li>
+            <li><strong>pos</strong> Position of the top SNP (bp)</li>
+            <li><strong>ref</strong> Reference allele for the top SNP</li>
+            <li><strong>alt</strong> Alternative allele for the top SNP</li>
+            <li><strong>af</strong> Alternative allele frequency</li>
+            <li><strong>tss_distance</strong> SNP position - TSS position, oriented on the gene's strand</li>
+            <li><strong>pval_nominal</strong> Nominal p-value</li>
+            <li><strong>slope</strong> Coefficient for the SNP genotype in the linear model</li>
+            <li><strong>slope_se</strong> Standard error of the slope</li>
+            <li><strong>pval_beta</strong> Empirical beta-approximated p-value</li>
+            <li><strong>qval</strong> Q-value used to control transcriptome-wide FDR per tissue (q &lt; 0.05 was used to determine significant cis-eQTLs)</li>
+            <li><strong>pval_nominal_threshold</strong> Gene-tissue-specific nominal p-value significance threshold as determined by permutations and transcriptome-wide FDR</li>
+            <li><strong>log2_aFC</strong> Effect size measured as allelic fold change</li>
         </ul>
 
     </div>
