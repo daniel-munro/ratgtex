@@ -137,23 +137,12 @@ topExpr = pd.read_csv("../data/topExpressedGene.txt", sep="\t")
 
 genes = pd.read_csv("../data/gene.txt", sep="\t", index_col="geneId").fillna("")
 
-tissues = ["BLA", "Eye", "IL", "LHb", "NAcc", "NAcc2", "OFC", "PL", "PL2"]
-dataset = {
-    "BLA": "BLA_NAcc2_PL2",
-    "Eye": "Eye",
-    "IL": "IL_LHb_NAcc_OFC_PL",
-    "LHb": "IL_LHb_NAcc_OFC_PL",
-    "NAcc": "IL_LHb_NAcc_OFC_PL",
-    "NAcc2": "BLA_NAcc2_PL2",
-    "OFC": "IL_LHb_NAcc_OFC_PL",
-    "PL": "IL_LHb_NAcc_OFC_PL",
-    "PL2": "BLA_NAcc2_PL2",
-}
+tissues = [tissue["tissueSiteDetailId"] for tissue in tissueInfo]
+dataset = {tissue["tissueSiteDetailId"]: tissue["dataset"] for tissue in tissueInfo}
 
 med_expr = pd.read_csv(
     "../data/medianGeneExpression.txt.gz", sep="\t", index_col="geneId"
 )
-# tpm = load_tpm("../data/expr/ensembl-gene_raw-tpm.txt")
 
 tpm = {}
 for tissue in tissues:
