@@ -101,14 +101,21 @@
         <h2>Raw data</h2>
 
         <p>RNA-Seq reads for the IL, LHb, NAcc, OFC, and PL brain regions are available in SRA and can be accessed from GEO accession <a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE173141">GSE173141</a>.</p>
+        <p>RNA-Seq reads for Eye are available at GEO accession <a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE201236">GSE201236</a>.</p>
 
         <h2>Gene expression</h2>
+
+        <p>
+            <a href="/data/medianGeneExpression.txt.gz">Median TPM per gene per tissue</a>
+            <em style="color: gray;">Used for heatmap visualizations</em>
+        </p>
 
         <strong>log2(count+1)</strong>
         <em style="color: gray;">Used to compute allelic fold change</em>
         <p>
             <a href="/data/expr/Adipose.expr.log2.bed.gz">Adipose</a> |
             <a href="/data/expr/BLA.expr.log2.bed.gz">BLA</a> |
+            <a href="/data/expr/Brain.expr.log2.bed.gz">Brain</a> |
             <a href="/data/expr/Eye.expr.log2.bed.gz">Eye</a> |
             <a href="/data/expr/IL.expr.log2.bed.gz">IL</a> |
             <a href="/data/expr/LHb.expr.log2.bed.gz">LHb</a> |
@@ -125,6 +132,7 @@
         <p>
             <a href="/data/expr/Adipose.expr.tpm.bed.gz">Adipose</a> |
             <a href="/data/expr/BLA.expr.tpm.bed.gz">BLA</a> |
+            <a href="/data/expr/Brain.expr.tpm.bed.gz">Brain</a> |
             <a href="/data/expr/Eye.expr.tpm.bed.gz">Eye</a> |
             <a href="/data/expr/IL.expr.tpm.bed.gz">IL</a> |
             <a href="/data/expr/LHb.expr.tpm.bed.gz">LHb</a> |
@@ -141,6 +149,7 @@
         <p>
             <a href="/data/expr/Adipose.expr.iqn.bed.gz">Adipose</a> |
             <a href="/data/expr/BLA.expr.iqn.bed.gz">BLA</a> |
+            <a href="/data/expr/Brain.expr.iqn.bed.gz">Brain</a> |
             <a href="/data/expr/Eye.expr.iqn.bed.gz">Eye</a> |
             <a href="/data/expr/IL.expr.iqn.bed.gz">IL</a> |
             <a href="/data/expr/LHb.expr.iqn.bed.gz">LHb</a> |
@@ -169,6 +178,7 @@
                 <li><a href="/data/geno/Eye.vcf.gz">Eye.vcf.gz</a></li>
                 <li><a href="/data/geno/IL_LHb_NAcc_OFC_PL.vcf.gz">IL_LHb_NAcc_OFC_PL.vcf.gz</a></li>
                 <li><a href="/data/geno/Adipose_Liver.vcf.gz">Adipose_Liver.vcf.gz</a></li>
+                <li><a href="/data/geno/Brain.vcf.gz">Brain.vcf.gz</a></li>
             </ul>
         </p>
         
@@ -177,6 +187,7 @@
         <p>
             <a href="/data/covar/Adipose.covar.txt">Adipose</a> |
             <a href="/data/covar/BLA.covar.txt">BLA</a> |
+            <a href="/data/covar/Brain.covar.txt">Brain</a> |
             <a href="/data/covar/Eye.covar.txt">Eye</a> |
             <a href="/data/covar/IL.covar.txt">IL</a> |
             <a href="/data/covar/LHb.covar.txt">LHb</a> |
@@ -201,6 +212,7 @@
         <p>
             <a href="/data/eqtl/Adipose.cis_qtl_signif.txt.gz">Adipose</a> |
             <a href="/data/eqtl/BLA.cis_qtl_signif.txt.gz">BLA</a> |
+            <a href="/data/eqtl/Brain.cis_qtl_signif.txt.gz">Brain</a> |
             <a href="/data/eqtl/Eye.cis_qtl_signif.txt.gz">Eye</a> |
             <a href="/data/eqtl/IL.cis_qtl_signif.txt.gz">IL</a> |
             <a href="/data/eqtl/LHb.cis_qtl_signif.txt.gz">LHb</a> |
@@ -225,6 +237,7 @@
         <p>
             <a href="/data/eqtl/Adipose.trans_qtl_pairs.txt.gz">Adipose</a> |
             <a href="/data/eqtl/BLA.trans_qtl_pairs.txt.gz">BLA</a> |
+            <a href="/data/eqtl/Brain.trans_qtl_pairs.txt.gz">Brain</a> |
             <a href="/data/eqtl/Eye.trans_qtl_pairs.txt.gz">Eye</a> |
             <a href="/data/eqtl/IL.trans_qtl_pairs.txt.gz">IL</a> |
             <a href="/data/eqtl/LHb.trans_qtl_pairs.txt.gz">LHb</a> |

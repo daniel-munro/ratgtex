@@ -472,6 +472,9 @@ paths:
                         colorRgb:
                           type: string
                           example: '55,126,184'
+                        dataset:
+                          type: string
+                          example: IL_LHb_NAcc_OFC_PL
                         datasetId:
                           type: string
                           example: ratgtex_v1
