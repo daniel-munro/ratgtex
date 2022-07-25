@@ -91,6 +91,10 @@
     <div class="container">
         <h1>About RatGTEx</h1>
 
+        <p>
+            <a href="https://scicrunch.org/resources/data/record/nlx_144509-1/SCR_022145/resolver">RRID:SCR_022145</a>
+        </p>
+
         <h3>Associated Studies</h3>
 
         <p>
@@ -136,7 +140,7 @@
             </tbody>
         </table>
 
-        <h3>Contact</h3>
+        <h3 id="contact">Contact</h3>
         <p>
             For questions or comments related to the data or website, email Daniel Munro at <a
                 href="mailto:dmunro@scripps.edu">dmunro@scripps.edu</a>.
@@ -155,17 +159,23 @@
                 href="https://gtexportal.org/">GTEx portal</a>.
         </p>
 
-        <h3>Data Specifications</h3>
+        <h3 id="data-specs">Data Specifications</h3>
+
+        <p>
+        </p>
+
         <p>
             The datasets provided in this portal conform to the following specifications to facilitate comparisons across tissues.
         </p>
 
         <h4>Processing</h4>
-        <p>The <a href="https://github.com/daniel-munro/ratgtex-pipeline">ratgtex-pipeline</a> repository contains all RNA-Seq and eQTL mapping pipeline code. The <a href="https://github.com/daniel-munro/ratgtex-server-data">ratgtex-server-data</a> repository contains code that processes those results into additional data files for download and for the API.</p>
+        <p>
+            The <a href="https://github.com/daniel-munro/ratgtex-pipeline">ratgtex-pipeline</a> repository contains all RNA-Seq and eQTL mapping pipeline code. The steps are also on protocols.io: <a href="http://dx.doi.org/10.17504/protocols.io.rm7vzyk92lx1/v1">http://dx.doi.org/10.17504/protocols.io.rm7vzyk92lx1/v1</a>. The <a href="https://github.com/daniel-munro/ratgtex-server-data">ratgtex-server-data</a> repository contains code that processes those results into additional data files for download and for the API.
+        </p>
         <ul>
-            <li>Genome assembly: Rnor_6.0 (GCA_000001895.4)</li>
+            <li>Genome assembly: <a href="http://ftp.ensembl.org/pub/release-99/fasta/rattus_norvegicus/dna/Rattus_norvegicus.Rnor_6.0.dna.toplevel.fa.gz">Rnor_6.0</a> (GCA_000001895.4)</li>
             <!-- <li>Genotypes: ???</li> -->
-            <li>Annotations: <a href="https://www.ensembl.org/Rattus_norvegicus/Info/Index">Ensembl Rat</a></li>
+            <li>Annotations: <a href="http://ftp.ensembl.org/pub/release-99/gtf/rattus_norvegicus/Rattus_norvegicus.Rnor_6.0.99.gtf.gz">Ensembl Rat Release 99</a></li>
             <li>RNA-Seq read counts, transformed as log<sub>2</sub>(count+1), were used to compute cis-eQTL effect sizes (allelic fold change).</li>
             <li>Inverse-quantile normalized expression values were used for eQTL mapping.</li>
             <li>eQTL mapping: <a href="https://github.com/broadinstitute/tensorqtl">tensorQTL</a>. cis-eQTL mapping tested cis-windows +/- 1 Mb from each gene's transcription start site.</li>
