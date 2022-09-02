@@ -50,9 +50,9 @@
                         <a class="nav-link" href="/download/">Download</a>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="browseDropdown" role="button"
-                            data-bs-toggle="dropdown" aria-expanded="false">Browse</a>
-                        <ul class="dropdown-menu" aria-labelledby="browseDropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="visualizeDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">Visualize</a>
+                        <ul class="dropdown-menu" aria-labelledby="visualizeDropdown">
                             <li>
                                 <h6 class="dropdown-header">Expression</h6>
                             </li>
@@ -72,7 +72,7 @@
                         <a class="nav-link dropdown-toggle" href="#" id="aboutDropdown" role="button"
                             data-bs-toggle="dropdown" aria-expanded="false">About</a>
                         <ul class="dropdown-menu" aria-labelledby="aboutDropdown">
-                            <li><a class="dropdown-item" href="/about/">RatGTEx</a></li>
+                            <li><a class="dropdown-item" href="/about/">Pipeline &amp; Data</a></li>
                             <li><a class="dropdown-item" href="/about/samples/">Samples</a></li>
                             <li><a class="dropdown-item" href="/about/api/">API</a></li>
                         </ul>
@@ -101,29 +101,94 @@
         <!-- <h3>Resource Overview</h3> -->
 
         <p>
-            This portal provides gene expression and eQTL data for different rat tissues. It is managed by the <a href="https://ratgenes.org">NIDA center for genetic studies of drug abuse in outbred rats (P50DA037844)</a>. Currently it includes data for these tissues grouped by their study of origin:
-
-            <table class="table table-sm w-auto">
-                <thead>
-                    <tr><th>Tissue</th><th>Abbreviation</th><th>Samples</th></tr>
-                </thead>
-                <tbody>
-                    <!-- <tr class="border-bottom border-secondary"><td>Eye</td><td>Eye</td><td>51</td></tr> -->
-                    <tr class="table-secondary"><td>Infralimbic cortex</td><td>IL</td><td>81</td></tr>
-                    <tr class="table-secondary"><td>Lateral habenula</td><td>LHb</td><td>81</td></tr>
-                    <tr class="table-secondary"><td>Nucleus accumbens core</td><td>NAcc</td><td>75</td></tr>
-                    <tr class="table-secondary"><td>Orbitofrontal cortex</td><td>OFC</td><td>80</td></tr>
-                    <tr class="table-secondary"><td>Prelimbic cortex</td><td>PL</td><td>80</td></tr>
-                    <tr><td>Eye</td><td>Eye</td><td>51</td></tr>
-                    <tr class="table-secondary"><td>Basolateral amygdala</td><td>BLA</td><td>185</td></tr>
-                    <tr class="table-secondary"><td>Nucleus accumbens core</td><td>NAcc2</td><td>188</td></tr>
-                    <tr class="table-secondary"><td>Prelimbic cortex</td><td>PL2</td><td>191</td></tr>
-                    <tr><td>Adipose</td><td>Adipose</td><td>411</td></tr>
-                    <tr><td>Liver</td><td>Liver</td><td>401</td></tr>
-                    <tr class="table-secondary"><td>Brain hemisphere</td><td>Brain</td><td>339</td></tr>
-                </tbody>
-            </table>
+            This portal provides gene expression and eQTL data for multiple rat tissues. It is managed by the <a href="https://ratgenes.org">NIDA center for genetic studies of drug abuse in outbred rats (P50DA037844)</a>.
+            <!-- Currently it includes data for these tissues grouped by their study of origin: -->
         </p>
+
+        <p>
+            <a href="https://scicrunch.org/resources/data/record/nlx_144509-1/SCR_022145/resolver">RRID:SCR_022145</a>
+        </p>
+
+        <h3>Tissues</h3>
+
+        <p>
+            The raw data for the tissues in this portal come from multiple studies. The processed data, however, may differ from the results reported in each study for a couple reasons:
+            <ol>
+                <li>
+                    Different processing decisions could be made for each study, while the data in this portal are processed uniformly to facilitate comparison across tissues.
+                </li>
+                <li>
+                    The published study results are immutable, while new versions of data in this portal may be released, for example to improve quality or to use updated reference genome and annotations.
+                </li>
+            </ol>
+            Nevertheless, we also host the original results from individual studies on the <a href="/download/#studies">Download</a> page when available.
+        </p>
+
+        <table class="table table-sm w-auto">
+            <thead>
+                <tr><th>Tissue</th><th>Abbreviation</th><th>Samples</th><th>Originating study</th></tr>
+            </thead>
+            <tbody>
+                <tr class="table-secondary"><td>Infralimbic cortex</td><td>IL</td><td>81</td><td>P50 DA037844 Y1-5, Project 2</td></tr>
+                <tr class="table-secondary"><td>Lateral habenula</td><td>LHb</td><td>81</td><td>P50 DA037844 Y1-5, Project 2</td></tr>
+                <tr class="table-secondary"><td>Nucleus accumbens core</td><td>NAcc</td><td>75</td><td>P50 DA037844 Y1-5, Project 2</td></tr>
+                <tr class="table-secondary"><td>Orbitofrontal cortex</td><td>OFC</td><td>80</td><td>P50 DA037844 Y1-5, Project 2</td></tr>
+                <tr class="table-secondary"><td>Prelimbic cortex</td><td>PL</td><td>80</td><td>P50 DA037844 Y1-5, Project 2</td></tr>
+                <tr><td>Eye</td><td>Eye</td><td>51</td><td>R01 EY021200</td></tr>
+                <tr class="table-secondary"><td>Basolateral amygdala</td><td>BLA</td><td>185</td><td>U01DA046077</td></tr>
+                <tr class="table-secondary"><td>Nucleus accumbens core</td><td>NAcc2</td><td>188</td><td>U01DA046077</td></tr>
+                <tr class="table-secondary"><td>Prelimbic cortex</td><td>PL2</td><td>191</td><td>U01DA046077</td></tr>
+                <tr><td>Adipose</td><td>Adipose</td><td>411</td><td>R01DK106386</td></tr>
+                <tr><td>Liver</td><td>Liver</td><td>401</td><td>R01DK106386</td></tr>
+                <tr class="table-secondary"><td>Brain hemisphere</td><td>Brain</td><td>339</td><td>Pilot: Creating the dataset for TWAS in HS rats</td></tr>
+            </tbody>
+        </table>
+
+        <h3>Associated Studies</h3>
+
+        <p>
+            More info on the <a href="https://ratgenes.org/research-projects/eqtl/">ratgenes.org eQTL page</a>. Additional publications will be posted when available.
+        </p>
+        <p>
+            Tissues from the same study are from the same set of rats, though the final subsets per tissue differ slightly after quality control filtering. See the <a href="/about/samples/">sample info page</a> for details.
+        </p>
+
+        <h5>P50 DA037844 Y1-5, Project 2: Socially-acquired nicotine self-administration</h5>
+        <ul>
+            <li>Preprint: <a href="https://www.biorxiv.org/content/10.1101/2022.04.07.487560v2">The regulatory landscape of multiple brain regions in outbred heterogeneous stock rats</a></li>
+            <li>Investigator: Hao Chen, UTHSC</li>
+            <li>Prior experience/treatment: Naive</li>
+            <li>Sex ratio: 43 Female, 45 Male</li>
+            <li>Age: Mean 86.3 days, SD 3.1</li>
+        </ul>
+
+        <h5>R01 EY021200: Genetic Modulators of Glaucoma</h5>
+        <ul>
+            <li>Preprint: <a href="https://www.biorxiv.org/content/10.1101/2022.08.16.503865v1">Genome-Wide Association Study Finds Multiple Loci Associated with Intraocular Pressure in HS Rats</a></li>
+            <li>Investigator: Monica Jablonsky, UTHSC</li>
+            <li>Sex ratio: Females and Males</li>
+        </ul>
+
+        <h5>U01DA046077: Identification of Genetic Features of Delay Discounting Using a Heterogeneous Stock Rat Model</h5>
+        <ul>
+            <li>Investigators: Suzanne Mitchell and Robert Hitzemann, OSHU</li>
+            <li>Prior experience/treatment: Behavior testing - delay discounting</li>
+            <li>Sex ratio: 100 Female, 100 Male</li>
+        </ul>
+
+        <h5>R01DK106386: Systems genetics of adiposity traits in outbred rats</h5>
+        <ul>
+            <li>Investigator: Leah Solberg Woods, WFU</li>
+            <li>Prior experience/treatment: Naive</li>
+            <li>Sex ratio: All males</li>
+        </ul>
+
+        <h5>Pilot: Creating the dataset for TWAS in HS rats</h5>
+        <ul>
+            <li>Investigator: Francesca Telese, UCSD</li>
+            <li>Prior experience/treatment: Naive</li>
+            <li>Sex ratio: 176 Female, 168 Male</li>
+        </ul>
 
         <h3>Visualizations</h3>
         <ul>
@@ -133,6 +198,26 @@
             <li><a href="/gene-eqtl-visualizer/">Gene-eQTL Visualizer</a></li>
         </ul>
         <p>Also try searching for a gene in the toolbar to view its expression and eQTLs.</p>
+
+        <h3 id="contact">Contact</h3>
+        <p>
+            For questions or comments related to the data or website, email Daniel Munro at <a
+                href="mailto:dmunro@scripps.edu">dmunro@scripps.edu</a>.
+        </p>
+        <p>
+            The RatGTEx data is currently available as a beta version. Please let us know if you'd like to use it for research so we can ensure everything is correct.
+        </p>
+
+        <h3>Acknowledgments</h3>
+        <p>
+            RatGTEx is produced by the <a href="https://ratgenes.org">NIDA center for genetic studies of drug abuse in outbred rats (P50DA037844)</a>. It is not a project of the GTEx Consortium.
+        </p>
+        <p>
+            Code for visualizations was adapted from the <a href="https://github.com/broadinstitute/gtex-viz">GTEx
+                portal viz tools</a>, and additional design considerations were inspired by the <a
+                href="https://gtexportal.org/">GTEx portal</a>.
+        </p>
+
     </div>
 </body>
 
