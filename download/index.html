@@ -275,7 +275,7 @@
 
         <strong>trans-eQTLs</strong>
         <br>
-        All SNP-gene associations genome-wide with TSS distance &gt; 5 Mb and with an arbitrary cutoff of p &lt; 1e-5
+        All SNP-gene associations genome-wide with TSS distance &gt; 5 Mb and with an arbitrary cutoff of p &lt; 1e-5. No significance testing was performed.
         <p>
             <a href="/data/eqtl/Adipose.trans_qtl_pairs.txt.gz">Adipose</a> |
             <a href="/data/eqtl/BLA.trans_qtl_pairs.txt.gz">BLA</a> |
@@ -291,24 +291,72 @@
             <a href="/data/eqtl/PL2.trans_qtl_pairs.txt.gz">PL2</a>
         </p>
 
-        <!-- <h2>sQTLs</h2>
+        <h2>sQTLs</h2>
 
+        <strong>Splice phenotypes</strong>
+        <em style="color: gray;">Relative usage of splice junctions within junction clusters</em>
         <p>
-            Splice QTLs are currently available for only IL, LHb, NAcc, OFC, and PL tissues.
+            <a href="/data/splice/Adipose.leafcutter.bed.gz">Adipose</a> |
+            <a href="/data/splice/BLA.leafcutter.bed.gz">BLA</a> |
+            <a href="/data/splice/Brain.leafcutter.bed.gz">Brain</a> |
+            <a href="/data/splice/Eye.leafcutter.bed.gz">Eye</a> |
+            <a href="/data/splice/IL.leafcutter.bed.gz">IL</a> |
+            <a href="/data/splice/LHb.leafcutter.bed.gz">LHb</a> |
+            <a href="/data/splice/Liver.leafcutter.bed.gz">Liver</a> |
+            <a href="/data/splice/NAcc.leafcutter.bed.gz">NAcc</a> |
+            <a href="/data/splice/NAcc2.leafcutter.bed.gz">NAcc2</a> |
+            <a href="/data/splice/OFC.leafcutter.bed.gz">OFC</a> |
+            <a href="/data/splice/PL.leafcutter.bed.gz">PL</a> |
+            <a href="/data/splice/PL2.leafcutter.bed.gz">PL2</a>
+        </p>
+
+        <strong>Covariates</strong>
+        <em style="color: gray;">used for sQTL mapping</em>
+        <p>
+            <a href="/data/splice/Adipose.covar_splice.txt">Adipose</a> |
+            <a href="/data/splice/BLA.covar_splice.txt">BLA</a> |
+            <a href="/data/splice/Brain.covar_splice.txt">Brain</a> |
+            <a href="/data/splice/Eye.covar_splice.txt">Eye</a> |
+            <a href="/data/splice/IL.covar_splice.txt">IL</a> |
+            <a href="/data/splice/LHb.covar_splice.txt">LHb</a> |
+            <a href="/data/splice/Liver.covar_splice.txt">Liver</a> |
+            <a href="/data/splice/NAcc.covar_splice.txt">NAcc</a> |
+            <a href="/data/splice/NAcc2.covar_splice.txt">NAcc2</a> |
+            <a href="/data/splice/OFC.covar_splice.txt">OFC</a> |
+            <a href="/data/splice/PL.covar_splice.txt">PL</a> |
+            <a href="/data/splice/PL2.covar_splice.txt">PL2</a>
         </p>
 
         <p>
-            <strong><a href="/data/sqtl/sqtls_indep.txt">Conditionally independent cis-sQTLs</a></strong>
+            <strong><a href="/data/splice/sqtls_indep.txt">Conditionally independent cis-sQTLs</a></strong>
             <br>
             A table of cis-sQTLs from all tissues.
         </p>
 
         <p>
-            <strong><a href="/data/sqtl/top_assoc_splice.txt">Top splice association per gene</a></strong>
+            <strong><a href="/data/splice/top_assoc_splice.txt">Top association per gene</a></strong>
             <br>
-            A table of the strongest variant-gene splice association per intron cluster per tissue, even if not significant. A
-            q-value threshold of 0.05 was used to determine significant sQTLs, grouped by gene for the purposes of multiple testing.
-        </p> -->
+            A table of the strongest variant-gene association per gene per tissue, even if not significant. A
+            q-value threshold of 0.05 was used to determine significant sQTLs.
+        </p>
+
+        <strong>trans-sQTLs</strong>
+        <br>
+        All SNP-phenotype associations genome-wide with TSS distance &gt; 5 Mb and with an arbitrary cutoff of p &lt; 1e-5. No significance testing was performed.
+        <p>
+            <a href="/data/splice/Adipose_splice.trans_qtl_pairs.txt.gz">Adipose</a> |
+            <a href="/data/splice/BLA_splice.trans_qtl_pairs.txt.gz">BLA</a> |
+            <a href="/data/splice/Brain_splice.trans_qtl_pairs.txt.gz">Brain</a> |
+            <a href="/data/splice/Eye_splice.trans_qtl_pairs.txt.gz">Eye</a> |
+            <a href="/data/splice/IL_splice.trans_qtl_pairs.txt.gz">IL</a> |
+            <a href="/data/splice/LHb_splice.trans_qtl_pairs.txt.gz">LHb</a> |
+            <a href="/data/splice/Liver_splice.trans_qtl_pairs.txt.gz">Liver</a> |
+            <a href="/data/splice/NAcc_splice.trans_qtl_pairs.txt.gz">NAcc</a> |
+            <a href="/data/splice/NAcc2_splice.trans_qtl_pairs.txt.gz">NAcc2</a> |
+            <a href="/data/splice/OFC_splice.trans_qtl_pairs.txt.gz">OFC</a> |
+            <a href="/data/splice/PL_splice.trans_qtl_pairs.txt.gz">PL</a> |
+            <a href="/data/splice/PL2_splice.trans_qtl_pairs.txt.gz">PL2</a>
+        </p>
 
         <h2>API</h2>
 
