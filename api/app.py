@@ -79,20 +79,26 @@ def validate_genes(ids, genes):
 
 
 def format_per_tissue_gene_info(info: list, tissues: list):
-    """Collect per-tissue expression and eQTL indicators into a list"""
+    """Collect per-tissue expression, eQTL, and sQTL indicators into a list"""
     for gene in info:
         gene["statusInTissue"] = []
         for tissue in tissues:
             item = {
                 "tissueSiteDetailId": tissue,
                 "expressed": gene["expr_" + tissue],
-                "tested": gene["tested_" + tissue],
+                "testedEqtl": gene["testedEqtl_" + tissue],
                 "eqtl": gene["eqtl_" + tissue],
+                "altSplice": gene["altSplice_" + tissue],
+                "testedSqtl": gene["testedSqtl_" + tissue],
+                "sqtl": gene["sqtl_" + tissue],
             }
             gene["statusInTissue"].append(item)
             del gene["expr_" + tissue]
-            del gene["tested_" + tissue]
+            del gene["testedEqtl_" + tissue]
             del gene["eqtl_" + tissue]
+            del gene["altSplice_" + tissue]
+            del gene["testedSqtl_" + tissue]
+            del gene["sqtl_" + tissue]
 
 
 # def load_tpm(path):
@@ -135,7 +141,8 @@ tissueInfo = tissueInfo.to_dict(orient="records")
 
 topExpr = pd.read_csv("../data/topExpressedGene.txt", sep="\t")
 
-genes = pd.read_csv("../data/gene.txt", sep="\t", index_col="geneId").fillna("")
+genes = pd.read_csv("../data/gene.txt", sep="\t", index_col="geneId", dtype={"chromosome": str})
+genes = genes.fillna("")
 
 tissues = [tissue["tissueSiteDetailId"] for tissue in tissueInfo]
 dataset = {tissue["tissueSiteDetailId"]: tissue["dataset"] for tissue in tissueInfo}
@@ -192,6 +199,29 @@ eqtls = eqtls.rename(
     }
 )
 
+sqtls = pd.read_csv("../data/splice/sqtls_indep.txt", sep="\t")
+sqtls = sqtls[
+    [
+        "tissue",
+        "phenotype_id",
+        "gene_id",
+        "gene_name",
+        "variant_id",
+        "ref",
+        "alt",
+        "pval_beta",
+    ]
+]
+sqtls = sqtls.rename(
+    columns={
+        "tissue": "tissueSiteDetailId",
+        "phenotype_id": "phenotypeId",
+        "gene_id": "geneId",
+        "gene_name": "geneSymbol",
+        "variant_id": "variantId",
+    }
+)
+
 api = Flask(__name__)
 CORS(api)
 # api.config["APPLICATION_ROOT"] = "/api/v1" # doesn't work??
@@ -229,6 +259,14 @@ def dyneqtl():
         "variantId": variant,
     }
     return jsonify(info)
+
+
+@api.route("/api/v1/eqtl", methods=["GET"])
+def eqtl():
+    gene = request.args.get("geneId")
+    d = eqtls.loc[eqtls["geneId"] == gene, :]
+    info = d.to_dict(orient="records")
+    return jsonify({"eqtl": info})
 
 
 @api.route("/api/v1/exon", methods=["GET"])
@@ -324,12 +362,12 @@ def single_tissue_eqtl():
     return jsonify({"singleTissueEqtl": info})
 
 
-@api.route("/api/v1/eqtl", methods=["GET"])
-def eqtl():
+@api.route("/api/v1/sqtl", methods=["GET"])
+def sqtl():
     gene = request.args.get("geneId")
-    d = eqtls.loc[eqtls["geneId"] == gene, :]
+    d = sqtls.loc[sqtls["geneId"] == gene, :]
     info = d.to_dict(orient="records")
-    return jsonify({"eqtl": info})
+    return jsonify({"sqtl": info})
 
 
 @api.route("/api/v1/tissueInfo", methods=["GET"])
