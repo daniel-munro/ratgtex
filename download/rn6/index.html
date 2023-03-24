@@ -92,17 +92,19 @@
 
     <div class="container">
         <div class="row justify-content-md-center">
-            <div class="alert alert-info col-md-auto" role="alert">
-                Showing data for <strong>rn7</strong> (mRatBN7.2).
-                <a href="/download/rn6/" style="color: inherit;">Switch to rn6</a>
+            <div class="alert alert-warning col-md-auto" role="alert">
+                Showing data for <strong>rn6</strong> (Rnor_6.0).
+                <a href="/download/" style="color: inherit;">Switch to rn7</a>
             </div>
         </div>
 
         <h1>Download data</h1>
 
+        <!-- <p><a href="/data/ref/metadata.csv">Sample metadata</a></p> -->
+
         <p>See the <a href="/about/#data-specs">About page</a> for processing and data format specifications.</p>
 
-        <p><a href="/data/rn7.gene.txt">Gene info</a></p>
+        <p><a href="/data/rn6.gene.txt">Gene info</a></p>
 
         <h2>Raw data</h2>
 
@@ -112,53 +114,59 @@
         <h2>Gene expression</h2>
 
         <p>
-            <a href="/data/rn7.medianGeneExpression.txt.gz">Median TPM per gene per tissue</a>
+            <a href="/data/rn6.medianGeneExpression.txt.gz">Median TPM per gene per tissue</a>
             <em style="color: gray;">Used for heatmap visualizations</em>
         </p>
 
         <strong>log2(count+1)</strong>
         <em style="color: gray;">Used to compute allelic fold change</em>
         <p>
-            <a href="/data/expr/BLA.rn7.expr.log2.bed.gz">BLA</a> |
-            <a href="/data/expr/Brain.rn7.expr.log2.bed.gz">Brain</a> |
-            <a href="/data/expr/Eye.rn7.expr.log2.bed.gz">Eye</a> |
-            <a href="/data/expr/IL.rn7.expr.log2.bed.gz">IL</a> |
-            <a href="/data/expr/LHb.rn7.expr.log2.bed.gz">LHb</a> |
-            <a href="/data/expr/NAcc.rn7.expr.log2.bed.gz">NAcc</a> |
-            <a href="/data/expr/NAcc2.rn7.expr.log2.bed.gz">NAcc2</a> |
-            <a href="/data/expr/OFC.rn7.expr.log2.bed.gz">OFC</a> |
-            <a href="/data/expr/PL.rn7.expr.log2.bed.gz">PL</a> |
-            <a href="/data/expr/PL2.rn7.expr.log2.bed.gz">PL2</a>
+            <a href="/data/expr/Adipose.rn6.expr.log2.bed.gz">Adipose</a> |
+            <a href="/data/expr/BLA.rn6.expr.log2.bed.gz">BLA</a> |
+            <a href="/data/expr/Brain.rn6.expr.log2.bed.gz">Brain</a> |
+            <a href="/data/expr/Eye.rn6.expr.log2.bed.gz">Eye</a> |
+            <a href="/data/expr/IL.rn6.expr.log2.bed.gz">IL</a> |
+            <a href="/data/expr/LHb.rn6.expr.log2.bed.gz">LHb</a> |
+            <a href="/data/expr/Liver.rn6.expr.log2.bed.gz">Liver</a> |
+            <a href="/data/expr/NAcc.rn6.expr.log2.bed.gz">NAcc</a> |
+            <a href="/data/expr/NAcc2.rn6.expr.log2.bed.gz">NAcc2</a> |
+            <a href="/data/expr/OFC.rn6.expr.log2.bed.gz">OFC</a> |
+            <a href="/data/expr/PL.rn6.expr.log2.bed.gz">PL</a> |
+            <a href="/data/expr/PL2.rn6.expr.log2.bed.gz">PL2</a>
         </p>
 
         <strong>TPM (transcripts per million)</strong>
         <em style="color: gray;">Relative abundance of transcripts</em>
         <p>
-            <a href="/data/expr/BLA.rn7.expr.tpm.bed.gz">BLA</a> |
-            <a href="/data/expr/Brain.rn7.expr.tpm.bed.gz">Brain</a> |
-            <a href="/data/expr/Eye.rn7.expr.tpm.bed.gz">Eye</a> |
-            <a href="/data/expr/IL.rn7.expr.tpm.bed.gz">IL</a> |
-            <a href="/data/expr/LHb.rn7.expr.tpm.bed.gz">LHb</a> |
-            <a href="/data/expr/NAcc.rn7.expr.tpm.bed.gz">NAcc</a> |
-            <a href="/data/expr/NAcc2.rn7.expr.tpm.bed.gz">NAcc2</a> |
-            <a href="/data/expr/OFC.rn7.expr.tpm.bed.gz">OFC</a> |
-            <a href="/data/expr/PL.rn7.expr.tpm.bed.gz">PL</a> |
-            <a href="/data/expr/PL2.rn7.expr.tpm.bed.gz">PL2</a>
+            <a href="/data/expr/Adipose.rn6.expr.tpm.bed.gz">Adipose</a> |
+            <a href="/data/expr/BLA.rn6.expr.tpm.bed.gz">BLA</a> |
+            <a href="/data/expr/Brain.rn6.expr.tpm.bed.gz">Brain</a> |
+            <a href="/data/expr/Eye.rn6.expr.tpm.bed.gz">Eye</a> |
+            <a href="/data/expr/IL.rn6.expr.tpm.bed.gz">IL</a> |
+            <a href="/data/expr/LHb.rn6.expr.tpm.bed.gz">LHb</a> |
+            <a href="/data/expr/Liver.rn6.expr.tpm.bed.gz">Liver</a> |
+            <a href="/data/expr/NAcc.rn6.expr.tpm.bed.gz">NAcc</a> |
+            <a href="/data/expr/NAcc2.rn6.expr.tpm.bed.gz">NAcc2</a> |
+            <a href="/data/expr/OFC.rn6.expr.tpm.bed.gz">OFC</a> |
+            <a href="/data/expr/PL.rn6.expr.tpm.bed.gz">PL</a> |
+            <a href="/data/expr/PL2.rn6.expr.tpm.bed.gz">PL2</a>
         </p>
 
         <strong>Inverse-quantile normalized</strong>
         <em style="color: gray;">Used for eQTL mapping</em>
         <p>
-            <a href="/data/expr/BLA.rn7.expr.iqn.bed.gz">BLA</a> |
-            <a href="/data/expr/Brain.rn7.expr.iqn.bed.gz">Brain</a> |
-            <a href="/data/expr/Eye.rn7.expr.iqn.bed.gz">Eye</a> |
-            <a href="/data/expr/IL.rn7.expr.iqn.bed.gz">IL</a> |
-            <a href="/data/expr/LHb.rn7.expr.iqn.bed.gz">LHb</a> |
-            <a href="/data/expr/NAcc.rn7.expr.iqn.bed.gz">NAcc</a> |
-            <a href="/data/expr/NAcc2.rn7.expr.iqn.bed.gz">NAcc2</a> |
-            <a href="/data/expr/OFC.rn7.expr.iqn.bed.gz">OFC</a> |
-            <a href="/data/expr/PL.rn7.expr.iqn.bed.gz">PL</a> |
-            <a href="/data/expr/PL2.rn7.expr.iqn.bed.gz">PL2</a>
+            <a href="/data/expr/Adipose.rn6.expr.iqn.bed.gz">Adipose</a> |
+            <a href="/data/expr/BLA.rn6.expr.iqn.bed.gz">BLA</a> |
+            <a href="/data/expr/Brain.rn6.expr.iqn.bed.gz">Brain</a> |
+            <a href="/data/expr/Eye.rn6.expr.iqn.bed.gz">Eye</a> |
+            <a href="/data/expr/IL.rn6.expr.iqn.bed.gz">IL</a> |
+            <a href="/data/expr/LHb.rn6.expr.iqn.bed.gz">LHb</a> |
+            <a href="/data/expr/Liver.rn6.expr.iqn.bed.gz">Liver</a> |
+            <a href="/data/expr/NAcc.rn6.expr.iqn.bed.gz">NAcc</a> |
+            <a href="/data/expr/NAcc2.rn6.expr.iqn.bed.gz">NAcc2</a> |
+            <a href="/data/expr/OFC.rn6.expr.iqn.bed.gz">OFC</a> |
+            <a href="/data/expr/PL.rn6.expr.iqn.bed.gz">PL</a> |
+            <a href="/data/expr/PL2.rn6.expr.iqn.bed.gz">PL2</a>
         </p>
 
         <h2>Genotypes</h2>
@@ -174,34 +182,37 @@
                 <tr><td><a href="/data/geno/brain_regions.vcf.gz">brain_regions.vcf.gz</a></td><td>IL, LHb, NAcc, OFC, PL</td></tr>
             </table> -->
             <ul>
-                <li><a href="/data/geno/BLA_NAcc2_PL2.rn7.vcf.gz">BLA_NAcc2_PL2.rn7.vcf.gz</a></li>
-                <li><a href="/data/geno/Eye.rn7.vcf.gz">Eye.rn7.vcf.gz</a></li>
-                <li><a href="/data/geno/IL_LHb_NAcc_OFC_PL.rn7.vcf.gz">IL_LHb_NAcc_OFC_PL.rn7.vcf.gz</a></li>
-                <li><a href="/data/geno/Brain.rn7.vcf.gz">Brain.rn7.vcf.gz</a></li>
+                <li><a href="/data/geno/BLA_NAcc2_PL2.rn6.vcf.gz">BLA_NAcc2_PL2.rn6.vcf.gz</a></li>
+                <li><a href="/data/geno/Eye.rn6.vcf.gz">Eye.rn6.vcf.gz</a></li>
+                <li><a href="/data/geno/IL_LHb_NAcc_OFC_PL.rn6.vcf.gz">IL_LHb_NAcc_OFC_PL.rn6.vcf.gz</a></li>
+                <li><a href="/data/geno/Adipose_Liver.rn6.vcf.gz">Adipose_Liver.rn6.vcf.gz</a></li>
+                <li><a href="/data/geno/Brain.rn6.vcf.gz">Brain.rn6.vcf.gz</a></li>
             </ul>
         </p>
         
         <h2>Other info</h2>
 
-        <p><a href="/data/ref/rn7.RatGTEx_rats.tsv">Rat info (all tissues)</a></p>
+        <p><a href="/data/ref/rn6.RatGTEx_rats.tsv">Rat info (all tissues)</a></p>
 
-        <p><a href="/data/ref/rn7.RatGTEx_samples.tsv">Sample info (all tissues)</a></p>
+        <p><a href="/data/ref/rn6.RatGTEx_samples.tsv">Sample info (all tissues)</a></p>
 
         <strong>Rat IDs</strong>
         <em style="color: gray;">The final QC-filtered sample sets used for eQTL mapping</em>
         <br>
         The NAcc2 dataset contains some samples with single-end (SE) RNA-Seq reads and other samples with paired-end (PE) reads.
         <p>
-            <a href="/data/rat_ids/BLA.rn7.rat_ids.txt">BLA</a> |
-            <a href="/data/rat_ids/Brain.rn7.rat_ids.txt">Brain</a> |
-            <a href="/data/rat_ids/Eye.rn7.rat_ids.txt">Eye</a> |
-            <a href="/data/rat_ids/IL.rn7.rat_ids.txt">IL</a> |
-            <a href="/data/rat_ids/LHb.rn7.rat_ids.txt">LHb</a> |
-            <a href="/data/rat_ids/NAcc.rn7.rat_ids.txt">NAcc</a> |
-            NAcc2 (<a href="/data/rat_ids/NAcc2.rn7.rat_ids.SE.txt">SE</a>)(<a href="/data/rat_ids/NAcc2.rn7.rat_ids.PE.txt">PE</a>) |
-            <a href="/data/rat_ids/OFC.rn7.rat_ids.txt">OFC</a> |
-            <a href="/data/rat_ids/PL.rn7.rat_ids.txt">PL</a> |
-            <a href="/data/rat_ids/PL2.rn7.rat_ids.txt">PL2</a>
+            <a href="/data/rat_ids/Adipose.rn6.rat_ids.txt">Adipose</a> |
+            <a href="/data/rat_ids/BLA.rn6.rat_ids.txt">BLA</a> |
+            <a href="/data/rat_ids/Brain.rn6.rat_ids.txt">Brain</a> |
+            <a href="/data/rat_ids/Eye.rn6.rat_ids.txt">Eye</a> |
+            <a href="/data/rat_ids/IL.rn6.rat_ids.txt">IL</a> |
+            <a href="/data/rat_ids/LHb.rn6.rat_ids.txt">LHb</a> |
+            <a href="/data/rat_ids/Liver.rn6.rat_ids.txt">Liver</a> |
+            <a href="/data/rat_ids/NAcc.rn6.rat_ids.txt">NAcc</a> |
+            NAcc2 (<a href="/data/rat_ids/NAcc2.rn6.rat_ids.SE.txt">SE</a>)(<a href="/data/rat_ids/NAcc2.rn6.rat_ids.PE.txt">PE</a>) |
+            <a href="/data/rat_ids/OFC.rn6.rat_ids.txt">OFC</a> |
+            <a href="/data/rat_ids/PL.rn6.rat_ids.txt">PL</a> |
+            <a href="/data/rat_ids/PL2.rn6.rat_ids.txt">PL2</a>
         </p>
 
         <strong>RNA-Seq FASTQ file lists</strong>
@@ -211,37 +222,41 @@
         <br>
         The NAcc2 dataset contains some samples with single-end (SE) RNA-Seq reads and other samples with paired-end (PE) reads.
         <p>
-            <a href="/data/fastq_map/BLA.rn7.fastq_map.txt">BLA</a> |
-            <a href="/data/fastq_map/Brain.rn7.fastq_map.txt">Brain</a> |
-            <a href="/data/fastq_map/Eye.rn7.fastq_map.txt">Eye</a> |
-            <a href="/data/fastq_map/IL.rn7.fastq_map.txt">IL</a> |
-            <a href="/data/fastq_map/LHb.rn7.fastq_map.txt">LHb</a> |
-            <a href="/data/fastq_map/NAcc.rn7.fastq_map.txt">NAcc</a> |
-            NAcc2 (<a href="/data/fastq_map/NAcc2.rn7.fastq_map.SE.txt">SE</a>)(<a href="/data/fastq_map/NAcc2.rn7.fastq_map.PE.txt">PE</a>) |
-            <a href="/data/fastq_map/OFC.rn7.fastq_map.txt">OFC</a> |
-            <a href="/data/fastq_map/PL.rn7.fastq_map.txt">PL</a> |
-            <a href="/data/fastq_map/PL2.rn7.fastq_map.txt">PL2</a>
+            <a href="/data/fastq_map/Adipose.rn6.fastq_map.txt">Adipose</a> |
+            <a href="/data/fastq_map/BLA.rn6.fastq_map.txt">BLA</a> |
+            <a href="/data/fastq_map/Brain.rn6.fastq_map.txt">Brain</a> |
+            <a href="/data/fastq_map/Eye.rn6.fastq_map.txt">Eye</a> |
+            <a href="/data/fastq_map/IL.rn6.fastq_map.txt">IL</a> |
+            <a href="/data/fastq_map/LHb.rn6.fastq_map.txt">LHb</a> |
+            <a href="/data/fastq_map/Liver.rn6.fastq_map.txt">Liver</a> |
+            <a href="/data/fastq_map/NAcc.rn6.fastq_map.txt">NAcc</a> |
+            NAcc2 (<a href="/data/fastq_map/NAcc2.rn6.fastq_map.SE.txt">SE</a>)(<a href="/data/fastq_map/NAcc2.rn6.fastq_map.PE.txt">PE</a>) |
+            <a href="/data/fastq_map/OFC.rn6.fastq_map.txt">OFC</a> |
+            <a href="/data/fastq_map/PL.rn6.fastq_map.txt">PL</a> |
+            <a href="/data/fastq_map/PL2.rn6.fastq_map.txt">PL2</a>
         </p>
 
         <strong>Covariates</strong>
         <em style="color: gray;">used for eQTL mapping</em>
         <p>
-            <a href="/data/covar/BLA.rn7.covar.txt">BLA</a> |
-            <a href="/data/covar/Brain.rn7.covar.txt">Brain</a> |
-            <a href="/data/covar/Eye.rn7.covar.txt">Eye</a> |
-            <a href="/data/covar/IL.rn7.covar.txt">IL</a> |
-            <a href="/data/covar/LHb.rn7.covar.txt">LHb</a> |
-            <a href="/data/covar/NAcc.rn7.covar.txt">NAcc</a> |
-            <a href="/data/covar/NAcc2.rn7.covar.txt">NAcc2</a> |
-            <a href="/data/covar/OFC.rn7.covar.txt">OFC</a> |
-            <a href="/data/covar/PL.rn7.covar.txt">PL</a> |
-            <a href="/data/covar/PL2.rn7.covar.txt">PL2</a>
+            <a href="/data/covar/Adipose.rn6.covar.txt">Adipose</a> |
+            <a href="/data/covar/BLA.rn6.covar.txt">BLA</a> |
+            <a href="/data/covar/Brain.rn6.covar.txt">Brain</a> |
+            <a href="/data/covar/Eye.rn6.covar.txt">Eye</a> |
+            <a href="/data/covar/IL.rn6.covar.txt">IL</a> |
+            <a href="/data/covar/LHb.rn6.covar.txt">LHb</a> |
+            <a href="/data/covar/Liver.rn6.covar.txt">Liver</a> |
+            <a href="/data/covar/NAcc.rn6.covar.txt">NAcc</a> |
+            <a href="/data/covar/NAcc2.rn6.covar.txt">NAcc2</a> |
+            <a href="/data/covar/OFC.rn6.covar.txt">OFC</a> |
+            <a href="/data/covar/PL.rn6.covar.txt">PL</a> |
+            <a href="/data/covar/PL2.rn6.covar.txt">PL2</a>
         </p>
 
         <h2>eQTLs</h2>
 
         <p>
-            <strong><a href="/data/eqtl/rn7.eqtls_indep.txt">Conditionally independent cis-eQTLs</a></strong>
+            <strong><a href="/data/eqtl/rn6.eqtls_indep.txt">Conditionally independent cis-eQTLs</a></strong>
             <br>
             A table of cis-eQTLs from all tissues.
         </p>
@@ -249,20 +264,22 @@
         <strong>All significant cis-eQTL variant-gene pairs</strong>
 
         <p>
-            <a href="/data/eqtl/BLA.rn7.cis_qtl_signif.txt.gz">BLA</a> |
-            <a href="/data/eqtl/Brain.rn7.cis_qtl_signif.txt.gz">Brain</a> |
-            <a href="/data/eqtl/Eye.rn7.cis_qtl_signif.txt.gz">Eye</a> |
-            <a href="/data/eqtl/IL.rn7.cis_qtl_signif.txt.gz">IL</a> |
-            <a href="/data/eqtl/LHb.rn7.cis_qtl_signif.txt.gz">LHb</a> |
-            <a href="/data/eqtl/NAcc.rn7.cis_qtl_signif.txt.gz">NAcc</a> |
-            <a href="/data/eqtl/NAcc2.rn7.cis_qtl_signif.txt.gz">NAcc2</a> |
-            <a href="/data/eqtl/OFC.rn7.cis_qtl_signif.txt.gz">OFC</a> |
-            <a href="/data/eqtl/PL.rn7.cis_qtl_signif.txt.gz">PL</a> |
-            <a href="/data/eqtl/PL2.rn7.cis_qtl_signif.txt.gz">PL2</a>
+            <a href="/data/eqtl/Adipose.rn6.cis_qtl_signif.txt.gz">Adipose</a> |
+            <a href="/data/eqtl/BLA.rn6.cis_qtl_signif.txt.gz">BLA</a> |
+            <a href="/data/eqtl/Brain.rn6.cis_qtl_signif.txt.gz">Brain</a> |
+            <a href="/data/eqtl/Eye.rn6.cis_qtl_signif.txt.gz">Eye</a> |
+            <a href="/data/eqtl/IL.rn6.cis_qtl_signif.txt.gz">IL</a> |
+            <a href="/data/eqtl/LHb.rn6.cis_qtl_signif.txt.gz">LHb</a> |
+            <a href="/data/eqtl/Liver.rn6.cis_qtl_signif.txt.gz">Liver</a> |
+            <a href="/data/eqtl/NAcc.rn6.cis_qtl_signif.txt.gz">NAcc</a> |
+            <a href="/data/eqtl/NAcc2.rn6.cis_qtl_signif.txt.gz">NAcc2</a> |
+            <a href="/data/eqtl/OFC.rn6.cis_qtl_signif.txt.gz">OFC</a> |
+            <a href="/data/eqtl/PL.rn6.cis_qtl_signif.txt.gz">PL</a> |
+            <a href="/data/eqtl/PL2.rn6.cis_qtl_signif.txt.gz">PL2</a>
         </p>
 
         <p>
-            <strong><a href="/data/eqtl/rn7.top_assoc.txt">Top association per gene</a></strong>
+            <strong><a href="/data/eqtl/rn6.top_assoc.txt">Top association per gene</a></strong>
             <br>
             A table of the strongest variant-gene association per gene per tissue, even if not significant. A
             q-value threshold of 0.05 was used to determine significant eQTLs.
@@ -272,16 +289,18 @@
         <br>
         All SNP-gene associations genome-wide with TSS distance &gt; 5 Mb and with an arbitrary cutoff of p &lt; 1e-5. No significance testing was performed.
         <p>
-            <a href="/data/eqtl/BLA.rn7.trans_qtl_pairs.txt.gz">BLA</a> |
-            <a href="/data/eqtl/Brain.rn7.trans_qtl_pairs.txt.gz">Brain</a> |
-            <a href="/data/eqtl/Eye.rn7.trans_qtl_pairs.txt.gz">Eye</a> |
-            <a href="/data/eqtl/IL.rn7.trans_qtl_pairs.txt.gz">IL</a> |
-            <a href="/data/eqtl/LHb.rn7.trans_qtl_pairs.txt.gz">LHb</a> |
-            <a href="/data/eqtl/NAcc.rn7.trans_qtl_pairs.txt.gz">NAcc</a> |
-            <a href="/data/eqtl/NAcc2.rn7.trans_qtl_pairs.txt.gz">NAcc2</a> |
-            <a href="/data/eqtl/OFC.rn7.trans_qtl_pairs.txt.gz">OFC</a> |
-            <a href="/data/eqtl/PL.rn7.trans_qtl_pairs.txt.gz">PL</a> |
-            <a href="/data/eqtl/PL2.rn7.trans_qtl_pairs.txt.gz">PL2</a>
+            <a href="/data/eqtl/Adipose.rn6.trans_qtl_pairs.txt.gz">Adipose</a> |
+            <a href="/data/eqtl/BLA.rn6.trans_qtl_pairs.txt.gz">BLA</a> |
+            <a href="/data/eqtl/Brain.rn6.trans_qtl_pairs.txt.gz">Brain</a> |
+            <a href="/data/eqtl/Eye.rn6.trans_qtl_pairs.txt.gz">Eye</a> |
+            <a href="/data/eqtl/IL.rn6.trans_qtl_pairs.txt.gz">IL</a> |
+            <a href="/data/eqtl/LHb.rn6.trans_qtl_pairs.txt.gz">LHb</a> |
+            <a href="/data/eqtl/Liver.rn6.trans_qtl_pairs.txt.gz">Liver</a> |
+            <a href="/data/eqtl/NAcc.rn6.trans_qtl_pairs.txt.gz">NAcc</a> |
+            <a href="/data/eqtl/NAcc2.rn6.trans_qtl_pairs.txt.gz">NAcc2</a> |
+            <a href="/data/eqtl/OFC.rn6.trans_qtl_pairs.txt.gz">OFC</a> |
+            <a href="/data/eqtl/PL.rn6.trans_qtl_pairs.txt.gz">PL</a> |
+            <a href="/data/eqtl/PL2.rn6.trans_qtl_pairs.txt.gz">PL2</a>
         </p>
 
         <h2>sQTLs</h2>
@@ -289,41 +308,45 @@
         <strong>Splice phenotypes</strong>
         <em style="color: gray;">Relative usage of splice junctions within junction clusters</em>
         <p>
-            <a href="/data/splice/BLA.rn7.leafcutter.bed.gz">BLA</a> |
-            <a href="/data/splice/Brain.rn7.leafcutter.bed.gz">Brain</a> |
-            <a href="/data/splice/Eye.rn7.leafcutter.bed.gz">Eye</a> |
-            <a href="/data/splice/IL.rn7.leafcutter.bed.gz">IL</a> |
-            <a href="/data/splice/LHb.rn7.leafcutter.bed.gz">LHb</a> |
-            <a href="/data/splice/NAcc.rn7.leafcutter.bed.gz">NAcc</a> |
-            <a href="/data/splice/NAcc2.rn7.leafcutter.bed.gz">NAcc2</a> |
-            <a href="/data/splice/OFC.rn7.leafcutter.bed.gz">OFC</a> |
-            <a href="/data/splice/PL.rn7.leafcutter.bed.gz">PL</a> |
-            <a href="/data/splice/PL2.rn7.leafcutter.bed.gz">PL2</a>
+            <a href="/data/splice/Adipose.rn6.leafcutter.bed.gz">Adipose</a> |
+            <a href="/data/splice/BLA.rn6.leafcutter.bed.gz">BLA</a> |
+            <a href="/data/splice/Brain.rn6.leafcutter.bed.gz">Brain</a> |
+            <a href="/data/splice/Eye.rn6.leafcutter.bed.gz">Eye</a> |
+            <a href="/data/splice/IL.rn6.leafcutter.bed.gz">IL</a> |
+            <a href="/data/splice/LHb.rn6.leafcutter.bed.gz">LHb</a> |
+            <a href="/data/splice/Liver.rn6.leafcutter.bed.gz">Liver</a> |
+            <a href="/data/splice/NAcc.rn6.leafcutter.bed.gz">NAcc</a> |
+            <a href="/data/splice/NAcc2.rn6.leafcutter.bed.gz">NAcc2</a> |
+            <a href="/data/splice/OFC.rn6.leafcutter.bed.gz">OFC</a> |
+            <a href="/data/splice/PL.rn6.leafcutter.bed.gz">PL</a> |
+            <a href="/data/splice/PL2.rn6.leafcutter.bed.gz">PL2</a>
         </p>
 
         <strong>Covariates</strong>
         <em style="color: gray;">used for sQTL mapping</em>
         <p>
-            <a href="/data/splice/BLA.rn7.covar_splice.txt">BLA</a> |
-            <a href="/data/splice/Brain.rn7.covar_splice.txt">Brain</a> |
-            <a href="/data/splice/Eye.rn7.covar_splice.txt">Eye</a> |
-            <a href="/data/splice/IL.rn7.covar_splice.txt">IL</a> |
-            <a href="/data/splice/LHb.rn7.covar_splice.txt">LHb</a> |
-            <a href="/data/splice/NAcc.rn7.covar_splice.txt">NAcc</a> |
-            <a href="/data/splice/NAcc2.rn7.covar_splice.txt">NAcc2</a> |
-            <a href="/data/splice/OFC.rn7.covar_splice.txt">OFC</a> |
-            <a href="/data/splice/PL.rn7.covar_splice.txt">PL</a> |
-            <a href="/data/splice/PL2.rn7.covar_splice.txt">PL2</a>
+            <a href="/data/splice/Adipose.rn6.covar_splice.txt">Adipose</a> |
+            <a href="/data/splice/BLA.rn6.covar_splice.txt">BLA</a> |
+            <a href="/data/splice/Brain.rn6.covar_splice.txt">Brain</a> |
+            <a href="/data/splice/Eye.rn6.covar_splice.txt">Eye</a> |
+            <a href="/data/splice/IL.rn6.covar_splice.txt">IL</a> |
+            <a href="/data/splice/LHb.rn6.covar_splice.txt">LHb</a> |
+            <a href="/data/splice/Liver.rn6.covar_splice.txt">Liver</a> |
+            <a href="/data/splice/NAcc.rn6.covar_splice.txt">NAcc</a> |
+            <a href="/data/splice/NAcc2.rn6.covar_splice.txt">NAcc2</a> |
+            <a href="/data/splice/OFC.rn6.covar_splice.txt">OFC</a> |
+            <a href="/data/splice/PL.rn6.covar_splice.txt">PL</a> |
+            <a href="/data/splice/PL2.rn6.covar_splice.txt">PL2</a>
         </p>
 
         <p>
-            <strong><a href="/data/splice/rn7.sqtls_indep.txt">Conditionally independent cis-sQTLs</a></strong>
+            <strong><a href="/data/splice/rn6.sqtls_indep.txt">Conditionally independent cis-sQTLs</a></strong>
             <br>
             A table of cis-sQTLs from all tissues.
         </p>
 
         <p>
-            <strong><a href="/data/splice/rn7.top_assoc_splice.txt">Top association per gene</a></strong>
+            <strong><a href="/data/splice/rn6.top_assoc_splice.txt">Top association per gene</a></strong>
             <br>
             A table of the strongest variant-gene association per gene per tissue, even if not significant. A
             q-value threshold of 0.05 was used to determine significant sQTLs.
@@ -333,16 +356,18 @@
         <br>
         All SNP-phenotype associations genome-wide with TSS distance &gt; 5 Mb and with an arbitrary cutoff of p &lt; 1e-5. No significance testing was performed.
         <p>
-            <a href="/data/splice/BLA.rn7.splice.trans_qtl_pairs.txt.gz">BLA</a> |
-            <a href="/data/splice/Brain.rn7.splice.trans_qtl_pairs.txt.gz">Brain</a> |
-            <a href="/data/splice/Eye.rn7.splice.trans_qtl_pairs.txt.gz">Eye</a> |
-            <a href="/data/splice/IL.rn7.splice.trans_qtl_pairs.txt.gz">IL</a> |
-            <a href="/data/splice/LHb.rn7.splice.trans_qtl_pairs.txt.gz">LHb</a> |
-            <a href="/data/splice/NAcc.rn7.splice.trans_qtl_pairs.txt.gz">NAcc</a> |
-            <a href="/data/splice/NAcc2.rn7.splice.trans_qtl_pairs.txt.gz">NAcc2</a> |
-            <a href="/data/splice/OFC.rn7.splice.trans_qtl_pairs.txt.gz">OFC</a> |
-            <a href="/data/splice/PL.rn7.splice.trans_qtl_pairs.txt.gz">PL</a> |
-            <a href="/data/splice/PL2.rn7.splice.trans_qtl_pairs.txt.gz">PL2</a>
+            <a href="/data/splice/Adipose.rn6.splice.trans_qtl_pairs.txt.gz">Adipose</a> |
+            <a href="/data/splice/BLA.rn6.splice.trans_qtl_pairs.txt.gz">BLA</a> |
+            <a href="/data/splice/Brain.rn6.splice.trans_qtl_pairs.txt.gz">Brain</a> |
+            <a href="/data/splice/Eye.rn6.splice.trans_qtl_pairs.txt.gz">Eye</a> |
+            <a href="/data/splice/IL.rn6.splice.trans_qtl_pairs.txt.gz">IL</a> |
+            <a href="/data/splice/LHb.rn6.splice.trans_qtl_pairs.txt.gz">LHb</a> |
+            <a href="/data/splice/Liver.rn6.splice.trans_qtl_pairs.txt.gz">Liver</a> |
+            <a href="/data/splice/NAcc.rn6.splice.trans_qtl_pairs.txt.gz">NAcc</a> |
+            <a href="/data/splice/NAcc2.rn6.splice.trans_qtl_pairs.txt.gz">NAcc2</a> |
+            <a href="/data/splice/OFC.rn6.splice.trans_qtl_pairs.txt.gz">OFC</a> |
+            <a href="/data/splice/PL.rn6.splice.trans_qtl_pairs.txt.gz">PL</a> |
+            <a href="/data/splice/PL2.rn6.splice.trans_qtl_pairs.txt.gz">PL2</a>
         </p>
 
         <h2>API</h2>
