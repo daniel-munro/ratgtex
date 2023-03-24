@@ -10,15 +10,20 @@
         integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css"
         integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" href="/css/violin.css">
-    <link rel="stylesheet" type="text/css" href="/css/eqtlDashboard.css">
+    <link href="https://fonts.googleapis.com/css?family=EB+Garamond|Libre+Franklin|Open+Sans|Roboto|Zilla+Slab"
+        rel="stylesheet">
+    <link rel="stylesheet" type="text/css"
+        href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/css/select2.min.css">
     <link rel="stylesheet" type="text/css" href="/css/tissueGroup.css">
+    <link rel="stylesheet" type="text/css" href="/css/dendrogram.css">
+    <link rel="stylesheet" type="text/css" href="/css/expressMap.css">
+    <link rel="stylesheet" type="text/css" href="/css/violin.css">
     <link rel="stylesheet" href="/css/main.css">
     <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="96x96" href="/images/favicon-96x96.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
 
-    <title>eQTL Dashboard | RatGTEx</title>
+    <title>Gene Expression Heatmap | RatGTEx</title>
 </head>
 
 <body>
@@ -86,31 +91,24 @@
     <div class="container">
 
         <div class="row justify-content-md-center">
-            <div class="alert alert-info col-md-auto" role="alert">
-                Showing data for <strong>rn7</strong> (mRatBN7.2).
-                <a href="/eqtl-dashboard/rn6/" style="color: inherit;">Switch to rn6</a>
+            <div class="alert alert-warning col-md-auto" role="alert">
+                Showing data for <strong>rn6</strong> (Rnor_6.0).
+                <a href="/query-gene-expression/" style="color: inherit;">Switch to rn7</a>
             </div>
         </div>
 
-        <h3>eQTL Dashboard</h3>
-        <hr>
-        <div class="col-sm-12">
-            <p>
-                Visualize associations for any gene-variant pairs in all or a selection of tissues.
-            <ul>
-                <li>All results, including non-significant ones, are visualized in a grid of violin plots grouped
-                    horizontally by the gene-variant pairs and aligned vertically by tissues.</li>
-                <li>Each violin plot shows three expression distributions of the genotypes: homozygous reference,
-                    heterozygous, and homozygous alternative alleles.</li>
-                <li>When an eQTL is significant (i.e. smaller than or equal to the gene-specific p-value threshold), its
-                    p-value is highlighted in red.</li>
-                <li>Note that the set of genotyped SNPs can differ among datasets, so the absence of significant
-                    associations in some tissues is not necessarily biologically meaningful. It can also reflect
-                    differences in statistical power due to differing sample sizes.</li>
-            </ul>
-            </p>
+        <div>
+            <h3>Heatmap for a query gene list</h3>
+            <hr>
+            <div class="col-sm-12">
+                <p>
+                    The rows of the heatmap are user-specific genes, columns are tissues (color-coded by the tissue
+                    types), and colors are scaled by the median expression values. By default, the gene rows and tissue
+                    columns are hierarchically clustered using the Euclidean distance and average linkage method.
+                </p>
+            </div>
+            <hr>
         </div>
-        <hr>
         <!-- input form -->
         <p>
             <button class="btn btn-secondary btn-sm" type="button" data-bs-toggle="collapse"
@@ -118,75 +116,84 @@
                 <i class="fa fa-bars"></i>
             </button>
         </p>
-        <div class="row collapse show" id="collapseForm">
 
+        <div class="row collapse show" id="collapseForm">
             <div class="col-sm-12">
-                <form id="eqtlDashboardForm" style="background:#f2f7fd; padding: 5px;">
+                <form id="geneExpressionForm" style="background:#f2f7fd; padding: 5px;">
                     <div class="form-group row">
                         <!-- form-group for optimum spacing between the label and its associated form input element -->
-
-                        <div class="col-sm-12 col-md-4">
-                            <label for="geneVariantPairs" class="align-top">Enter Gene-Variant Pairs</label>
+                        <div class="col-sm-12 col-md-2">
+                            <label for="genes" class="align-top">Enter Gencode IDs or Gene Names</label>
                             <ul style="font-size:12px; list-style-type:square; padding-left: 15px;">
-                                <li>Limited to 30 entries.</li>
-                                <li><a href="#" id="example">Example search</a></li>
+                                <li>Limited to 50 entries.</li>
+                                <li><a href="#" id="searchExample">A search example</a></li>
                             </ul>
-                            <textarea id="geneVariantPairs" rows="20" class="form-control"
-                                placeholder="For example: ENSRNOG00000009377,chr3:2306454"
-                                style="font-size:9px;" spellcheck="false"></textarea>
+                            <textarea id="genes" rows="20" class="form-control" style="font-size:12px;"></textarea>
                             <br />
-                            <div id="eqtlDashboardSubmit" class="btn btn-primary btn-sm" style="margin-bottom:1em;">
-                                Search</div>
+
+                            <div id="batchSubmit" class="btn btn-primary btn-sm" style="margin-bottom:1em;">Search</div>
 
                         </div>
-                        <div class="col-xs-12 col-md-8">
+                        <div class="col-xs-12 col-md-10">
                             <label>Select Tissue(s)</label>
-                            <div id="tissueBoxes" class="form-group row">
+                            <div id="tissueMenu" class="form-group row">
                                 <!-- tissue menu check boxes -->
                             </div>
                         </div>
                     </div>
-
                 </form>
 
             </div>
         </div>
-
-        <!-- eQTL violin plots -->
+        <hr />
         <div class="row">
-            <div class="col-sm-12" id="messageBox" style="color:firebrick; font-size: 10px;"></div>
-            <div id="eqtlDashboardDiv" class="col-sm-12">
-                <div id="eqtlDashboardRoot" class="row flex-row" style="padding-left: 15px;overflow:auto;"></div>
+            <div class="col-xs-12">
+                <i id="spinner" class="fas fa-sync fa-spin" style="display:none;"></i>
             </div>
         </div>
+        <div class="row">
+            <div id="searchResult" class="col-xs-12 col-md-12">
+                <div class="row" style="margin-left: 10px;">
+                    <div id="heatmapRoot" class="col-xs-12 col-md-12"></div> <!-- the heatmap Div -->
+                    <div id="violinRoot" class="col-xs-12 col-md-12"></div>
+                </div>
+
+            </div>
+        </div>
+
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/file-saver@1.3.3/FileSaver.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"
         integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
         integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/js/select2.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
         crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/file-saver@1.3.3/FileSaver.min.js"></script>
     <script>
-        window.genome = "rn7";
+        window.genome = "rn6";
     </script>
-    <script src="/build/js/eqtl-dashboard.bundle.min.js"></script>
+    <script src="/build/js/expression-map.bundle.min.js"></script>
     <script src="/src/main.js"></script>
-
     <script>
-        $(document).ready(function () {
-            // build the tissue menu
-            EqtlDashboard.build("eqtlDashboardRoot", "tissueBoxes", "geneVariantPairs", "eqtlDashboardSubmit", "collapseForm", "messageBox");
+        $(document).ready(batchGeneQuery);
+        function batchGeneQuery() {
+            const heatmapRootId = "heatmapRoot";
+            const violinRootId = "violinRoot";
+            const submitId = 'batchSubmit';
+            const menuId = "tissueMenu";
+            const formId = "collapseForm";
 
-            // define buttons
-
-            $('#example').click(function () {
-                $('#geneVariantPairs').val("Ifnlr1,chr5:154091639\nENSRNOG00000015285,chr3:80464449\n");
-                return false;
+            $('#searchExample').click(function () {
+                const examples = "Polr3k, Rtel1, Eno1, Nit2, Map4, Fam107a, Mrap2, Calr3, LOC102548695, ENSRNOG00000048194, ENSRNOG00000046493, ENSRNOG00000001738, ENSRNOG00000026109, ENSRNOG00000018227, ENSRNOG00000011411, AABR07051450.1";
+                $('#genes').val(examples);
+                return false; // this prevents a # sign being added to the URL...
             });
-        });
+            BatchGeneExpression.launch(formId, menuId, submitId, heatmapRootId, violinRootId);
+        }
+
     </script>
 </body>
 

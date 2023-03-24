@@ -101,23 +101,10 @@ def format_per_tissue_gene_info(info: list, tissues: list):
             del gene["sqtl_" + tissue]
 
 
-# def load_tpm(path):
-#     tpm = {}
-#     expr = pd.read_csv(path, sep="\t")
-#     samples = pd.read_csv("../data/ref/metadata.csv")
-#     samples = samples.loc[samples["QC_pass"] == "pass", :]
-#     expr = expr.loc[:, expr.columns.isin(samples["library"])]
-#     tis_conv = {"Acbc": "NAcc", "IL": "IL", "LHB": "LHb", "PL": "PL", "VoLo": "OFC"}
-#     tis = pd.Series([tis_conv[x.split("_")[1]] for x in expr.columns])
-#     for tissue in tis.unique():
-#         tpm[tissue] = expr.loc[:, list(tis == tissue)]
-#     return tpm
-
-
-def cis_pval(tissue, gene, variant):
+def cis_pval(tissue, genome, gene, variant):
     """Return nominal p-value for a given cis-window variant"""
-    with zipfile.ZipFile(f"../data/cis_pvals/{tissue}.zip", "r") as archive:
-        fname = f"{tissue}/{gene}.txt"
+    with zipfile.ZipFile(f"../data/cis_pvals/{tissue}.{genome}.zip", "r") as archive:
+        fname = f"{tissue}.{genome}/{gene}.txt"
         if fname in archive.namelist():
             df = pd.read_csv(archive.open(fname), sep="\t", index_col="variant_id")
             if variant in df.index:
@@ -125,10 +112,10 @@ def cis_pval(tissue, gene, variant):
         return None
 
 
-def single_tissue(gene):
+def single_tissue(genome, gene):
     """Return table of significant cis-eSNPs for a gene"""
-    with zipfile.ZipFile(f"../data/singleTissueEqtl.zip", "r") as archive:
-        fname = f"singleTissueEqtl/{gene}.txt"
+    with zipfile.ZipFile(f"../data/{genome}.singleTissueEqtl.zip", "r") as archive:
+        fname = f"{genome}.singleTissueEqtl/{gene}.txt"
         if fname in archive.namelist():
             d = pd.read_csv(archive.open(fname), sep="\t", dtype={"chromosome": str})
             d["geneId"] = gene
@@ -136,116 +123,142 @@ def single_tissue(gene):
         return None
 
 
-tissueInfo = pd.read_csv("../data/tissueInfo.txt", sep="\t")
-tissueInfo = tissueInfo.to_dict(orient="records")
+def load_expr(fname):
+    df = pd.read_csv(fname, sep="\t", dtype={"#chr": str}, index_col="gene_id")
+    df.drop(columns=["#chr", "start", "end"], inplace=True)
+    return df
 
-topExpr = pd.read_csv("../data/topExpressedGene.txt", sep="\t")
 
-genes = pd.read_csv("../data/gene.txt", sep="\t", index_col="geneId", dtype={"chromosome": str})
-genes = genes.fillna("")
+def load_eqtls(fname):
+    eqtls = pd.read_csv(fname, sep="\t")
+    eqtls = eqtls[
+        [
+            "tissue",
+            "gene_id",
+            "gene_name",
+            "variant_id",
+            "ref",
+            "alt",
+            "pval_beta",
+            "log2_aFC",
+        ]
+    ]
+    eqtls = eqtls.rename(
+        columns={
+            "tissue": "tissueSiteDetailId",
+            "gene_id": "geneId",
+            "gene_name": "geneSymbol",
+            "variant_id": "variantId",
+        }
+    )
+    return eqtls
 
-tissues = [tissue["tissueSiteDetailId"] for tissue in tissueInfo]
-dataset = {tissue["tissueSiteDetailId"]: tissue["dataset"] for tissue in tissueInfo}
 
-med_expr = pd.read_csv(
-    "../data/medianGeneExpression.txt.gz", sep="\t", index_col="geneId"
-)
+def load_sqtls(fname):
+    sqtls = pd.read_csv(fname, sep="\t")
+    sqtls = sqtls[
+        [
+            "tissue",
+            "phenotype_id",
+            "gene_id",
+            "gene_name",
+            "variant_id",
+            "ref",
+            "alt",
+            "pval_beta",
+        ]
+    ]
+    sqtls = sqtls.rename(
+        columns={
+            "tissue": "tissueSiteDetailId",
+            "phenotype_id": "phenotypeId",
+            "gene_id": "geneId",
+            "gene_name": "geneSymbol",
+            "variant_id": "variantId",
+        }
+    )
+    return sqtls
 
+
+tissueInfo = {}
+topExpr = {}
+genes = {}
+tissues = {}
+dataset = {}
+med_expr = {}
 tpm = {}
-for tissue in tissues:
-    tpm_file = f"../data/expr/{tissue}.expr.tpm.bed.gz"
-    tpm[tissue] = pd.read_csv(
-        tpm_file, sep="\t", dtype={"#chr": str}, index_col="gene_id"
-    )
-    tpm[tissue].drop(columns=["#chr", "start", "end"], inplace=True)
 iqn = {}
-for tissue in tissues:
-    iqn_file = f"../data/expr/{tissue}.expr.iqn.bed.gz"
-    iqn[tissue] = pd.read_csv(
-        iqn_file, sep="\t", dtype={"#chr": str}, index_col="gene_id"
-    )
-    iqn[tissue].drop(columns=["#chr", "start", "end"], inplace=True)
-
-# vcf = pysam.VariantFile("../data/ratgtex.vcf.gz")
 vcf = {}
-for dset in set(dataset.values()):
-    vcf[dset] = pysam.VariantFile(f"../data/geno/{dset}.vcf.gz")
-ref_vcf = vcf["BLA_NAcc2_PL2"]
+ref_vcf = {}
+exons = {}
+top_assoc = {}
+eqtls = {}
+sqtls = {}
 
-exons = pd.read_csv("../data/exon.txt", sep="\t", dtype={"chromosome": str})
+for genome in ["rn6", "rn7"]:
+    df = pd.read_csv(f"../data/{genome}.tissueInfo.txt", sep="\t")
+    tissueInfo[genome] = df.to_dict(orient="records")
 
-top_assoc = pd.read_csv(
-    "../data/eqtl/top_assoc.txt", sep="\t", index_col=["tissue", "gene_id"]
-)  # Just for pval_nominal_threshold
-eqtls = pd.read_csv("../data/eqtl/eqtls_indep.txt", sep="\t")
-eqtls = eqtls[
-    [
-        "tissue",
-        "gene_id",
-        "gene_name",
-        "variant_id",
-        "ref",
-        "alt",
-        "pval_beta",
-        "log2_aFC",
-    ]
-]
-eqtls = eqtls.rename(
-    columns={
-        "tissue": "tissueSiteDetailId",
-        "gene_id": "geneId",
-        "gene_name": "geneSymbol",
-        "variant_id": "variantId",
-    }
-)
+    topExpr[genome] = pd.read_csv(f"../data/{genome}.topExpressedGene.txt", sep="\t")
 
-sqtls = pd.read_csv("../data/splice/sqtls_indep.txt", sep="\t")
-sqtls = sqtls[
-    [
-        "tissue",
-        "phenotype_id",
-        "gene_id",
-        "gene_name",
-        "variant_id",
-        "ref",
-        "alt",
-        "pval_beta",
-    ]
-]
-sqtls = sqtls.rename(
-    columns={
-        "tissue": "tissueSiteDetailId",
-        "phenotype_id": "phenotypeId",
-        "gene_id": "geneId",
-        "gene_name": "geneSymbol",
-        "variant_id": "variantId",
-    }
-)
+    df = pd.read_csv(f"../data/{genome}.gene.txt", sep="\t", index_col="geneId", dtype={"chromosome": str})
+    genes[genome] = df.fillna("")
+
+    tissues[genome] = [tissue["tissueSiteDetailId"] for tissue in tissueInfo[genome]]
+    dataset[genome] = {tissue["tissueSiteDetailId"]: tissue["dataset"] for tissue in tissueInfo[genome]}
+
+    med_expr[genome] = pd.read_csv(
+        f"../data/{genome}.medianGeneExpression.txt.gz", sep="\t", index_col="geneId"
+    )
+
+    tpm[genome] = {}
+    for tissue in tissues[genome]:
+        fname = f"../data/expr/{tissue}.{genome}.expr.tpm.bed.gz"
+        tpm[genome][tissue] = load_expr(fname)
+
+    iqn[genome] = {}
+    for tissue in tissues[genome]:
+        fname = f"../data/expr/{tissue}.{genome}.expr.iqn.bed.gz"
+        iqn[genome][tissue] = load_expr(fname)
+
+    vcf[genome] = {}
+    for dset in set(dataset[genome].values()):
+        vcf[genome][dset] = pysam.VariantFile(f"../data/geno/{dset}.{genome}.vcf.gz")
+    ref_vcf[genome] = vcf[genome]["BLA_NAcc2_PL2"]
+
+    exons[genome] = pd.read_csv(f"../data/{genome}.exon.txt", sep="\t", dtype={"chromosome": str})
+
+    top_assoc[genome] = pd.read_csv(
+        f"../data/eqtl/{genome}.top_assoc.txt", sep="\t", index_col=["tissue", "gene_id"]
+    )  # Just for pval_nominal_threshold
+    eqtls[genome] = load_eqtls(f"../data/eqtl/{genome}.eqtls_indep.txt")
+    sqtls[genome] = load_sqtls(f"../data/splice/{genome}.sqtls_indep.txt")
 
 api = Flask(__name__)
 CORS(api)
 # api.config["APPLICATION_ROOT"] = "/api/v1" # doesn't work??
 
 
-@api.route("/api/v1/dyneqtl", methods=["GET"])
+@api.route("/api/v2/dyneqtl", methods=["GET"])
 def dyneqtl():
     variant = request.args.get("variantId")
     gene = request.args.get("geneId")
     tissue = request.args.get("tissueSiteDetailId")
-    expr = iqn[tissue].loc[gene, :]
-    rec = variant_record(variant, vcf[dataset[tissue]])
+    genome = request.args.get("genome")
+    expr = iqn[genome][tissue].loc[gene, :]
+    rec = variant_record(variant, vcf[genome][dataset[genome][tissue]])
     assert len(rec.alts) == 1, f"Multiple alt alleles: {variant}"
     gt = rec.samples
     # indivs = [x.split("_")[0] for x in expr.index]
     geno = [genotype(gt[ind]["GT"]) for ind in expr.index]
     # ignoring error, nes, tStatistic, timing
     counts = [int(np.sum(np.array(geno) == x)) for x in [0, 1, 2]]
-    pval = cis_pval(tissue, gene, variant)
-    thresh = top_assoc.loc[(tissue, gene), "pval_nominal_threshold"]
+    pval = cis_pval(tissue, genome, gene, variant)
+    thresh = top_assoc[genome].loc[(tissue, gene), "pval_nominal_threshold"]
     info = {
         "data": list(expr),
         "geneId": gene,
-        "geneSymbol": genes.loc[gene, "geneSymbol"],
+        "geneSymbol": genes[genome].loc[gene, "geneSymbol"],
         "genotypes": geno,
         "hetCount": counts[1],
         "homoAltCount": counts[2],
@@ -261,40 +274,44 @@ def dyneqtl():
     return jsonify(info)
 
 
-@api.route("/api/v1/eqtl", methods=["GET"])
+@api.route("/api/v2/eqtl", methods=["GET"])
 def eqtl():
     gene = request.args.get("geneId")
-    d = eqtls.loc[eqtls["geneId"] == gene, :]
+    genome = request.args.get("genome")
+    d = eqtls[genome].loc[eqtls[genome]["geneId"] == gene, :]
     info = d.to_dict(orient="records")
     return jsonify({"eqtl": info})
 
 
-@api.route("/api/v1/exon", methods=["GET"])
+@api.route("/api/v2/exon", methods=["GET"])
 def exon():
     gene = request.args.get("geneId")
-    d = exons.loc[exons["geneId"] == gene, :]
+    genome = request.args.get("genome")
+    d = exons[genome].loc[exons[genome]["geneId"] == gene, :]
     d = d.to_dict(orient="records")
     return jsonify({"exon": d})
 
 
-@api.route("/api/v1/gene", methods=["GET"])
+@api.route("/api/v2/gene", methods=["GET"])
 def gene():
     ids = request.args.get("geneId").split(",")
-    ids = validate_genes(ids, genes)
-    d = genes.loc[ids, :].reset_index()  # Include geneId in dict
+    genome = request.args.get("genome")
+    ids = validate_genes(ids, genes[genome])
+    d = genes[genome].loc[ids, :].reset_index()  # Include geneId in dict
     info = d.to_dict(orient="records")
-    format_per_tissue_gene_info(info, tissues)
+    format_per_tissue_gene_info(info, tissues[genome])
     return jsonify({"gene": info})
 
 
-@api.route("/api/v1/geneExpression", methods=["GET"])
+@api.route("/api/v2/geneExpression", methods=["GET"])
 def gene_exp():
     gene = request.args.get("geneId")
-    symbol = genes.loc[gene, "geneSymbol"]
+    genome = request.args.get("genome")
+    symbol = genes[genome].loc[gene, "geneSymbol"]
     infos = []
-    for tissue in tissues:
+    for tissue in tissues[genome]:
         info = {
-            "data": list(tpm[tissue].loc[gene, :]),
+            "data": list(tpm[genome][tissue].loc[gene, :]),
             "datasetId": "ratgtex_v1",
             "geneId": gene,
             "geneSymbol": symbol,
@@ -305,16 +322,17 @@ def gene_exp():
     return jsonify({"geneExpression": infos})
 
 
-@api.route("/api/v1/ld", methods=["GET"])
+@api.route("/api/v2/ld", methods=["GET"])
 def ld():
     gene = request.args.get("geneId")
-    d = single_tissue(gene)
+    genome = request.args.get("genome")
+    d = single_tissue(genome, gene)
     if d is None:
         return jsonify({"ld": []})
     d["pos"] = [int(x.split(":")[1]) for x in d["variantId"]]
     d = d.sort_values(by="pos")
     ids = d["variantId"].unique()
-    geno = geno_matrix(ids, ref_vcf)
+    geno = geno_matrix(ids, ref_vcf[genome])
     # ldmat = np.corrcoef(geno) ** 2
     geno = pd.DataFrame(geno.T, dtype=float)  # Pandas corr allows missing values
     ldmat = geno.corr().to_numpy() ** 2
@@ -327,21 +345,22 @@ def ld():
     return jsonify({"ld": lds})
 
 
-@api.route("/api/v1/medianGeneExpression", methods=["GET"])
+@api.route("/api/v2/medianGeneExpression", methods=["GET"])
 def med_gene_exp():
     ids = request.args.get("geneId").split(",")
-    ids = [x for x in ids if x in med_expr.index]
+    genome = request.args.get("genome")
+    ids = [x for x in ids if x in med_expr[genome].index]
     if request.args.get("tissueSiteDetailId") is None:
-        d = med_expr.loc[ids, :]
+        d = med_expr[genome].loc[ids, :]
     else:
         tissues = request.args.get("tissueSiteDetailId").split(",")
-        d = med_expr.loc[ids, tissues]
+        d = med_expr[genome].loc[ids, tissues]
     gene_tree = row_tree(d)
     tissue_tree = row_tree(d.T)
     d = d.reset_index().melt(
         id_vars="geneId", var_name="tissueSiteDetailId", value_name="median"
     )
-    d = d.merge(genes["geneSymbol"].reset_index(), how="left", on="geneId")
+    d = d.merge(genes[genome]["geneSymbol"].reset_index(), how="left", on="geneId")
     d = d.to_dict(orient="records")
     info = {
         "clusters": {"gene": gene_tree, "tissue": tissue_tree},
@@ -350,36 +369,40 @@ def med_gene_exp():
     return jsonify(info)
 
 
-@api.route("/api/v1/singleTissueEqtl", methods=["GET"])
+@api.route("/api/v2/singleTissueEqtl", methods=["GET"])
 def single_tissue_eqtl():
     gene = request.args.get("geneId")
-    d = single_tissue(gene)
+    genome = request.args.get("genome")
+    d = single_tissue(genome, gene)
     if d is None:
         return jsonify({"singleTissueEqtl": []})
-    d["geneSymbol"] = genes.loc[gene, "geneSymbol"]
+    d["geneSymbol"] = genes[genome].loc[gene, "geneSymbol"]
     d["geneSymbolUpper"] = d["geneSymbol"]
     info = d.to_dict(orient="records")
     return jsonify({"singleTissueEqtl": info})
 
 
-@api.route("/api/v1/sqtl", methods=["GET"])
+@api.route("/api/v2/sqtl", methods=["GET"])
 def sqtl():
     gene = request.args.get("geneId")
-    d = sqtls.loc[sqtls["geneId"] == gene, :]
+    genome = request.args.get("genome")
+    d = sqtls[genome].loc[sqtls[genome]["geneId"] == gene, :]
     info = d.to_dict(orient="records")
     return jsonify({"sqtl": info})
 
 
-@api.route("/api/v1/tissueInfo", methods=["GET"])
+@api.route("/api/v2/tissueInfo", methods=["GET"])
 def tissue_info():
-    return jsonify({"tissueInfo": tissueInfo})
+    genome = request.args.get("genome")
+    return jsonify({"tissueInfo": tissueInfo[genome]})
 
 
-@api.route("/api/v1/topExpressedGene", methods=["GET"])
+@api.route("/api/v2/topExpressedGene", methods=["GET"])
 def top_expressed_gene():
     tissue = request.args.get("tissueSiteDetailId")
+    genome = request.args.get("genome")
     filterMt = request.args.get("filterMtGene", type=json.loads, default=False)
-    x = topExpr.loc[topExpr["tissueSiteDetailId"] == tissue, :]
+    x = topExpr[genome].loc[topExpr[genome]["tissueSiteDetailId"] == tissue, :]
     if filterMt:
         x = x.loc[~x["mtGene"], :]
     x = x.iloc[:50, :]
@@ -388,13 +411,14 @@ def top_expressed_gene():
     return jsonify({"topExpressedGene": x})
 
 
-@api.route("/api/v1/variant", methods=["GET"])
+@api.route("/api/v2/variant", methods=["GET"])
 def variant():
     ids = request.args.get("variantId").split(",")
+    genome = request.args.get("genome")
     infos = []
     for variant in ids:
         # Ignoring b37VariantId, datasetId, maf01, shorthand, snpId
-        rec = variant_record(variant, ref_vcf)
+        rec = variant_record(variant, ref_vcf[genome])
         assert len(rec.alts) == 1, f"Multiple alt alleles: {variant}"
         info = {
             "alt": rec.alts[0],

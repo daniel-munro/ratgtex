@@ -88,6 +88,14 @@
     </nav>
 
     <div class="container-fluid">
+
+        <div class="row justify-content-md-center">
+            <div class="alert alert-info col-md-auto" role="alert">
+                Showing data for <strong>rn7</strong> (mRatBN7.2).
+                <a href="/gene-eqtl-visualizer/rn6/" style="color: inherit;">Switch to rn6</a>
+            </div>
+        </div>
+
         <h3>Gene eQTL Visualizer</h3>
         <hr>
         <div class="row">
@@ -146,7 +154,10 @@
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
         integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/file-saver@1.3.3/FileSaver.min.js"></script>
-    <script src="/build/js/gev.bundle.min.js"></script>
+    <script>
+        window.genome = "rn7";
+     </script>
+     <script src="/build/js/gev.bundle.min.js"></script>
     <script src="/src/main.js"></script>
     <script>
         $(document).ready(function () {

@@ -21,17 +21,6 @@
     <link rel="icon" type="image/png" sizes="96x96" href="/images/favicon-96x96.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
 
-    <script src="https://cdn.jsdelivr.net/npm/file-saver@1.3.3/FileSaver.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
-        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
-        integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
-        crossorigin="anonymous"></script>
-    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js" crossorigin="anonymous"></script>
-    <script src="/build/js/gene-expression-violin-plot.bundle.min.js"></script>
-    <script src="/src/main.js"></script>
     <style>
         .gene-expr-vplot-option-label {
             margin-left: 10px;
@@ -109,6 +98,13 @@
     </div>
 
     <div id="gene-info" class="container">
+
+        <div class="row justify-content-md-center">
+            <div class="alert alert-info col-md-auto" role="alert">
+                Showing data for <strong>rn7</strong> (mRatBN7.2).
+            </div>
+        </div>
+
         <h3 id="gene-title"></h3>
         <p id="gene-description"></p>
 
@@ -152,6 +148,21 @@
 
         <br>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/file-saver@1.3.3/FileSaver.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+        integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js" crossorigin="anonymous"></script>
+    <script>
+        window.genome = "rn7";
+     </script>
+    <script src="/build/js/gene-expression-violin-plot.bundle.min.js"></script>
+    <script src="/src/main.js"></script>
 
     <script>
         function loadGene(info) {
@@ -204,7 +215,7 @@
 
             $.ajax({
                 dataType: 'json',
-                url: `/api/v1/eqtl?geneId=${info.geneId}`,
+                url: `/api/v2/eqtl?genome=${window.genome}&geneId=${info.geneId}`,
                 success: function (data) {
                     $('#eqtl-table').append('<thead><tr><th>Tissue</th><th>Representative Variant ID</th><th>Ref</th><th>Alt</th><th>Adjusted P-Value</th><th>log<sub>2</sub>aFC</th></tr></thead><tbody>');
                     var cols = ['tissueSiteDetailId', 'variantId', 'ref', 'alt', 'pval_beta', 'log2_aFC'];
@@ -224,7 +235,7 @@
 
             $.ajax({
                 dataType: 'json',
-                url: `/api/v1/singleTissueEqtl?geneId=${info.geneId}`,
+                url: `/api/v2/singleTissueEqtl?genome=${window.genome}&geneId=${info.geneId}`,
                 success: function (data) {
                     // $('#eqtl-all-table').append('<thead><tr><th>Gene ID</th><th>Gene Symbol</th><th>Variant ID</th><th>P-Value</th><th>NES</th><th>Tissue</th></tr></thead><tbody>');
                     // var cols = ['geneId', 'geneSymbol', 'variantId', 'pValue', 'nes', 'tissueSiteDetailId'];
@@ -246,7 +257,7 @@
 
             $.ajax({
                 dataType: 'json',
-                url: `/api/v1/sqtl?geneId=${info.geneId}`,
+                url: `/api/v2/sqtl?genome=${window.genome}&geneId=${info.geneId}`,
                 success: function (data) {
                     $('#sqtl-table').append('<thead><tr><th>Tissue</th><th>Splice Junction ID</th><th>Representative Variant ID</th><th>Ref</th><th>Alt</th><th>Adjusted P-Value</th></tr></thead><tbody>');
                     var cols = ['tissueSiteDetailId', 'phenotypeId', 'variantId', 'ref', 'alt', 'pval_beta'];
@@ -274,7 +285,7 @@
             $.ajax({
                 dataType: 'json',
                 // url: `/api/v1/gene?${field}=${gene}`,
-                url: `/api/v1/gene?geneId=${gene}`,
+                url: `/api/v2/gene?genome=${window.genome}&geneId=${gene}`,
                 success: function (data) {
                     if (data.gene.length == 0) {
                         $('#gene-not-found').text(`Gene not found: ${gene}`);

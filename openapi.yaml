@@ -1,8 +1,8 @@
 openapi: 3.0.0
 info:
   title: RatGTEx REST API
-  version: '1.0.0'
-  description: This API provides data for the visualizations in the RatGTEx data portal.
+  version: '2.0.0'
+  description: This API provides data for the visualizations in the RatGTEx data portal. This version (v2) provides data for both rn6 (Rnor_6.0) and rn7 (mRatBN7.2) genome assemblies.
   contact:
     name: Daniel Munro
     x-role: responsible developer
@@ -10,7 +10,7 @@ info:
     url: https://danmun.ro
     x-id: https://danmun.ro
 servers:
-- url: https://ratgtex.org/api/v1
+- url: https://ratgtex.org/api/v2
   description: RatGTEx data portal
 tags:
 - name: reference
@@ -36,6 +36,14 @@ paths:
           type: string
           example: ENSRNOG00000021424
         x-valueType: https://identifiers.org/ensembl
+      - name: genome
+        in: query
+        description: Genome build (rn6 or rn7)
+        required: true
+        schema:
+          type: string
+          enum: [rn6, rn7]
+          example: rn6
       - name: tissueSiteDetailId
         in: query
         description: Tissue ID
@@ -121,6 +129,14 @@ paths:
           type: string
           example: ENSRNOG00000021424
         x-valueType: https://identifiers.org/ensembl
+      - name: genome
+        in: query
+        description: Genome build (rn6 or rn7)
+        required: true
+        schema:
+          type: string
+          enum: [rn6, rn7]
+          example: rn6
       responses:
         '200':
           description: Success
@@ -175,6 +191,14 @@ paths:
           type: string
           example: ENSRNOG00000021424
         x-valueType: https://identifiers.org/ensembl
+      - name: genome
+        in: query
+        description: Genome build (rn6 or rn7)
+        required: true
+        schema:
+          type: string
+          enum: [rn6, rn7]
+          example: rn6
       responses:
         '200':
           description: Success
@@ -242,6 +266,14 @@ paths:
         style: form
         explode: false
         x-valueType: https://identifiers.org/ensembl
+      - name: genome
+        in: query
+        description: Genome build (rn6 or rn7)
+        required: true
+        schema:
+          type: string
+          enum: [rn6, rn7]
+          example: rn6
       responses:
         '200':
           description: Success
@@ -325,6 +357,14 @@ paths:
           type: string
           example: ENSRNOG00000021424
         x-valueType: https://identifiers.org/ensembl
+      - name: genome
+        in: query
+        description: Genome build (rn6 or rn7)
+        required: true
+        schema:
+          type: string
+          enum: [rn6, rn7]
+          example: rn6
       responses:
         '200':
           description: Success
@@ -357,6 +397,14 @@ paths:
         style: form
         explode: false
         x-valueType: https://identifiers.org/ensembl
+      - name: genome
+        in: query
+        description: Genome build (rn6 or rn7)
+        required: true
+        schema:
+          type: string
+          enum: [rn6, rn7]
+          example: rn6
       - name: tissueSiteDetailId
         in: query
         description: One or more tissue IDs. If omitted, all tissues are included.
@@ -419,6 +467,14 @@ paths:
           type: string
           example: ENSRNOG00000016560
         x-valueType: https://identifiers.org/ensembl
+      - name: genome
+        in: query
+        description: Genome build (rn6 or rn7)
+        required: true
+        schema:
+          type: string
+          enum: [rn6, rn7]
+          example: rn6
       responses:
         '200':
           description: Success
@@ -476,6 +532,14 @@ paths:
           type: string
           example: ENSRNOG00000021424
         x-valueType: https://identifiers.org/ensembl
+      - name: genome
+        in: query
+        description: Genome build (rn6 or rn7)
+        required: true
+        schema:
+          type: string
+          enum: [rn6, rn7]
+          example: rn6
       responses:
         '200':
           description: Success
@@ -521,6 +585,15 @@ paths:
       tags:
       - reference
       description: Fetch metadata for all tissues
+      parameters:
+      - name: genome
+        in: query
+        description: Genome build (rn6 or rn7)
+        required: true
+        schema:
+          type: string
+          enum: [rn6, rn7]
+          example: rn6
       responses:
         '200':
           description: Success
@@ -586,6 +659,14 @@ paths:
         schema:
           type: boolean
           example: true
+      - name: genome
+        in: query
+        description: Genome build (rn6 or rn7)
+        required: true
+        schema:
+          type: string
+          enum: [rn6, rn7]
+          example: rn6
       - name: tissueSiteDetailId
         in: query
         description: Tissue ID
@@ -634,6 +715,14 @@ paths:
       - reference
       description: Fetch information for one or more variants
       parameters:
+      - name: genome
+        in: query
+        description: Genome build (rn6 or rn7)
+        required: true
+        schema:
+          type: string
+          enum: [rn6, rn7]
+          example: rn6
       - name: variantId
         in: query
         description: Variant ID
