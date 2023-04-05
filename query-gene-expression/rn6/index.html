@@ -41,10 +41,10 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link" href="/">Home</a>
+                        <a class="nav-link" href="/rn6/">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/download/">Download</a>
+                        <a class="nav-link" href="/download/rn6/">Download</a>
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle active" href="#" id="visualizeDropdown" role="button"
@@ -53,26 +53,32 @@
                             <li>
                                 <h6 class="dropdown-header">Expression</h6>
                             </li>
-                            <li><a class="dropdown-item" href="/top-expressed/">Top expressed genes</a></li>
-                            <li><a class="dropdown-item" href="/query-gene-expression/">Query gene expression</a></li>
+                            <li><a class="dropdown-item" href="/top-expressed/rn6/">Top expressed genes</a></li>
+                            <li><a class="dropdown-item" href="/query-gene-expression/rn6/">Query gene expression</a></li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
                             <li>
                                 <h6 class="dropdown-header">eQTLs</h6>
                             </li>
-                            <li><a class="dropdown-item" href="/eqtl-dashboard/">eQTL violin plots</a></li>
-                            <li><a class="dropdown-item" href="/gene-eqtl-visualizer/">Gene eQTL Visualizer</a></li>
+                            <li><a class="dropdown-item" href="/eqtl-dashboard/rn6/">eQTL violin plots</a></li>
+                            <li><a class="dropdown-item" href="/gene-eqtl-visualizer/rn6/">Gene eQTL Visualizer</a></li>
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="aboutDropdown" role="button"
                             data-bs-toggle="dropdown" aria-expanded="false">About</a>
                         <ul class="dropdown-menu" aria-labelledby="aboutDropdown">
-                            <li><a class="dropdown-item" href="/about/">Pipeline &amp; Data</a></li>
-                            <li><a class="dropdown-item" href="/about/samples/">Samples</a></li>
+                            <li><a class="dropdown-item" href="/about/rn6/">Pipeline &amp; Data</a></li>
+                            <li><a class="dropdown-item" href="/about/samples/rn6/">Samples</a></li>
                             <li><a class="dropdown-item" href="/about/api/">API</a></li>
                         </ul>
+                    </li>
+                    <li class="nav-item">
+                        <div class="btn-group mx-md-4" role="group" aria-label="rn6/rn7 toggle">
+                            <button type="button" class="btn btn-primary" disabled>rn6</button>
+                            <a href="/query-gene-expression/" class="btn btn-outline-secondary">rn7</a>
+                        </div>
                     </li>
                 </ul>
                 <form class="d-flex col-md-4 mb-0" id="gene-search">
@@ -90,12 +96,12 @@
 
     <div class="container">
 
-        <div class="row justify-content-md-center">
+        <!-- <div class="row justify-content-md-center">
             <div class="alert alert-warning col-md-auto" role="alert">
                 Showing data for <strong>rn6</strong> (Rnor_6.0).
                 <a href="/query-gene-expression/" style="color: inherit;">Switch to rn7</a>
             </div>
-        </div>
+        </div> -->
 
         <div>
             <h3>Heatmap for a query gene list</h3>

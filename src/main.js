@@ -1,12 +1,15 @@
 $(document).ready(function() { 
+    const rn = window.genome; // Defined in the HTML pages
+
     $('#gene-search').submit(function (event) {
-        window.location.href = "/gene#" + $('#search-input').val();
+        var base = rn == "rn6" ? "/gene/rn6#" : "/gene#";
+        window.location.href = base + $('#search-input').val();
         return false; // prevents form submission from overriding redirect
     });
 
     $.ajax({
         dataType: "json",
-        url: "/data/rn7.autocomplete.json"
+        url: `/data/${rn}.autocomplete.json`
     }).done(function (data) {
         $("#search-input").autocomplete({
             // source: data,
