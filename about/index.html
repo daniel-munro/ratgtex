@@ -162,8 +162,6 @@
 
         <h5>All significant cis-eQTL gene-SNP pairs <em style="color: gray;">({tissue}.{genome}.cis_qtl_signif.txt.gz)</em></h5>
         <p>A compressed tab-separated table.</p>
-        <!-- <dt>phenotype_id</dt><dd>Ensembl gene ID</dd>
-        <dt>variant_id</dt><dd>SNP ID (e.g. chr1:669562)</dd> -->
         <ul>
             <li><strong>gene_id</strong> Ensembl gene ID</li>
             <li><strong>variant_id</strong> SNP ID (e.g. chr1:669562)</li>
@@ -243,6 +241,21 @@
             <li><strong>end</strong> One higher than the start value. Thus, this would be the typical coordinate to represent the TSS.</li>
             <li><strong>ID</strong> Splice junction ID (chromosome:start:end:cluster_id:gene_id)</li>
             <li><strong>{sample}</strong> Each additional column is labeled with the sample or rat ID and contains inverse-quantile normalized values.</li>
+        </ul>
+
+        <h5>All significant cis-sQTL phenotype-SNP pairs <em style="color: gray;">({tissue}.{genome}.splice.cis_qtl_signif.txt.gz)</em></h5>
+        <p>A compressed tab-separated table.</p>
+        <ul>
+            <li><strong>phenotype_id</strong> Splice junction ID (chromosome:start:end:cluster_id:gene_id).</li>
+            <li><strong>variant_id</strong> SNP ID (e.g. chr1:669562)</li>
+            <li><strong>tss_distance</strong> SNP position - TSS position, oriented on the gene's strand</li>
+            <li><strong>af</strong> Alternative allele frequency</li>
+            <li><strong>ma_samples</strong> Number of samples with minor allele</li>
+            <li><strong>ma_count</strong> Total number of minor alleles (i.e. no. het. + 2 * no. hom. alt.)</li>
+            <li><strong>pval_nominal</strong> Nominal p-value</li>
+            <li><strong>slope</strong> Coefficient for the SNP genotype in the linear model</li>
+            <li><strong>slope_se</strong> Standard error of the slope</li>
+            <li><strong>pval_nominal_threshold</strong> Gene-tissue-specific nominal p-value significance threshold as determined by permutations and transcriptome-wide FDR</li>
         </ul>
 
         <h5>Strong associations from trans-sQTL mapping <em style="color: gray;">({tissue}.{genome}.splice.trans_qtl_pairs.txt.gz)</em></h5>
