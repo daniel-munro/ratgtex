@@ -169,7 +169,7 @@
             $('#gene-title').text(`Gene: ${info.geneSymbol}`);
             var desc = `${info.description}, ${info.geneId}, chr${info.chromosome}:${info.start} - ${info.end} (${info.strand})`;
             $('#gene-description').text(desc);
-            $('#gev-link').attr('href', '/gene-eqtl-visualizer/#' + info.geneId);
+            $('#gev-link').attr('href', '/gene-eqtl-visualizer/rn6/#' + info.geneId);
             info.statusInTissue.forEach(function(tissue) {
                 var status = `<p><strong>${tissue.tissueSiteDetailId}:</strong>`;
                 if (tissue.expressed) {
