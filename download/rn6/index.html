@@ -122,7 +122,7 @@
             <em style="color: gray;">Used for heatmap visualizations</em>
         </p>
 
-        <strong>log2(count+1)</strong>
+        <strong>log2(readcount+1)</strong>
         <em style="color: gray;">Used to compute allelic fold change</em>
         <p>
             <a href="/data/expr/Adipose.rn6.expr.log2.bed.gz">Adipose</a> |
@@ -173,6 +173,8 @@
             <a href="/data/expr/PL2.rn6.expr.iqn.bed.gz">PL2</a>
         </p>
 
+        <br>
+
         <h2>Genotypes</h2>
 
         <p>
@@ -194,6 +196,8 @@
             </ul>
         </p>
         
+        <br>
+
         <h2>Other info</h2>
 
         <p><a href="/data/ref/rn6.RatGTEx_rats.tsv">Rat info (all tissues)</a></p>
@@ -257,6 +261,8 @@
             <a href="/data/covar/PL2.rn6.covar.txt">PL2</a>
         </p>
 
+        <br>
+
         <h2>eQTLs</h2>
 
         <p>
@@ -306,6 +312,8 @@
             <a href="/data/eqtl/PL.rn6.trans_qtl_pairs.txt.gz">PL</a> |
             <a href="/data/eqtl/PL2.rn6.trans_qtl_pairs.txt.gz">PL2</a>
         </p>
+
+        <br>
 
         <h2>sQTLs</h2>
 
@@ -390,12 +398,16 @@
             <a href="/data/splice/PL2.rn6.splice.trans_qtl_pairs.txt.gz">PL2</a>
         </p>
 
+        <br>
+
         <h2>API</h2>
 
         <p>
             Different types of data used for visualizations, including expression, eQTLs, and reference annotations, can
             be accessed via API. See the <a href="/about/api/">API documentation</a> for details.
         </p>
+
+        <br>
 
         <h2>Raw data</h2>
 
@@ -406,73 +418,13 @@
             <li>RNA-Seq reads for Liver are available at GEO accession <a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE200453">GSE200453</a>.</li>
         </ul>
 
-        <h2 id="studies">Original study data</h2>
+        <br>
+
+        <h2 id="studies"><a href="/download/study-data/">Original study data</a></h2>
 
         <p>
-            The processed data above may differ from the results reported in each original study for a couple reasons:
-            <ol>
-                <li>
-                    Different processing decisions could be made for each study, while the data in this portal are processed uniformly to facilitate comparison across tissues.
-                </li>
-                <li>
-                    The published study results are immutable, while new versions of data in this portal may be released, for example to improve quality or to use updated reference genome and annotations.
-                </li>
-            </ol>
-            Therefore, we also provide data files here corresponding directly to the results in each paper.
+            Archives of the data files used in the originating studies.
         </p>
-
-        <h5>IL, LHb, NAcc, OFC, PL</h5>
-        <p>
-            <a href="https://academic.oup.com/nar/article/50/19/10882/6764417">The regulatory landscape of multiple brain regions in outbred heterogeneous stock rats</a>
-        </p>
-        <p>The Rnor_6.0 genome was used for all data here.</p>
-        <ul>
-            <li><a href="/data/studies/IL_LHb_NAcc_OFC_PL/P50.rnaseq.88.unpruned.vcf.gz">P50.rnaseq.88.unpruned.vcf.gz</li>
-            <li><a href="/data/studies/IL_LHb_NAcc_OFC_PL/metadata_p50_hao_chen_2014.csv">metadata_p50_hao_chen_2014.csv</a></li>
-            <li><a href="/data/studies/IL_LHb_NAcc_OFC_PL/ensembl-gene_raw-counts.txt">ensembl-gene_raw-counts.txt</a></li>
-            <li><a href="/data/studies/IL_LHb_NAcc_OFC_PL/ensembl-gene_raw-tpm.txt">ensembl-gene_raw-tpm.txt</a></li>
-            <li><a href="/data/studies/IL_LHb_NAcc_OFC_PL/ensembl-gene_log2_IL.bed.gz">ensembl-gene_log2_IL.bed.gz</a></li>
-            <li><a href="/data/studies/IL_LHb_NAcc_OFC_PL/ensembl-gene_log2_LHb.bed.gz">ensembl-gene_log2_LHb.bed.gz</a></li>
-            <li><a href="/data/studies/IL_LHb_NAcc_OFC_PL/ensembl-gene_log2_NAcc.bed.gz">ensembl-gene_log2_NAcc.bed.gz</a></li>
-            <li><a href="/data/studies/IL_LHb_NAcc_OFC_PL/ensembl-gene_log2_OFC.bed.gz">ensembl-gene_log2_OFC.bed.gz</a></li>
-            <li><a href="/data/studies/IL_LHb_NAcc_OFC_PL/ensembl-gene_log2_PL.bed.gz">ensembl-gene_log2_PL.bed.gz</a></li>
-            <li><a href="/data/studies/IL_LHb_NAcc_OFC_PL/ensembl-gene_inv-quant_IL.bed.gz">ensembl-gene_inv-quant_IL.bed.gz</a></li>
-            <li><a href="/data/studies/IL_LHb_NAcc_OFC_PL/ensembl-gene_inv-quant_LHb.bed.gz">ensembl-gene_inv-quant_LHb.bed.gz</a></li>
-            <li><a href="/data/studies/IL_LHb_NAcc_OFC_PL/ensembl-gene_inv-quant_NAcc.bed.gz">ensembl-gene_inv-quant_NAcc.bed.gz</a></li>
-            <li><a href="/data/studies/IL_LHb_NAcc_OFC_PL/ensembl-gene_inv-quant_OFC.bed.gz">ensembl-gene_inv-quant_OFC.bed.gz</a></li>
-            <li><a href="/data/studies/IL_LHb_NAcc_OFC_PL/ensembl-gene_inv-quant_PL.bed.gz">ensembl-gene_inv-quant_PL.bed.gz</a></li>
-            <li><a href="/data/studies/IL_LHb_NAcc_OFC_PL/top_assoc.txt">top_assoc.txt</a></li>
-            <li><a href="/data/studies/IL_LHb_NAcc_OFC_PL/eqtls_indep.txt">eqtls_indep.txt</a></li>
-            <li><a href="/data/studies/IL_LHb_NAcc_OFC_PL/ASE_aFC.txt">ASE_aFC.txt</a></li>
-            <li><a href="/data/studies/IL_LHb_NAcc_OFC_PL/top_assoc_splice.txt">top_assoc_splice.txt</a></li>
-            <li><a href="/data/studies/IL_LHb_NAcc_OFC_PL/sqtls_indep.txt">sqtls_indep.txt</a></li>
-        </ul>
-
-        <h5>Eye</h5>
-        <p>
-            <a href="https://www.frontiersin.org/articles/10.3389/fgene.2022.1029058/full">Genome-wide association study finds multiple loci associated with intraocular pressure in HS rats</a>
-        </p>
-        <p>The Rnor_6.0 genome was used for all data here.</p>
-        <ul>
-            <li><a href="/data/studies/Eye/eyes.vcf.gz">eyes.vcf.gz</a></li>
-            <li><a href="/data/studies/Eye/Eye.expr.log2.bed.gz">Eye.expr.log2.bed.gz</a></li>
-            <li><a href="/data/studies/Eye/Eye.expr.tpm.bed.gz">Eye.expr.tpm.bed.gz</a></li>
-            <li><a href="/data/studies/Eye/Eye.expr.iqn.bed.gz">Eye.expr.iqn.bed.gz</a></li>
-            <li><a href="/data/studies/Eye/Eye.expr.iqn.filtered.bed.gz">Eye.expr.iqn.filtered.bed.gz</a></li>
-            <li><a href="/data/studies/Eye/covar.txt">covar.txt</a></li>
-            <li><a href="/data/studies/Eye/Eye.cis_qtl_signif.txt.gz">Eye.cis_qtl_signif.txt.gz</a></li>
-            <li><a href="/data/studies/Eye/Eye.cis_qtl.txt.gz">Eye.cis_qtl.txt.gz</a></li>
-            <li><a href="/data/studies/Eye/Eye.cis_independent_qtl.txt.gz">Eye.cis_independent_qtl.txt.gz</a></li>
-            <li><a href="/data/studies/Eye/Eye.top_assoc.txt">Eye.top_assoc.txt</a></li>
-            <li><a href="/data/studies/Eye/Eye.top_eQTLs.txt">Eye.top_eQTLs.txt</a></li>
-            <li><a href="/data/studies/Eye/Eye.aFC.txt">Eye.aFC.txt</a></li>
-        </ul>
-
-        <h5>Adipose, Liver</h5>
-        <p>
-            <a href="https://diabetesjournals.org/diabetes/article-abstract/72/1/135/147723/Genetic-Mapping-of-Multiple-Traits-Identifies">Genetic mapping of multiple traits identifies novel genes for adiposity, lipids, and insulin secretory capacity in outbred rats</a></li>
-        </p>
-        <p>Phenotype and genotype data have been deposited in <a href="https://rgd.mcw.edu/">RGD</a> (RGD:153344611).</p>
 
     </div>
 </body>
