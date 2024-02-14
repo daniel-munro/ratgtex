@@ -15,7 +15,7 @@
     "rollup-plugin-uglify": "^2.0.1"
   },
   "dependencies": {
-    "d3": "^5.0.0",
+    "d3": "^7.8.5",
     "uglify-es": "^3.3.9"
   }
 }
