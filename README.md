@@ -1,5 +1,5 @@
 
-# ![RatGTEx](/images/RatGTExPortal.png)
+# ![RatGTEx](/assets/images/RatGTExPortal.png)
 
 This repository contains code for the [RatGTEx web portal](https://ratgtex.org), which provides gene expression and eQTL data for different rat tissues.
 
@@ -7,23 +7,23 @@ There are also repositories for the RatGTEx [data pipeline](https://github.com/d
 
 ---
 
-### Using Rollup to bundle the applications
-Most of our tools are written in ES6, with the exception of the GTEx Gene-eQTL Visualizer, and we recommend using a module bundler such as Rollup to recompile code if needed.
+### Using Jekyll to build the site
+
+This site uses [Jekyll](https://jekyllrb.com/) to build the pages for each genome version.
+
+### Using Rollup to bundle the visualization scripts
 
 #### Rollup installation
-To install Rollup and required libraries, you may run ```npm install``` in the repo's root directory on your computer. This will install the libraries under a subdirectory: node_modules.
+To install Rollup and required libraries, you may run `npm install` in this directory. This will install the libraries under a subdirectory: `node_modules`.
 
 #### Rollup configuration
-The rollup configuration files for each tool is located in the directory [rollup](/rollup). To recompile a tool (e.g. GTEx Expression Map): run the following command in your local repo's root directory:
+The rollup configuration files for each visualization is located in the directory [src/rollup](/src/rollup). To recompile the code for a particular visualization, run the following command in this directory:
 
-```rollup -c rollup/rollup.expression-map.config.js```
+```shell
+rollup -c src/rollup/rollup.expression-map.config.js
+```
 
-This will recompile and generate a new bundled tool code in the directory `build/js/`.
-
-To minify the bundled code, first set the environment variable NODE_ENV to "prod", for example in a Bash terminal, the command would be:
-```export NODE_ENV="prod"```
-
-Then run rollup to recompile the code. All the demos are using the minified code of the tools.
+This will recompile and generate a new bundled visualization script in the directory `assets/js/`.
 
 ### Dependencies
 RatGTEx Visualizations is distributed, in part, under and subject to the provisions of licenses for:
@@ -35,4 +35,4 @@ jQuery (https://jquery.com/), Copyright (c) 2018 The jQuery Foundation. All righ
 Licensed under the MIT license (https://jquery.org/license/).
 
 ### Acknowledgements
-Much of this code is adapted from the [GTEx portal visualizations](https://github.com/broadinstitute/gtex-viz).
+Visualization code was adapted from the [GTEx portal visualizations](https://github.com/broadinstitute/gtex-viz).

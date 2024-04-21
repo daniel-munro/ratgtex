@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="/assets/css/jquery-ui.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css"
+        integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Libre+Franklin:300,400">
+    <link rel="stylesheet" type="text/css"
+        href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/css/select2.min.css">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
+    <link rel="stylesheet" type="text/css" href="/assets/css/bubbleMap.css">
+    <link rel="stylesheet" type="text/css" href="/assets/css/halfMap.css">
+    <link rel="stylesheet" type="text/css" href="/assets/css/violin.css">
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/assets/images/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/images/favicon-16x16.png">
+
+    <title>Gene eQTL Visualizer | RatGTEx</title>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <!-- <a class="navbar-brand" href="/">RatGTEx Portal</a> -->
+            <a class="navbar-brand" href="/{{ page.suffix }}">
+                <img src="/assets/images/RatGTExPortal.png" width="200px" alt="RatGTEx Portal">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/{{ page.suffix }}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/download/{{ page.suffix }}">Download</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle active" href="#" id="visualizeDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">Visualize</a>
+                        <ul class="dropdown-menu" aria-labelledby="visualizeDropdown">
+                            <li>
+                                <h6 class="dropdown-header">Expression</h6>
+                            </li>
+                            <li><a class="dropdown-item" href="/top-expressed/{{ page.suffix }}">Top expressed genes</a></li>
+                            <li><a class="dropdown-item" href="/query-gene-expression/{{ page.suffix }}">Query gene expression</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li>
+                                <h6 class="dropdown-header">eQTLs</h6>
+                            </li>
+                            <li><a class="dropdown-item" href="/eqtl-dashboard/{{ page.suffix }}">eQTL violin plots</a></li>
+                            <li><a class="dropdown-item" href="/gene-eqtl-visualizer/{{ page.suffix }}">Gene eQTL Visualizer</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="aboutDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">About</a>
+                        <ul class="dropdown-menu" aria-labelledby="aboutDropdown">
+                            <li><a class="dropdown-item" href="/about/{{ page.suffix }}">Pipeline &amp; Data</a></li>
+                            <li><a class="dropdown-item" href="/about/samples/{{ page.suffix }}">Samples</a></li>
+                            <li><a class="dropdown-item" href="/about/api/">API</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <div class="btn-group mx-md-4" role="group" aria-label="rn6/rn7 toggle">
+                            {% if page.genome == 'rn6' %}
+                                <button type="button" class="btn btn-primary" disabled>rn6</button>
+                                <a href="/gene-eqtl-visualizer/" class="btn btn-outline-secondary">rn7</a>
+                            {% else %}
+                                <a href="/gene-eqtl-visualizer/rn6/" class="btn btn-outline-secondary">rn6</a>
+                                <button type="button" class="btn btn-primary" disabled>rn7</button>
+                            {% endif %}
+                        </div>
+                    </li>
+                </ul>
+                <form class="d-flex col-md-4 mb-0" id="gene-search">
+                    <div class="input-group">
+                        <input class="form-control basicAutoComplete" id="search-input" type="text" autocomplete="off"
+                        placeholder="{{ page.genome }} gene search (symbol or Ensembl ID)">
+                        <button class="btn btn-outline-secondary" type="submit">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+
+        <h3>Gene eQTL Visualizer</h3>
+        <hr>
+        <div class="row">
+            <div class="col-xs-12 col-sm-3">
+                <form id="geneEqtlForm" style="padding: 5px;">
+                    <div class="form-group">
+                        <!-- form-group for optimum spacing between the label and its associated form input element -->
+                        <input id="gene" type="text" class="form-control" placeholder="Enter an Ensembl ID or gene name"
+                            style="font-size:12px;" spellcheck="false"></input>
+                        <small>e.g. {{ page.gene_eqtl_visualizer_examples }}</small>
+                    </div>
+                </form>
+            </div>
+            <div id="bmap-info-box" class="col-xs-12 col-sm-9">
+                <div><i id="spinner" class="fas fa-sync fa-spin" style="display:none; "></i></div>
+                <div id="bmap-gene-info">Browse local variants associated with expression of a gene. <br />
+                </div>
+                <div id="bmap-filter-info"></div>
+            </div>
+        </div>
+        <div id="bmap-dashboard" class="row" style="border-bottom: 2px solid #e2e2e2; border-top: 1px solid #e2e2e2;">
+        </div>
+        <div id="bmap-root">
+            <div id="messageBox" style="color: #CB181D;"></div> <!-- for displaying message of input errors-->
+            <div id="bmap"></div>
+            <div id="ldMap"></div>
+        </div>
+
+        <!-- bbMap tissue modal -->
+        <div id="bmap-modal" class="modal fade" aria-hidden='true' role='dialog'>
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <span class="modal-title" id="myModalLabel">Gene eQTL Visualizer Tissue Filter</span>
+                        <i class="close fa fa-window-close" data-dismiss="modal" aria-label="Close"></i>
+
+                    </div>
+                    <div class="modal-body"></div>
+                    <div class="modal-footer"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <!-- <script
+      src="https://code.jquery.com/jquery-3.2.1.min.js"
+      integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+      crossorigin="anonymous">
+    </script> -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/js/select2.full.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+        integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/file-saver@1.3.3/FileSaver.min.js"></script>
+    <script>
+        window.genome = "{{ page.genome}}";
+     </script>
+     <script src="/assets/js/gev.bundle.min.js"></script>
+    <script src="/assets/js/main.js"></script>
+    <script>
+        $(document).ready(function () {
+
+            let svgConfig = {
+                id: 'bmap',
+                width: window.innerWidth * 0.9,
+                height: 650,
+                marginTop: 40,
+                marginRight: 20,
+                marginBottom: 20,
+                marginLeft: 100,
+                legendHeight: 100, // assuming the color legends appear at the top of the focus panel
+
+                miniPanelHeight: 100,
+
+                focusPanelLabels: {
+                    column: {
+                        show: true,
+                        height: 100,
+                        angle: 90,
+                        adjust: 20,
+                        location: 'bottom',
+                        textAlign: 'left'
+                    },
+                    row: {
+                        show: true,
+                        width: 100,
+                        angle: 0,
+                        adjust: 30,
+                        location: 'left',
+                        textAlign: 'right'
+                    }
+                },
+
+                ldId: "ldMap",
+                ldCutoff: 0.0,
+                ldColorScheme: "Greys",
+                ldLegendSpace: 50,
+
+                colorScheme: "RdBu",
+                colorScaleDomain: [-1.2, 1.2],
+
+                useLog: false,
+                logBase: undefined,
+
+                // div IDs
+                divSpinner: "spinner",
+                divDashboard: "bmap-dashboard",
+                divInfo: "bmap-filter-info",
+                divGeneInfo: "bmap-gene-info",
+                divModal: 'bmap-modal'
+            };
+
+            $('#gene').keypress(function (e) {
+                if (e.keyCode == 13) {
+                    // bind the enter key
+                    e.preventDefault(); // Note: prevent the default behavior of the enter key, which is refreshing the page
+                    const geneId = $('#gene').val();
+                    reset(svgConfig.id);
+                    reset(svgConfig.ldId);
+                    $('#spinner').show();
+                    window.location.hash = '#' + geneId;
+                    GeneEqtlVisualizer.render(svgConfig, geneId);
+                }
+            });
+
+            var geneId = window.location.hash.slice(1);
+            if (geneId.length > 0) {
+                GeneEqtlVisualizer.render(svgConfig, geneId);
+            }
+        });
+        function reset(id) {
+            $(`#${id}`).empty();
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="/assets/css/jquery-ui.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css"
+        integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css"
+        crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="/assets/css/violin.css">
+    <link rel="stylesheet" type="text/css" href="/assets/css/eqtlDashboard.css">
+    <link rel="stylesheet" type="text/css" href="/assets/css/tissueGroup.css">
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/assets/images/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/images/favicon-16x16.png">
+
+    <style>
+        .gene-expr-vplot-option-label {
+            margin-left: 10px;
+            margin-right: 5px;
+        }
+    </style>
+
+    <title>Gene Info | RatGTEx</title>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <!-- <a class="navbar-brand" href="/">RatGTEx Portal</a> -->
+            <a class="navbar-brand" href="/{{ page.suffix }}">
+                <img src="/assets/images/RatGTExPortal.png" width="200px" alt="RatGTEx Portal">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/{{ page.suffix }}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/download/{{ page.suffix }}">Download</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="visualizeDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">Visualize</a>
+                        <ul class="dropdown-menu" aria-labelledby="visualizeDropdown">
+                            <li>
+                                <h6 class="dropdown-header">Expression</h6>
+                            </li>
+                            <li><a class="dropdown-item" href="/top-expressed/{{ page.suffix }}">Top expressed genes</a></li>
+                            <li><a class="dropdown-item" href="/query-gene-expression/{{ page.suffix }}">Query gene expression</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li>
+                                <h6 class="dropdown-header">eQTLs</h6>
+                            </li>
+                            <li><a class="dropdown-item" href="/eqtl-dashboard/{{ page.suffix }}">eQTL violin plots</a></li>
+                            <li><a class="dropdown-item" href="/gene-eqtl-visualizer/{{ page.suffix }}">Gene eQTL Visualizer</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="aboutDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">About</a>
+                        <ul class="dropdown-menu" aria-labelledby="aboutDropdown">
+                            <li><a class="dropdown-item" href="/about/{{ page.suffix }}">Pipeline &amp; Data</a></li>
+                            <li><a class="dropdown-item" href="/about/samples/{{ page.suffix }}">Samples</a></li>
+                            <li><a class="dropdown-item" href="/about/api/">API</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <div class="btn-group mx-md-4" role="group" aria-label="rn6/rn7 toggle">
+                            {% if page.genome == 'rn6' %}
+                                <button type="button" class="btn btn-primary" disabled>rn6</button>
+                                <a href="/gene/" class="btn btn-outline-secondary">rn7</a>
+                            {% else %}
+                                <a href="/gene/rn6/" class="btn btn-outline-secondary">rn6</a>
+                                <button type="button" class="btn btn-primary" disabled>rn7</button>
+                            {% endif %}
+                        </div>
+                    </li>
+                </ul>
+                <form class="d-flex col-md-4 mb-0" id="gene-search">
+                    <div class="input-group">
+                        <input class="form-control basicAutoComplete" id="search-input" type="text" autocomplete="off"
+                        placeholder="{{ page.genome }} gene search (symbol or Ensembl ID)">
+                        <button class="btn btn-outline-secondary" type="submit">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h3 id="gene-not-found"></h3>
+    </div>
+
+    <div id="gene-info" class="container">
+
+        <h3 id="gene-title"></h3>
+        <p id="gene-description"></p>
+
+        <h5>Gene expression &amp; eQTL status per tissue</h5>
+        <span id="gene-status"></span>
+
+        <hr class="my-4">
+
+        <h5>Alternative splicing &amp; sQTL status per tissue</h5>
+        <span id="gene-status-splice"></span>
+
+        <hr class="my-4">
+
+        <h5>Expression per tissue</h5>
+        <p><em>If the gene is expressed in very few samples in a tissue, it may not be plotted below, even if it is labeled as "Expressed" in that tissue at the top of this page.</em></p>
+        <div id="gene-expr-vplot" style="max-width: 800px;"></div>
+
+        <hr class="my-4">
+
+        <p>
+            <a id="gev-link" href=""><button class="btn btn-primary">Visualize cis-eQTLs</button></a>
+        </p>
+
+        <hr class="my-4">
+
+        <h5>Significant cis-eQTLs in any tissue</h5>
+        <p><em>Conditionally independent. Top eSNP shown per eQTL, randomly chosen among the top eSNPs in case of
+                ties.</em></p>
+        <table id="eqtl-table"></table>
+
+        <hr class="my-4">
+
+        <h5>All significantly associated cis-window SNPs for the above genes</h5>
+        <table id="eqtl-all-table"></table>
+
+        <hr class="my-4">
+
+        <h5>Significant cis-sQTLs in any tissue</h5>
+        <p><em>Conditionally independent. Top sSNP shown per sQTL, randomly chosen among the top sSNPs in case of
+                ties.</em></p>
+        <table id="sqtl-table"></table>
+
+        <br>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/file-saver@1.3.3/FileSaver.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+        integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js" crossorigin="anonymous"></script>
+    <script>
+        window.genome = "{{ page.genome }}";
+     </script>
+    <script src="/assets/js/gene-expression-violin-plot.bundle.min.js"></script>
+    <script src="/assets/js/main.js"></script>
+
+    <script>
+        function loadGene(info) {
+            $('#gene-title').text(`Gene: ${info.geneSymbol}`);
+            var desc = `${info.description}, ${info.geneId}, chr${info.chromosome}:${info.start} - ${info.end} (${info.strand})`;
+            $('#gene-description').text(desc);
+            $('#gev-link').attr('href', '/gene-eqtl-visualizer/#' + info.geneId);
+            info.statusInTissue.forEach(function(tissue) {
+                var status = `<p><strong>${tissue.tissueSiteDetailId}:</strong>`;
+                if (tissue.expressed) {
+                    status += ' <span class="badge bg-primary">Expressed</span>';
+                    if (tissue.testedEqtl) {
+                        status += ' <span class="badge bg-info">Tested for cis-eQTLs</span>';
+                        if (tissue.eqtl) {
+                            status += ' <span class="badge bg-success">At least one cis-eQTL</span>';
+                        } else {
+                            status += ' <span class="badge bg-secondary">No significant cis-eQTLs</span>';
+                        }
+                    } else {
+                        status += ' <span class="badge bg-secondary">Not tested for cis-eQTLs</span>';
+                    }
+                } else {
+                    status += ' <span class="badge bg-secondary">Not expressed</span>';
+                }
+                status += `</p>`;
+                $('#gene-status').append(status);
+            });
+            info.statusInTissue.forEach(function(tissue) {
+                var status = `<p><strong>${tissue.tissueSiteDetailId}:</strong>`;
+                if (tissue.altSplice) {
+                    status += ' <span class="badge bg-primary">Alt. spliced</span>';
+                    if (tissue.testedSqtl) {
+                        status += ' <span class="badge bg-info">Tested for cis-sQTLs</span>';
+                        if (tissue.sqtl) {
+                            status += ' <span class="badge bg-success">At least one cis-sQTL</span>';
+                        } else {
+                            status += ' <span class="badge bg-secondary">No significant cis-sQTLs</span>';
+                        }
+                    } else {
+                        status += ' <span class="badge bg-secondary">Not tested for cis-sQTLs</span>';
+                    }
+                } else {
+                    status += ' <span class="badge bg-secondary">No alt. splicing detected</span>';
+                }
+                status += `</p>`;
+                $('#gene-status-splice').append(status);
+            });
+
+            GeneExpressionViolinPlot.launch('gene-expr-vplot', 'gene-expr-vplot-tooltip', info.geneId);
+
+            $.ajax({
+                dataType: 'json',
+                url: `/api/v2/eqtl?genome=${window.genome}&geneId=${info.geneId}`,
+                success: function (data) {
+                    $('#eqtl-table').append('<thead><tr><th>Tissue</th><th>Representative Variant ID</th><th>Ref</th><th>Alt</th><th>Adjusted P-Value</th><th>log<sub>2</sub>aFC</th></tr></thead><tbody>');
+                    var cols = ['tissueSiteDetailId', 'variantId', 'ref', 'alt', 'pval_beta', 'log2_aFC'];
+                    $(data['eqtl']).each(function (i, rowData) {
+                        var row = $('<tr></tr>');
+                        $(cols).each(function (j, col) {
+                            row.append($(`<td>${rowData[col]}</td>`));
+                        });
+                        $('#eqtl-table').append(row);
+                    });
+                    $('#eqtl-table').append('</tbody>');
+                    $('#eqtl-table').DataTable({
+                        order: [[4, 'asc']] // sort by p-value
+                    });
+                }
+            });
+
+            $.ajax({
+                dataType: 'json',
+                url: `/api/v2/singleTissueEqtl?genome=${window.genome}&geneId=${info.geneId}`,
+                success: function (data) {
+                    // $('#eqtl-all-table').append('<thead><tr><th>Gene ID</th><th>Gene Symbol</th><th>Variant ID</th><th>P-Value</th><th>NES</th><th>Tissue</th></tr></thead><tbody>');
+                    // var cols = ['geneId', 'geneSymbol', 'variantId', 'pValue', 'nes', 'tissueSiteDetailId'];
+                    $('#eqtl-all-table').append('<thead><tr><th>Tissue</th><th>Variant ID</th><th>P-Value</th><th>NES</th></tr></thead><tbody>');
+                    var cols = ['tissueSiteDetailId', 'variantId', 'pValue', 'nes'];
+                    $(data['singleTissueEqtl']).each(function (i, rowData) {
+                        var row = $('<tr></tr>');
+                        $(cols).each(function (j, col) {
+                            row.append($(`<td>${rowData[col]}</td>`));
+                        });
+                        $('#eqtl-all-table').append(row);
+                    });
+                    $('#eqtl-all-table').append('</tbody>');
+                    $('#eqtl-all-table').DataTable({
+                        order: [[2, 'asc']] // sort by p-value
+                    });
+                }
+            });
+
+            $.ajax({
+                dataType: 'json',
+                url: `/api/v2/sqtl?genome=${window.genome}&geneId=${info.geneId}`,
+                success: function (data) {
+                    $('#sqtl-table').append('<thead><tr><th>Tissue</th><th>Splice Junction ID</th><th>Representative Variant ID</th><th>Ref</th><th>Alt</th><th>Adjusted P-Value</th></tr></thead><tbody>');
+                    var cols = ['tissueSiteDetailId', 'phenotypeId', 'variantId', 'ref', 'alt', 'pval_beta'];
+                    $(data['sqtl']).each(function (i, rowData) {
+                        var row = $('<tr></tr>');
+                        $(cols).each(function (j, col) {
+                            row.append($(`<td>${rowData[col]}</td>`));
+                        });
+                        $('#sqtl-table').append(row);
+                    });
+                    $('#sqtl-table').append('</tbody>');
+                    $('#sqtl-table').DataTable({
+                        order: [[5, 'asc']] // sort by p-value
+                    });
+                }
+            });
+
+        }
+
+        $(document).ready(function () {
+            // var path = window.location.pathname.split('/');
+            // var gene = path[path.length - 1];
+            var gene = window.location.hash.slice(1);  // slice removes hash
+            // var field = gene.substring(0, 7) == 'ENSRNOG' ? 'geneId' : 'geneSymbol';
+            $.ajax({
+                dataType: 'json',
+                // url: `/api/v1/gene?${field}=${gene}`,
+                url: `/api/v2/gene?genome=${window.genome}&geneId=${gene}`,
+                success: function (data) {
+                    if (data.gene.length == 0) {
+                        $('#gene-not-found').text(`Gene not found: ${gene}`);
+                        $('#gene-info').hide();
+                    } else {
+                        loadGene(data.gene[0]);
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
