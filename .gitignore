@@ -3,3 +3,6 @@
 data
 deploy.sh
 api/__pycache__
+_site
+.sass-cache
+.jekyll-metadata

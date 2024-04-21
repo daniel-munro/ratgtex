@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="/assets/css/jquery-ui.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css"
+        integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/assets/images/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/images/favicon-16x16.png">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+        integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
+        crossorigin="anonymous"></script>
+    <script>
+        window.genome = "{{ page.genome }}";
+    </script>
+    <script src="/assets/js/main.js"></script>
+
+
+    <title>Download | RatGTEx</title>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <!-- <a class="navbar-brand" href="/">RatGTEx Portal</a> -->
+            <a class="navbar-brand" href="/{{ page.suffix }}">
+                <img src="/assets/images/RatGTExPortal.png" width="200px" alt="RatGTEx Portal">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/{{ page.suffix }}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="/download/{{ page.suffix }}">Download</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="visualizeDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">Visualize</a>
+                        <ul class="dropdown-menu" aria-labelledby="visualizeDropdown">
+                            <li>
+                                <h6 class="dropdown-header">Expression</h6>
+                            </li>
+                            <li><a class="dropdown-item" href="/top-expressed/{{ page.suffix }}">Top expressed genes</a></li>
+                            <li><a class="dropdown-item" href="/query-gene-expression/{{ page.suffix }}">Query gene expression</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li>
+                                <h6 class="dropdown-header">eQTLs</h6>
+                            </li>
+                            <li><a class="dropdown-item" href="/eqtl-dashboard/{{ page.suffix }}">eQTL violin plots</a></li>
+                            <li><a class="dropdown-item" href="/gene-eqtl-visualizer/{{ page.suffix }}">Gene eQTL Visualizer</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="aboutDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">About</a>
+                        <ul class="dropdown-menu" aria-labelledby="aboutDropdown">
+                            <li><a class="dropdown-item" href="/about/{{ page.suffix }}">Pipeline &amp; Data</a></li>
+                            <li><a class="dropdown-item" href="/about/samples/{{ page.suffix }}">Samples</a></li>
+                            <li><a class="dropdown-item" href="/about/api/">API</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <div class="btn-group mx-md-4" role="group" aria-label="rn6/rn7 toggle">
+                            {% if page.genome == 'rn6' %}
+                                <button type="button" class="btn btn-primary" disabled>rn6</button>
+                                <a href="/download/" class="btn btn-outline-secondary">rn7</a>
+                            {% else %}
+                                <a href="/download/rn6/" class="btn btn-outline-secondary">rn6</a>
+                                <button type="button" class="btn btn-primary" disabled>rn7</button>
+                            {% endif %}
+                        </div>
+                    </li>
+                </ul>
+                <form class="d-flex col-md-4 mb-0" id="gene-search">
+                    <div class="input-group">
+                        <input class="form-control basicAutoComplete" id="search-input" type="text" autocomplete="off"
+                        placeholder="{{ page.genome }} gene search (symbol or Ensembl ID)">
+                        <button class="btn btn-outline-secondary" type="submit">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+
+        <h1>Download data</h1>
+
+        <p>See the <a href="/about/{{ page.suffix }}#data-specs">About page</a> for processing and data format specifications.</p>
+
+        <p><a href="/data/{{ page.genome }}.gene.txt">Gene info</a></p>
+
+        <h2>Gene expression</h2>
+
+        <p>
+            <a href="/data/{{ page.genome }}.medianGeneExpression.txt.gz">Median TPM per gene per tissue</a>
+            <em style="color: gray;">Used for heatmap visualizations</em>
+        </p>
+
+        <strong>log2(readcount+1)</strong>
+        <em style="color: gray;">Used to compute allelic fold change</em>
+        <p>
+            <a href="/data/expr/Adipose.{{ page.genome }}.expr.log2.bed.gz">Adipose</a> |
+            <a href="/data/expr/BLA.{{ page.genome }}.expr.log2.bed.gz">BLA</a> |
+            <a href="/data/expr/Brain.{{ page.genome }}.expr.log2.bed.gz">Brain</a> |
+            <a href="/data/expr/Eye.{{ page.genome }}.expr.log2.bed.gz">Eye</a> |
+            <a href="/data/expr/IL.{{ page.genome }}.expr.log2.bed.gz">IL</a> |
+            <a href="/data/expr/LHb.{{ page.genome }}.expr.log2.bed.gz">LHb</a> |
+            <a href="/data/expr/Liver.{{ page.genome }}.expr.log2.bed.gz">Liver</a> |
+            <a href="/data/expr/NAcc.{{ page.genome }}.expr.log2.bed.gz">NAcc</a> |
+            <a href="/data/expr/NAcc2.{{ page.genome }}.expr.log2.bed.gz">NAcc2</a> |
+            <a href="/data/expr/OFC.{{ page.genome }}.expr.log2.bed.gz">OFC</a> |
+            <a href="/data/expr/PL.{{ page.genome }}.expr.log2.bed.gz">PL</a> |
+            <a href="/data/expr/PL2.{{ page.genome }}.expr.log2.bed.gz">PL2</a>
+        </p>
+
+        <strong>TPM (transcripts per million)</strong>
+        <em style="color: gray;">Relative abundance of transcripts</em>
+        <p>
+            <a href="/data/expr/Adipose.{{ page.genome }}.expr.tpm.bed.gz">Adipose</a> |
+            <a href="/data/expr/BLA.{{ page.genome }}.expr.tpm.bed.gz">BLA</a> |
+            <a href="/data/expr/Brain.{{ page.genome }}.expr.tpm.bed.gz">Brain</a> |
+            <a href="/data/expr/Eye.{{ page.genome }}.expr.tpm.bed.gz">Eye</a> |
+            <a href="/data/expr/IL.{{ page.genome }}.expr.tpm.bed.gz">IL</a> |
+            <a href="/data/expr/LHb.{{ page.genome }}.expr.tpm.bed.gz">LHb</a> |
+            <a href="/data/expr/Liver.{{ page.genome }}.expr.tpm.bed.gz">Liver</a> |
+            <a href="/data/expr/NAcc.{{ page.genome }}.expr.tpm.bed.gz">NAcc</a> |
+            <a href="/data/expr/NAcc2.{{ page.genome }}.expr.tpm.bed.gz">NAcc2</a> |
+            <a href="/data/expr/OFC.{{ page.genome }}.expr.tpm.bed.gz">OFC</a> |
+            <a href="/data/expr/PL.{{ page.genome }}.expr.tpm.bed.gz">PL</a> |
+            <a href="/data/expr/PL2.{{ page.genome }}.expr.tpm.bed.gz">PL2</a>
+        </p>
+
+        <strong>Inverse-quantile normalized</strong>
+        <em style="color: gray;">Used for eQTL mapping</em>
+        <p>
+            <a href="/data/expr/Adipose.{{ page.genome }}.expr.iqn.bed.gz">Adipose</a> |
+            <a href="/data/expr/BLA.{{ page.genome }}.expr.iqn.bed.gz">BLA</a> |
+            <a href="/data/expr/Brain.{{ page.genome }}.expr.iqn.bed.gz">Brain</a> |
+            <a href="/data/expr/Eye.{{ page.genome }}.expr.iqn.bed.gz">Eye</a> |
+            <a href="/data/expr/IL.{{ page.genome }}.expr.iqn.bed.gz">IL</a> |
+            <a href="/data/expr/LHb.{{ page.genome }}.expr.iqn.bed.gz">LHb</a> |
+            <a href="/data/expr/Liver.{{ page.genome }}.expr.iqn.bed.gz">Liver</a> |
+            <a href="/data/expr/NAcc.{{ page.genome }}.expr.iqn.bed.gz">NAcc</a> |
+            <a href="/data/expr/NAcc2.{{ page.genome }}.expr.iqn.bed.gz">NAcc2</a> |
+            <a href="/data/expr/OFC.{{ page.genome }}.expr.iqn.bed.gz">OFC</a> |
+            <a href="/data/expr/PL.{{ page.genome }}.expr.iqn.bed.gz">PL</a> |
+            <a href="/data/expr/PL2.{{ page.genome }}.expr.iqn.bed.gz">PL2</a>
+        </p>
+
+        <br>
+
+        <h2>Genotypes</h2>
+
+        <p>
+            Genotypes are grouped by the datasets from which they originated. The sample sets for the tissues within a dataset are overlapping subsets. Different datasets include different sets of SNPs in their genotypes.
+        </p>
+
+        <p>
+            <ul>
+                <li><a href="/data/geno/BLA_NAcc2_PL2.{{ page.genome }}.vcf.gz">BLA_NAcc2_PL2.{{ page.genome }}.vcf.gz</a></li>
+                <li><a href="/data/geno/Eye.{{ page.genome }}.vcf.gz">Eye.{{ page.genome }}.vcf.gz</a></li>
+                <li><a href="/data/geno/IL_LHb_NAcc_OFC_PL.{{ page.genome }}.vcf.gz">IL_LHb_NAcc_OFC_PL.{{ page.genome }}.vcf.gz</a></li>
+                <li><a href="/data/geno/Adipose_Liver.{{ page.genome }}.vcf.gz">Adipose_Liver.{{ page.genome }}.vcf.gz</a></li>
+                <li><a href="/data/geno/Brain.{{ page.genome }}.vcf.gz">Brain.{{ page.genome }}.vcf.gz</a></li>
+            </ul>
+        </p>
+        
+        <br>
+
+        <h2>Other info</h2>
+
+        <p><a href="/data/ref/{{ page.genome }}.RatGTEx_rats.tsv">Rat info (all tissues)</a></p>
+
+        <p><a href="/data/ref/{{ page.genome }}.RatGTEx_samples.tsv">Sample info (all tissues)</a></p>
+
+        <strong>Rat IDs</strong>
+        <em style="color: gray;">The final QC-filtered sample sets used for eQTL mapping</em>
+        <br>
+        The NAcc2 dataset contains some samples with single-end (SE) RNA-Seq reads and other samples with paired-end (PE) reads.
+        <p>
+            <a href="/data/rat_ids/Adipose.{{ page.genome }}.rat_ids.txt">Adipose</a> |
+            <a href="/data/rat_ids/BLA.{{ page.genome }}.rat_ids.txt">BLA</a> |
+            <a href="/data/rat_ids/Brain.{{ page.genome }}.rat_ids.txt">Brain</a> |
+            <a href="/data/rat_ids/Eye.{{ page.genome }}.rat_ids.txt">Eye</a> |
+            <a href="/data/rat_ids/IL.{{ page.genome }}.rat_ids.txt">IL</a> |
+            <a href="/data/rat_ids/LHb.{{ page.genome }}.rat_ids.txt">LHb</a> |
+            <a href="/data/rat_ids/Liver.{{ page.genome }}.rat_ids.txt">Liver</a> |
+            <a href="/data/rat_ids/NAcc.{{ page.genome }}.rat_ids.txt">NAcc</a> |
+            NAcc2 (<a href="/data/rat_ids/NAcc2.{{ page.genome }}.rat_ids.SE.txt">SE</a>)(<a href="/data/rat_ids/NAcc2.{{ page.genome }}.rat_ids.PE.txt">PE</a>) |
+            <a href="/data/rat_ids/OFC.{{ page.genome }}.rat_ids.txt">OFC</a> |
+            <a href="/data/rat_ids/PL.{{ page.genome }}.rat_ids.txt">PL</a> |
+            <a href="/data/rat_ids/PL2.{{ page.genome }}.rat_ids.txt">PL2</a>
+        </p>
+
+        <strong>RNA-Seq FASTQ file lists</strong>
+        <em style="color: gray;">with corresponding rat IDs</em>
+        <br>
+        Datasets with single-end reads have one column of files, while paired-end file pairs are given as two columns. These lists may include files for samples that were filtered out, so use the rat ID lists above to get the final sample sets.
+        <br>
+        The NAcc2 dataset contains some samples with single-end (SE) RNA-Seq reads and other samples with paired-end (PE) reads.
+        <p>
+            <a href="/data/fastq_map/Adipose.{{ page.genome }}.fastq_map.txt">Adipose</a> |
+            <a href="/data/fastq_map/BLA.{{ page.genome }}.fastq_map.txt">BLA</a> |
+            <a href="/data/fastq_map/Brain.{{ page.genome }}.fastq_map.txt">Brain</a> |
+            <a href="/data/fastq_map/Eye.{{ page.genome }}.fastq_map.txt">Eye</a> |
+            <a href="/data/fastq_map/IL.{{ page.genome }}.fastq_map.txt">IL</a> |
+            <a href="/data/fastq_map/LHb.{{ page.genome }}.fastq_map.txt">LHb</a> |
+            <a href="/data/fastq_map/Liver.{{ page.genome }}.fastq_map.txt">Liver</a> |
+            <a href="/data/fastq_map/NAcc.{{ page.genome }}.fastq_map.txt">NAcc</a> |
+            NAcc2 (<a href="/data/fastq_map/NAcc2.{{ page.genome }}.fastq_map.SE.txt">SE</a>)(<a href="/data/fastq_map/NAcc2.{{ page.genome }}.fastq_map.PE.txt">PE</a>) |
+            <a href="/data/fastq_map/OFC.{{ page.genome }}.fastq_map.txt">OFC</a> |
+            <a href="/data/fastq_map/PL.{{ page.genome }}.fastq_map.txt">PL</a> |
+            <a href="/data/fastq_map/PL2.{{ page.genome }}.fastq_map.txt">PL2</a>
+        </p>
+
+        <strong>Covariates</strong>
+        <em style="color: gray;">used for eQTL mapping</em>
+        <p>
+            <a href="/data/covar/Adipose.{{ page.genome }}.covar.txt">Adipose</a> |
+            <a href="/data/covar/BLA.{{ page.genome }}.covar.txt">BLA</a> |
+            <a href="/data/covar/Brain.{{ page.genome }}.covar.txt">Brain</a> |
+            <a href="/data/covar/Eye.{{ page.genome }}.covar.txt">Eye</a> |
+            <a href="/data/covar/IL.{{ page.genome }}.covar.txt">IL</a> |
+            <a href="/data/covar/LHb.{{ page.genome }}.covar.txt">LHb</a> |
+            <a href="/data/covar/Liver.{{ page.genome }}.covar.txt">Liver</a> |
+            <a href="/data/covar/NAcc.{{ page.genome }}.covar.txt">NAcc</a> |
+            <a href="/data/covar/NAcc2.{{ page.genome }}.covar.txt">NAcc2</a> |
+            <a href="/data/covar/OFC.{{ page.genome }}.covar.txt">OFC</a> |
+            <a href="/data/covar/PL.{{ page.genome }}.covar.txt">PL</a> |
+            <a href="/data/covar/PL2.{{ page.genome }}.covar.txt">PL2</a>
+        </p>
+
+        <br>
+
+        <h2>eQTLs</h2>
+
+        <p>
+            <strong><a href="/data/eqtl/{{ page.genome }}.eqtls_indep.txt">Conditionally independent cis-eQTLs</a></strong>
+            <br>
+            A table of cis-eQTLs from all tissues.
+        </p>
+
+        <strong>All significant cis-eQTL variant-gene pairs</strong>
+
+        <p>
+            <a href="/data/eqtl/Adipose.{{ page.genome }}.cis_qtl_signif.txt.gz">Adipose</a> |
+            <a href="/data/eqtl/BLA.{{ page.genome }}.cis_qtl_signif.txt.gz">BLA</a> |
+            <a href="/data/eqtl/Brain.{{ page.genome }}.cis_qtl_signif.txt.gz">Brain</a> |
+            <a href="/data/eqtl/Eye.{{ page.genome }}.cis_qtl_signif.txt.gz">Eye</a> |
+            <a href="/data/eqtl/IL.{{ page.genome }}.cis_qtl_signif.txt.gz">IL</a> |
+            <a href="/data/eqtl/LHb.{{ page.genome }}.cis_qtl_signif.txt.gz">LHb</a> |
+            <a href="/data/eqtl/Liver.{{ page.genome }}.cis_qtl_signif.txt.gz">Liver</a> |
+            <a href="/data/eqtl/NAcc.{{ page.genome }}.cis_qtl_signif.txt.gz">NAcc</a> |
+            <a href="/data/eqtl/NAcc2.{{ page.genome }}.cis_qtl_signif.txt.gz">NAcc2</a> |
+            <a href="/data/eqtl/OFC.{{ page.genome }}.cis_qtl_signif.txt.gz">OFC</a> |
+            <a href="/data/eqtl/PL.{{ page.genome }}.cis_qtl_signif.txt.gz">PL</a> |
+            <a href="/data/eqtl/PL2.{{ page.genome }}.cis_qtl_signif.txt.gz">PL2</a>
+        </p>
+
+        <p>
+            <strong><a href="/data/eqtl/{{ page.genome }}.top_assoc.txt">Top association per gene</a></strong>
+            <br>
+            A table of the strongest variant-gene association per gene per tissue, even if not significant. A
+            q-value threshold of 0.05 was used to determine significant eQTLs.
+        </p>
+
+        <strong>trans-eQTLs</strong>
+        <br>
+        All SNP-gene associations genome-wide with TSS distance &gt; 5 Mb and with an arbitrary cutoff of p &lt; 1e-5. No significance testing was performed.
+        <p>
+            <a href="/data/eqtl/Adipose.{{ page.genome }}.trans_qtl_pairs.txt.gz">Adipose</a> |
+            <a href="/data/eqtl/BLA.{{ page.genome }}.trans_qtl_pairs.txt.gz">BLA</a> |
+            <a href="/data/eqtl/Brain.{{ page.genome }}.trans_qtl_pairs.txt.gz">Brain</a> |
+            <a href="/data/eqtl/Eye.{{ page.genome }}.trans_qtl_pairs.txt.gz">Eye</a> |
+            <a href="/data/eqtl/IL.{{ page.genome }}.trans_qtl_pairs.txt.gz">IL</a> |
+            <a href="/data/eqtl/LHb.{{ page.genome }}.trans_qtl_pairs.txt.gz">LHb</a> |
+            <a href="/data/eqtl/Liver.{{ page.genome }}.trans_qtl_pairs.txt.gz">Liver</a> |
+            <a href="/data/eqtl/NAcc.{{ page.genome }}.trans_qtl_pairs.txt.gz">NAcc</a> |
+            <a href="/data/eqtl/NAcc2.{{ page.genome }}.trans_qtl_pairs.txt.gz">NAcc2</a> |
+            <a href="/data/eqtl/OFC.{{ page.genome }}.trans_qtl_pairs.txt.gz">OFC</a> |
+            <a href="/data/eqtl/PL.{{ page.genome }}.trans_qtl_pairs.txt.gz">PL</a> |
+            <a href="/data/eqtl/PL2.{{ page.genome }}.trans_qtl_pairs.txt.gz">PL2</a>
+        </p>
+
+        <br>
+
+        <h2>sQTLs</h2>
+
+        <strong>Splice phenotypes</strong>
+        <em style="color: gray;">Relative usage of splice junctions within junction clusters</em>
+        <p>
+            <a href="/data/splice/Adipose.{{ page.genome }}.leafcutter.bed.gz">Adipose</a> |
+            <a href="/data/splice/BLA.{{ page.genome }}.leafcutter.bed.gz">BLA</a> |
+            <a href="/data/splice/Brain.{{ page.genome }}.leafcutter.bed.gz">Brain</a> |
+            <a href="/data/splice/Eye.{{ page.genome }}.leafcutter.bed.gz">Eye</a> |
+            <a href="/data/splice/IL.{{ page.genome }}.leafcutter.bed.gz">IL</a> |
+            <a href="/data/splice/LHb.{{ page.genome }}.leafcutter.bed.gz">LHb</a> |
+            <a href="/data/splice/Liver.{{ page.genome }}.leafcutter.bed.gz">Liver</a> |
+            <a href="/data/splice/NAcc.{{ page.genome }}.leafcutter.bed.gz">NAcc</a> |
+            <a href="/data/splice/NAcc2.{{ page.genome }}.leafcutter.bed.gz">NAcc2</a> |
+            <a href="/data/splice/OFC.{{ page.genome }}.leafcutter.bed.gz">OFC</a> |
+            <a href="/data/splice/PL.{{ page.genome }}.leafcutter.bed.gz">PL</a> |
+            <a href="/data/splice/PL2.{{ page.genome }}.leafcutter.bed.gz">PL2</a>
+        </p>
+
+        <strong>Covariates</strong>
+        <em style="color: gray;">used for sQTL mapping</em>
+        <p>
+            <a href="/data/splice/Adipose.{{ page.genome }}.covar_splice.txt">Adipose</a> |
+            <a href="/data/splice/BLA.{{ page.genome }}.covar_splice.txt">BLA</a> |
+            <a href="/data/splice/Brain.{{ page.genome }}.covar_splice.txt">Brain</a> |
+            <a href="/data/splice/Eye.{{ page.genome }}.covar_splice.txt">Eye</a> |
+            <a href="/data/splice/IL.{{ page.genome }}.covar_splice.txt">IL</a> |
+            <a href="/data/splice/LHb.{{ page.genome }}.covar_splice.txt">LHb</a> |
+            <a href="/data/splice/Liver.{{ page.genome }}.covar_splice.txt">Liver</a> |
+            <a href="/data/splice/NAcc.{{ page.genome }}.covar_splice.txt">NAcc</a> |
+            <a href="/data/splice/NAcc2.{{ page.genome }}.covar_splice.txt">NAcc2</a> |
+            <a href="/data/splice/OFC.{{ page.genome }}.covar_splice.txt">OFC</a> |
+            <a href="/data/splice/PL.{{ page.genome }}.covar_splice.txt">PL</a> |
+            <a href="/data/splice/PL2.{{ page.genome }}.covar_splice.txt">PL2</a>
+        </p>
+
+        <p>
+            <strong><a href="/data/splice/{{ page.genome }}.sqtls_indep.txt">Conditionally independent cis-sQTLs</a></strong>
+            <br>
+            A table of cis-sQTLs from all tissues.
+        </p>
+
+        <strong>All significant cis-sQTL variant-phenotype pairs</strong>
+        <p>
+            <a href="/data/splice/Adipose.{{ page.genome }}.splice.cis_qtl_signif.txt.gz">Adipose</a> |
+            <a href="/data/splice/BLA.{{ page.genome }}.splice.cis_qtl_signif.txt.gz">BLA</a> |
+            <a href="/data/splice/Brain.{{ page.genome }}.splice.cis_qtl_signif.txt.gz">Brain</a> |
+            <a href="/data/splice/Eye.{{ page.genome }}.splice.cis_qtl_signif.txt.gz">Eye</a> |
+            <a href="/data/splice/IL.{{ page.genome }}.splice.cis_qtl_signif.txt.gz">IL</a> |
+            <a href="/data/splice/LHb.{{ page.genome }}.splice.cis_qtl_signif.txt.gz">LHb</a> |
+            <a href="/data/splice/Liver.{{ page.genome }}.splice.cis_qtl_signif.txt.gz">Liver</a> |
+            <a href="/data/splice/NAcc.{{ page.genome }}.splice.cis_qtl_signif.txt.gz">NAcc</a> |
+            <a href="/data/splice/NAcc2.{{ page.genome }}.splice.cis_qtl_signif.txt.gz">NAcc2</a> |
+            <a href="/data/splice/OFC.{{ page.genome }}.splice.cis_qtl_signif.txt.gz">OFC</a> |
+            <a href="/data/splice/PL.{{ page.genome }}.splice.cis_qtl_signif.txt.gz">PL</a> |
+            <a href="/data/splice/PL2.{{ page.genome }}.splice.cis_qtl_signif.txt.gz">PL2</a>
+        </p>
+
+        <p>
+            <strong><a href="/data/splice/{{ page.genome }}.top_assoc_splice.txt">Top association per gene</a></strong>
+            <br>
+            A table of the strongest variant-gene association per gene per tissue, even if not significant. A
+            q-value threshold of 0.05 was used to determine significant sQTLs.
+        </p>
+
+        <strong>trans-sQTLs</strong>
+        <br>
+        All SNP-phenotype associations genome-wide with TSS distance &gt; 5 Mb and with an arbitrary cutoff of p &lt; 1e-5. No significance testing was performed.
+        <p>
+            <a href="/data/splice/Adipose.{{ page.genome }}.splice.trans_qtl_pairs.txt.gz">Adipose</a> |
+            <a href="/data/splice/BLA.{{ page.genome }}.splice.trans_qtl_pairs.txt.gz">BLA</a> |
+            <a href="/data/splice/Brain.{{ page.genome }}.splice.trans_qtl_pairs.txt.gz">Brain</a> |
+            <a href="/data/splice/Eye.{{ page.genome }}.splice.trans_qtl_pairs.txt.gz">Eye</a> |
+            <a href="/data/splice/IL.{{ page.genome }}.splice.trans_qtl_pairs.txt.gz">IL</a> |
+            <a href="/data/splice/LHb.{{ page.genome }}.splice.trans_qtl_pairs.txt.gz">LHb</a> |
+            <a href="/data/splice/Liver.{{ page.genome }}.splice.trans_qtl_pairs.txt.gz">Liver</a> |
+            <a href="/data/splice/NAcc.{{ page.genome }}.splice.trans_qtl_pairs.txt.gz">NAcc</a> |
+            <a href="/data/splice/NAcc2.{{ page.genome }}.splice.trans_qtl_pairs.txt.gz">NAcc2</a> |
+            <a href="/data/splice/OFC.{{ page.genome }}.splice.trans_qtl_pairs.txt.gz">OFC</a> |
+            <a href="/data/splice/PL.{{ page.genome }}.splice.trans_qtl_pairs.txt.gz">PL</a> |
+            <a href="/data/splice/PL2.{{ page.genome }}.splice.trans_qtl_pairs.txt.gz">PL2</a>
+        </p>
+
+        <br>
+
+        <h2>API</h2>
+
+        <p>
+            Different types of data used for visualizations, including expression, eQTLs, and reference annotations, can
+            be accessed via API. See the <a href="/about/api/">API documentation</a> for details.
+        </p>
+
+        <br>
+
+        <h2>Raw data</h2>
+
+        <ul>
+            <li>RNA-Seq reads for the IL, LHb, NAcc, OFC, and PL brain regions are available in SRA and can be accessed from GEO accession <a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE173141">GSE173141</a>.</li>
+            <li>RNA-Seq reads for Eye are available at GEO accession <a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE201236">GSE201236</a>.</li>
+            <li>RNA-Seq reads for Adipose are available at GEO accession <a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE196572">GSE196572</a>.</li>
+            <li>RNA-Seq reads for Liver are available at GEO accession <a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE200453">GSE200453</a>.</li>
+        </ul>
+
+        <br>
+
+        <h2 id="studies"><a href="/download/study-data/">Original study data</a></h2>
+
+        <p>
+            Archives of the data files used in the originating studies.
+        </p>
+
+    </div>
+</body>
+
+</html>
