@@ -103,14 +103,16 @@
                 Visualize associations for any gene-variant pairs in all or a selection of tissues.
             <ul>
                 <li>All results, including non-significant ones, are visualized in a grid of violin plots grouped
-                    horizontally by the gene-variant pairs and aligned vertically by tissues.</li>
-                <li>Each violin plot shows three expression distributions of the genotypes: homozygous reference,
+                    in rows by the gene-variant pairs and in columns by tissues.</li>
+                <li>Each violin plot shows three quantile-normalized expression distributions of the genotypes: homozygous reference,
                     heterozygous, and homozygous alternative alleles.</li>
-                <li>When an eQTL is significant (i.e. smaller than or equal to the gene-specific p-value threshold), its
-                    p-value is highlighted in red.</li>
-                <li>Note that the set of genotyped SNPs can differ among datasets, so the absence of significant
-                    associations in some tissues is not necessarily biologically meaningful. It can also reflect
-                    differences in statistical power due to differing sample sizes.</li>
+                <li>When an eQTL is significant (i.e. p-value below the tissue-gene-specific p-value
+                    threshold based on a 5% FDR), its p-value is highlighted in red.</li>
+                <li>Note that the set of genotyped SNPs and the sample size can differ among datasets, so the absence of significant
+                    associations in some tissues is not necessarily biologically meaningful.</li>
+                <li>Also note that the group medians, shown in pink, do not necessarily reflect the effects measured by the eQTL
+                    linear regression tests, and that any influence of covariates on the test results would not be visible in these
+                    violin plots.</li>
             </ul>
             </p>
         </div>

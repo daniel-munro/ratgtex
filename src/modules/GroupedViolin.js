@@ -508,6 +508,7 @@ export default class GroupedViolin {
                 .attr("x2", this.scale.z(z))
                 .attr("y1", this.scale.y(med))
                 .attr("y2", this.scale.y(med))
+                .style("stroke", "#f88")
                 .attr("class", "violin-median");
 
             // outliers

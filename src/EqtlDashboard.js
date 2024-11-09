@@ -163,12 +163,39 @@ function _customizeViolinPlot(plot, dom){
                 let y = plot.scale.y(plot.scale.y.domain()[0]) + 75 + (12*i); // todo: avoid hard-coded values
                 return `translate(${x}, ${y})`
             })
-            .text((d) => d);
+            .text((d) => d)
+            .call(wrap, 120);
     });
 
     dom.selectAll(".violin-size-axis").classed("violin-size-axis-hide", true).classed("violin-size-axis", false);
 
 }
+
+/**
+ * Wrap text for long labels
+ * Adapted from https://gist.github.com/mbostock/7555321
+ */
+function wrap(text, width) {
+    var words = text.text().split(/\s+/).reverse(),
+        word,
+        line = [],
+        lineNumber = 0,
+        lineHeight = 1.1, // ems
+        y = text.attr("y"),
+        // dy = parseFloat(text.attr("dy")),
+        dy = 0,
+        tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em");
+    while (word = words.pop()) {
+    line.push(word);
+    tspan.text(line.join(" "));
+    if (tspan.node().getComputedTextLength() > width) {
+        line.pop();
+        tspan.text(line.join(" "));
+        line = [word];
+        tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(word);
+    }
+    }
+  }
 
 /**
  * Define the submit button's action

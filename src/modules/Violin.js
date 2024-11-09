@@ -213,6 +213,7 @@ export default class Violin {
             .attr("x2", scale.z(z))
             .attr("y1", scale.y(med))
             .attr("y2", scale.y(med))
+            .style("stroke", "#f88")
             .attr("class", "violin-median");
     }
 
