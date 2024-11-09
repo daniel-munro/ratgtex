@@ -95,8 +95,8 @@ export function createTissueGroupMenu(groups, domId, forEqtl=false, checkAll=fal
     // sort the tissue groups alphabetically
     let groupNames = Object.keys(groups).sort((a, b) => {
         // regular sorting, except that 'Brain' group will always be first
-        if (a == 'Brain') return -1;
-        if (b == 'Brain') return 1;
+        if (a == 'BrainGroup') return -1;
+        if (b == 'BrainGroup') return 1;
         if (a < b) return -1;
         if (a > b) return 1;
     });
@@ -119,6 +119,7 @@ export function createTissueGroupMenu(groups, domId, forEqtl=false, checkAll=fal
     groupNames.forEach((gname)=>{
         let sites = groups[gname]; // a list of site objects with attr: name and id
         const gId = gname.replace(/ /g, "_"); // replace the spaces with dashes to create a group <DOM> id
+        gname = gname.replace("Group", ""); // remove the "Group" suffix from the group name
         // figure out which dom section to append this tissue site
         let groupLen = sites.length;
         groupLen = groupLen == 1 ? groupLen : groupLen+1; // +1 to account for site name

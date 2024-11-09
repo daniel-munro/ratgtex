@@ -231,7 +231,8 @@ export function parseTissueSampleCounts(json){
 export function parseTissueSites(data, forEqtl=false){
     // the list of invalid eqtl tissues due to sample size < 70
     // a hard-coded list because the sample size is not easy to retrieve
-    const invalidTissues = ['Bladder', 'Cervix_Ectocervix', 'Cervix_Endocervix', 'Fallopian_Tube', 'Kidney_Cortex'];
+    // const invalidTissues = ['Bladder', 'Cervix_Ectocervix', 'Cervix_Endocervix', 'Fallopian_Tube', 'Kidney_Cortex'];
+    const invalidTissues = [];
 
     const attr = 'tissueInfo';
     if(!data.hasOwnProperty(attr)) throw 'Parsing Error: required json attribute is missing: ' + attr;
@@ -243,7 +244,7 @@ export function parseTissueSites(data, forEqtl=false){
 
     // build the tissueGroups lookup dictionary indexed by the tissue group name (i.e. the tissue main site name)
     let tissueGroups = tissues.reduce((arr, d)=>{
-        let groupName = d.tissueSite;
+        let groupName = d.tissueSite + "Group"; // Added suffix to avoid ID collisions -DM
         let site = {
             id: d.tissueSiteDetailId,
             name: d.tissueSiteDetail
