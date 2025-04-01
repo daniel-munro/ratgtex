@@ -111,16 +111,16 @@
         <h1>RatGTEx Samples</h1>
 
         <h2>Rat table</h2>
-        <p><a href="/data/ref/{{ page.genome }}.RatGTEx_rats.tsv">(Download TSV)</a></p>
+        <p><a href="/data/ref/RatGTEx_rats.{{ page.version }}.tsv">(Download TSV)</a></p>
 
-        {% include {{ page.genome }}.rats.html %}
+        {% include rats.{{ page.version }}.html %}
 
     <hr>
 
         <h2>Sample table</h2>
-        <p><a href="/data/ref/{{ page.genome }}.RatGTEx_samples.tsv">(Download TSV)</a></p>
+        <p><a href="/data/ref/RatGTEx_samples.{{ page.version }}.tsv">(Download TSV)</a></p>
 
-        {% include {{ page.genome }}.samples.html %}
+        {% include samples.{{ page.version }}.html %}
 
     </div>
     <script>

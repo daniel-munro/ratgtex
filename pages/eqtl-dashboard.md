@@ -1,4 +1,5 @@
 ---
+permalink: /eqtl-dashboard/
 layout: eqtl-dashboard
 genome: rn7
 suffix : ""

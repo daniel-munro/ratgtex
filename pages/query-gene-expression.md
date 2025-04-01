@@ -1,4 +1,5 @@
 ---
+permalink: /query-gene-expression/
 layout: query-gene-expression
 genome: rn7
 suffix : ""

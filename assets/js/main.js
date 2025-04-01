@@ -1,6 +1,7 @@
 $(document).ready(function() { 
     const rn = window.genome; // Defined in the HTML pages
     const default_genome = "rn7";
+    const version = "v3";
 
     $('#gene-search').submit(function (event) {
         var base = rn == default_genome ? "/gene#" : `/gene/${rn}#`;
@@ -10,7 +11,7 @@ $(document).ready(function() {
 
     $.ajax({
         dataType: "json",
-        url: `/data/${rn}.autocomplete.json`
+        url: `/data/autocomplete.${version}.json`
     }).done(function (data) {
         $("#search-input").autocomplete({
             // source: data,
