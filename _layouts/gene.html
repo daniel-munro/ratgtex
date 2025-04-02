@@ -221,7 +221,7 @@
 
             $.ajax({
                 dataType: 'json',
-                url: `/api/v2/eqtl?genome=${window.genome}&geneId=${info.geneId}`,
+                url: `/api/v3/eqtl?version=${window.version}&geneId=${info.geneId}`,
                 success: function (data) {
                     $('#eqtl-table').append('<thead><tr><th>Tissue</th><th>Representative Variant ID</th><th>Ref</th><th>Alt</th><th>Adjusted P-Value</th><th>log<sub>2</sub>aFC</th></tr></thead><tbody>');
                     var cols = ['tissueSiteDetailId', 'variantId', 'ref', 'alt', 'pval_beta', 'log2_aFC'];
@@ -241,7 +241,7 @@
 
             $.ajax({
                 dataType: 'json',
-                url: `/api/v2/singleTissueEqtl?genome=${window.genome}&geneId=${info.geneId}`,
+                url: `/api/v3/singleTissueEqtl?version=${window.version}&geneId=${info.geneId}`,
                 success: function (data) {
                     // $('#eqtl-all-table').append('<thead><tr><th>Gene ID</th><th>Gene Symbol</th><th>Variant ID</th><th>P-Value</th><th>NES</th><th>Tissue</th></tr></thead><tbody>');
                     // var cols = ['geneId', 'geneSymbol', 'variantId', 'pValue', 'nes', 'tissueSiteDetailId'];
@@ -263,7 +263,7 @@
 
             $.ajax({
                 dataType: 'json',
-                url: `/api/v2/sqtl?genome=${window.genome}&geneId=${info.geneId}`,
+                url: `/api/v3/sqtl?version=${window.version}&geneId=${info.geneId}`,
                 success: function (data) {
                     $('#sqtl-table').append('<thead><tr><th>Tissue</th><th>Splice Junction ID</th><th>Representative Variant ID</th><th>Ref</th><th>Alt</th><th>Adjusted P-Value</th></tr></thead><tbody>');
                     var cols = ['tissueSiteDetailId', 'phenotypeId', 'variantId', 'ref', 'alt', 'pval_beta'];
@@ -291,7 +291,7 @@
             $.ajax({
                 dataType: 'json',
                 // url: `/api/v1/gene?${field}=${gene}`,
-                url: `/api/v2/gene?genome=${window.genome}&geneId=${gene}`,
+                url: `/api/v3/gene?version=${window.version}&geneId=${gene}`,
                 success: function (data) {
                     if (data.gene.length == 0) {
                         $('#gene-not-found').text(`Gene not found: ${gene}`);

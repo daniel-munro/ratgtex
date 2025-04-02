@@ -1,6 +1,7 @@
 import nodeResolve from 'rollup-plugin-node-resolve';
 import uglify from 'rollup-plugin-uglify';
-import {minify} from 'uglify-es';
+import pkg from 'uglify-es';
+const {minify} = pkg;
 
 /* to set the NODE_ENV
 in a terminal window (bash)
