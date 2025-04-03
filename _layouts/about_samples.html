@@ -25,86 +25,13 @@
         integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
         crossorigin="anonymous"></script>
     <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js" crossorigin="anonymous"></script>
-    <script>
-        window.genome = "{{ page.genome }}";
-    </script>
     <script src="/assets/js/main.js"></script>
 
     <title>About | RatGTEx</title>
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container-fluid">
-            <!-- <a class="navbar-brand" href="/">RatGTEx Portal</a> -->
-            <a class="navbar-brand" href="/{{ page.suffix }}">
-                <img src="/assets/images/RatGTExPortal.png" width="200px" alt="RatGTEx Portal">
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
-                aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/{{ page.suffix }}">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/download/{{ page.suffix }}">Download</a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="visualizeDropdown" role="button"
-                            data-bs-toggle="dropdown" aria-expanded="false">Visualize</a>
-                        <ul class="dropdown-menu" aria-labelledby="visualizeDropdown">
-                            <li>
-                                <h6 class="dropdown-header">Expression</h6>
-                            </li>
-                            <li><a class="dropdown-item" href="/top-expressed/{{ page.suffix }}">Top expressed genes</a></li>
-                            <li><a class="dropdown-item" href="/query-gene-expression/{{ page.suffix }}">Query gene expression</a></li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            <li>
-                                <h6 class="dropdown-header">eQTLs</h6>
-                            </li>
-                            <li><a class="dropdown-item" href="/eqtl-dashboard/{{ page.suffix }}">eQTL violin plots</a></li>
-                            <li><a class="dropdown-item" href="/gene-eqtl-visualizer/{{ page.suffix }}">Gene eQTL Visualizer</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle active" href="#" id="aboutDropdown" role="button"
-                            data-bs-toggle="dropdown" aria-expanded="false">About</a>
-                        <ul class="dropdown-menu" aria-labelledby="aboutDropdown">
-                            <li><a class="dropdown-item" href="/about/{{ page.suffix }}">Pipeline &amp; Data</a></li>
-                            <li><a class="dropdown-item" href="/about/samples/{{ page.suffix }}" aria-current="page">Samples</a></li>
-                            <li><a class="dropdown-item" href="/about/api/">API</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item">
-                        <div class="btn-group mx-md-4" role="group" aria-label="rn6/rn7 toggle">
-                            {% if page.genome == 'rn6' %}
-                                <button type="button" class="btn btn-primary" disabled>rn6</button>
-                                <a href="/about/samples/" class="btn btn-outline-secondary">rn7</a>
-                            {% else %}
-                                <a href="/about/samples/rn6/" class="btn btn-outline-secondary">rn6</a>
-                                <button type="button" class="btn btn-primary" disabled>rn7</button>
-                            {% endif %}
-                        </div>
-                    </li>
-                </ul>
-                <form class="d-flex col-md-4 mb-0" id="gene-search">
-                    <div class="input-group">
-                        <input class="form-control basicAutoComplete" id="search-input" type="text" autocomplete="off"
-                            placeholder="{{ page.genome }} gene search (symbol or Ensembl ID)">
-                        <button class="btn btn-outline-secondary" type="submit">
-                            <i class="fa fa-search"></i>
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </nav>
+    {% include navigation.html %}
 
     <div class="container">
 

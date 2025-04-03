@@ -22,9 +22,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
         crossorigin="anonymous"></script>
-    <script>
-        window.genome = "{{ page.genome }}";
-    </script>
     <script src="/assets/js/main.js"></script>
 
 
@@ -32,83 +29,13 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container-fluid">
-            <!-- <a class="navbar-brand" href="/">RatGTEx Portal</a> -->
-            <a class="navbar-brand" href="/{{ page.suffix }}">
-                <img src="/assets/images/RatGTExPortal.png" width="200px" alt="RatGTEx Portal">
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
-                aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/{{ page.suffix }}">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="/download/{{ page.suffix }}">Download</a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="visualizeDropdown" role="button"
-                            data-bs-toggle="dropdown" aria-expanded="false">Visualize</a>
-                        <ul class="dropdown-menu" aria-labelledby="visualizeDropdown">
-                            <li>
-                                <h6 class="dropdown-header">Expression</h6>
-                            </li>
-                            <li><a class="dropdown-item" href="/top-expressed/{{ page.suffix }}">Top expressed genes</a></li>
-                            <li><a class="dropdown-item" href="/query-gene-expression/{{ page.suffix }}">Query gene expression</a></li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            <li>
-                                <h6 class="dropdown-header">eQTLs</h6>
-                            </li>
-                            <li><a class="dropdown-item" href="/eqtl-dashboard/{{ page.suffix }}">eQTL violin plots</a></li>
-                            <li><a class="dropdown-item" href="/gene-eqtl-visualizer/{{ page.suffix }}">Gene eQTL Visualizer</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="aboutDropdown" role="button"
-                            data-bs-toggle="dropdown" aria-expanded="false">About</a>
-                        <ul class="dropdown-menu" aria-labelledby="aboutDropdown">
-                            <li><a class="dropdown-item" href="/about/{{ page.suffix }}">Pipeline &amp; Data</a></li>
-                            <li><a class="dropdown-item" href="/about/samples/{{ page.suffix }}">Samples</a></li>
-                            <li><a class="dropdown-item" href="/about/api/">API</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item">
-                        <div class="btn-group mx-md-4" role="group" aria-label="rn6/rn7 toggle">
-                            {% if page.genome == 'rn6' %}
-                                <button type="button" class="btn btn-primary" disabled>rn6</button>
-                                <a href="/download/" class="btn btn-outline-secondary">rn7</a>
-                            {% else %}
-                                <a href="/download/rn6/" class="btn btn-outline-secondary">rn6</a>
-                                <button type="button" class="btn btn-primary" disabled>rn7</button>
-                            {% endif %}
-                        </div>
-                    </li>
-                </ul>
-                <form class="d-flex col-md-4 mb-0" id="gene-search">
-                    <div class="input-group">
-                        <input class="form-control basicAutoComplete" id="search-input" type="text" autocomplete="off"
-                        placeholder="{{ page.genome }} gene search (symbol or Ensembl ID)">
-                        <button class="btn btn-outline-secondary" type="submit">
-                            <i class="fa fa-search"></i>
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </nav>
+    {% include navigation.html %}
 
     <div class="container">
 
         <h1>Download data</h1>
 
-        <p>See the <a href="/about/{{ page.suffix }}#data-specs">About page</a> for processing and data format specifications.</p>
+        <p>See the <a href="/about/#data-specs">About page</a> for processing and data format specifications.</p>
 
         <p><a href="/data/{{ page.genome }}.gene.txt">Gene info</a></p>
 
@@ -199,7 +126,6 @@
         <strong>Rat IDs</strong>
         <em style="color: gray;">The final QC-filtered sample sets used for eQTL mapping</em>
         <br>
-        The NAcc2 dataset contains some samples with single-end (SE) RNA-Seq reads and other samples with paired-end (PE) reads.
         <p>
             <a href="/data/rat_ids/Adipose.{{ page.genome }}.rat_ids.txt">Adipose</a> |
             <a href="/data/rat_ids/BLA.{{ page.genome }}.rat_ids.txt">BLA</a> |
@@ -209,7 +135,7 @@
             <a href="/data/rat_ids/LHb.{{ page.genome }}.rat_ids.txt">LHb</a> |
             <a href="/data/rat_ids/Liver.{{ page.genome }}.rat_ids.txt">Liver</a> |
             <a href="/data/rat_ids/NAcc.{{ page.genome }}.rat_ids.txt">NAcc</a> |
-            NAcc2 (<a href="/data/rat_ids/NAcc2.{{ page.genome }}.rat_ids.SE.txt">SE</a>)(<a href="/data/rat_ids/NAcc2.{{ page.genome }}.rat_ids.PE.txt">PE</a>) |
+            <a href="/data/rat_ids/NAcc2.{{ page.genome }}.rat_ids.txt">NAcc2</a> |
             <a href="/data/rat_ids/OFC.{{ page.genome }}.rat_ids.txt">OFC</a> |
             <a href="/data/rat_ids/PL.{{ page.genome }}.rat_ids.txt">PL</a> |
             <a href="/data/rat_ids/PL2.{{ page.genome }}.rat_ids.txt">PL2</a>
@@ -218,9 +144,8 @@
         <strong>RNA-Seq FASTQ file lists</strong>
         <em style="color: gray;">with corresponding rat IDs</em>
         <br>
-        Datasets with single-end reads have one column of files, while paired-end file pairs are given as two columns. These lists may include files for samples that were filtered out, so use the rat ID lists above to get the final sample sets.
+        Each line includes one FASTQ path for single-end reads, or two FASTQ paths for paired-end reads, followed by the rat ID. FASTQ maps can include a mix of single-end and paired-end rows. These files may include mappings to samples that were filtered out during QC, so use the rat ID lists above to get the final sample sets.
         <br>
-        The NAcc2 dataset contains some samples with single-end (SE) RNA-Seq reads and other samples with paired-end (PE) reads.
         <p>
             <a href="/data/fastq_map/Adipose.{{ page.genome }}.fastq_map.txt">Adipose</a> |
             <a href="/data/fastq_map/BLA.{{ page.genome }}.fastq_map.txt">BLA</a> |
@@ -230,7 +155,7 @@
             <a href="/data/fastq_map/LHb.{{ page.genome }}.fastq_map.txt">LHb</a> |
             <a href="/data/fastq_map/Liver.{{ page.genome }}.fastq_map.txt">Liver</a> |
             <a href="/data/fastq_map/NAcc.{{ page.genome }}.fastq_map.txt">NAcc</a> |
-            NAcc2 (<a href="/data/fastq_map/NAcc2.{{ page.genome }}.fastq_map.SE.txt">SE</a>)(<a href="/data/fastq_map/NAcc2.{{ page.genome }}.fastq_map.PE.txt">PE</a>) |
+            <a href="/data/fastq_map/NAcc2.{{ page.genome }}.fastq_map.txt">NAcc2</a> |
             <a href="/data/fastq_map/OFC.{{ page.genome }}.fastq_map.txt">OFC</a> |
             <a href="/data/fastq_map/PL.{{ page.genome }}.fastq_map.txt">PL</a> |
             <a href="/data/fastq_map/PL2.{{ page.genome }}.fastq_map.txt">PL2</a>

@@ -65,14 +65,9 @@ def validate_genes(ids, genes):
         if id in genes.index:
             valid.append(id)
         else:
-            x = list(genes.loc[genes["geneSymbol"] == id, :].index)
-            if len(x) > 0:
-                valid.append(x[0])
-            else:
-                id2 = id[0].upper() + id[1:].lower()
-                x = list(genes.loc[genes["geneSymbol"] == id2, :].index)
-                if len(x) > 0:
-                    valid.append(x[0])
+            id2 = id[0].upper() + id[1:].lower()
+            if id2 in genes.index:
+                valid.append(id2)
     return valid
 
 
@@ -226,7 +221,6 @@ def dyneqtl():
     rec = variant_record(variant, vcf[version][dataset[version][tissue]])
     assert len(rec.alts) == 1, f"Multiple alt alleles: {variant}"
     gt = rec.samples
-    # indivs = [x.split("_")[0] for x in expr.index]
     geno = [genotype(gt[ind]["GT"]) for ind in expr.index]
     # ignoring error, nes, tStatistic, timing
     counts = [int(np.sum(np.array(geno) == x)) for x in [0, 1, 2]]
@@ -235,7 +229,6 @@ def dyneqtl():
     info = {
         "data": list(expr),
         "geneId": gene,
-        "geneSymbol": genes[version].loc[gene, "geneSymbol"],
         "genotypes": geno,
         "hetCount": counts[1],
         "homoAltCount": counts[2],
@@ -280,14 +273,12 @@ def gene():
 @api.route("/api/v3/geneExpression", methods=["GET"])
 def gene_exp():
     gene = request.args.get("geneId")
-    symbol = genes.loc[gene, "geneSymbol"]
     infos = []
     for tissue in tissues:
         info = {
             "data": list(tpm[tissue].loc[gene, :]),
             "datasetId": "ratgtex_v1",
             "geneId": gene,
-            "geneSymbol": symbol,
             "tissueSiteDetailId": tissue,
             "unit": "TPM",
         }
@@ -331,7 +322,6 @@ def med_gene_exp():
     d = d.reset_index().melt(
         id_vars="geneId", var_name="tissueSiteDetailId", value_name="median"
     )
-    d = d.merge(genes["geneSymbol"].reset_index(), how="left", on="geneId")
     d = d.to_dict(orient="records")
     info = {
         "clusters": {"gene": gene_tree, "tissue": tissue_tree},
@@ -346,8 +336,6 @@ def single_tissue_eqtl():
     d = single_tissue(gene)
     if d is None:
         return jsonify({"singleTissueEqtl": []})
-    d["geneSymbol"] = genes.loc[gene, "geneSymbol"]
-    d["geneSymbolUpper"] = d["geneSymbol"]
     info = d.to_dict(orient="records")
     return jsonify({"singleTissueEqtl": info})
 
