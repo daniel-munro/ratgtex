@@ -112,7 +112,8 @@ function _visualize(gene, variant, mainId, input, info){
     dom.append("text")
         .classed("ed-section-title", true)
         // .text(`${gene.geneSymbol} (${gene.geneId}) and ${variant.snpId||""} (${variant.variantId})`)
-        .text(`${gene.geneSymbol} (${gene.geneId}) and ${variant.variantId}`)
+        // .text(`${gene.geneSymbol} (${gene.geneId}) and ${variant.variantId}`)
+        .text(`${gene.geneId} and ${variant.variantId}`)
         .attr("x", 0)
         .attr("y", -margin.top + 16);
 

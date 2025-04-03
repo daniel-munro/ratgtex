@@ -348,14 +348,14 @@ function _parseGeneExpressionForViolin(data, idNameMap=undefined, colors=undefin
     const attr = 'geneExpression';
     if(!data.hasOwnProperty(attr)) throw 'Parse Error: required json attribute is missing: ' + attr;
     data[attr].forEach((d)=>{
-        ['data', 'tissueSiteDetailId', 'geneSymbol', 'geneId'].forEach((k)=>{
+        ['data', 'tissueSiteDetailId', 'geneId'].forEach((k)=>{
             if(!d.hasOwnProperty(k)){
                 console.error(d);
                 throw 'Parse Error: required json attribute is missing: ' + k;
             }
         });
         d.group = idNameMap===undefined?d.tissueSiteDetailId:idNameMap[d.tissueSiteDetailId];
-        d.label = d.subsetGroup===undefined?d.geneSymbol:d.subsetGroup;
+        d.label = d.subsetGroup===undefined?d.geneId:d.subsetGroup;
         d.color = colors===undefined?'#90c1c1':d.subsetGroup=='allData'?`#${colors[d.tissueSiteDetailId]}`:colors[d.subsetGroup];
     });
     _calcViolinPlotValues(data[attr], useLog);

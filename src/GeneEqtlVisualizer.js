@@ -2,7 +2,6 @@
  * Copyright © 2015 - 2018 The Broad Institute, Inc. All rights reserved.
  * Licensed under the BSD 3-clause license (https://github.com/broadinstitute/gtex-viz/blob/master/LICENSE.md)
  */
-// TODO: consider creating a GEV class that stores bmap and LD objects...
 "use strict";
 import {json} from "d3-fetch";
 import {brushX} from "d3-brush";
@@ -16,7 +15,6 @@ import {
     getGtexUrls,
     parseGenes,
     parseSingleTissueEqtls,
-    parseLD,
     parseExonsToList,
     parseTissueSampleCounts,
     parseTissueDict,
@@ -29,13 +27,13 @@ import {render as eqtlViolinPlotRender} from "./EqtlViolinPlot";
 export function render(par, geneId, urls = getGtexUrls()){
     $(`#${par.divSpinner}`).show();
 
-    json(urls.geneId + geneId, {credentials: 'include'}) // query the gene by geneId which could be gene name or gene ID with or withour versioning
+    json(urls.geneId + geneId, {credentials: 'include'})
         .then((data)=> {
             let gene = parseGenes(data, true, geneId);
             // report the gene info
             $(`#${par.divGeneInfo}`).empty();
             $("<span/>")
-                .html(`<span>${gene.geneSymbol} (${gene.geneId}), ${gene.chromosome}:${gene.start} - ${gene.end} (${gene.strand}), ${gene.description}`)
+                .html(`<span><strong><i>${gene.geneId}</i></strong> (${gene.description}), ${gene.chromosome}:${gene.start}-${gene.end} (${gene.strand})`)
                 .appendTo($(`#${par.divGeneInfo}`));
 
             // Only fetch eQTLs if gene has any: -DM
@@ -58,43 +56,32 @@ export function render(par, geneId, urls = getGtexUrls()){
                     par.data = eqtls;
                     par = setDimensions(par);
                     let bmap = renderBubbleMap(par, gene, tissues, exons, tissueSiteTable, urls);
-                    // fetch LD data, this query is slow, so it's not included in the promises.
-                    json(urls.ld + gene.geneId, {credentials: 'include'})
-                        .then((ldJson) => {
-                            let ld = parseLD(ldJson);
-                            par.ldData = ld.filter((d)=>d.value>=par.ldCutoff); // filter unused data
-                            renderLdMap(par, bmap);
-                            $(`#${par.divSpinner}`).hide();
+                    $(`#${par.divSpinner}`).hide();
 
-                            // define the tissue filtering event on tissue menu window close
-                            // Note: the tissue menu content in the modal is built by renderBmapFilters()
-                            const oriY = bmap.yScale.domain();
-                            const oriX = bmap.xScale.domain();
+                    // define the tissue filtering event on tissue menu window close
+                    // Note: the tissue menu content in the modal is built by renderBmapFilters()
+                    const oriY = bmap.yScale.domain();
+                    const oriX = bmap.xScale.domain();
 
-                            // execute the tissue filtering when the modal window closes
-                            $(`#${par.divModal}`).on('hidden.bs.modal', (e)=>{
-                                let checked = [];
-                                $(`#${par.divModal}`).find(":input").each(function(){
-                                    if($(this).prop("checked")) checked.push($(this).val());
-                                });
-                                // if (checked.length == oriY.length) return; // no change
-                                // filter eQTL data based on selected tissues
-                                par.data = eqtls.filter((d)=>{
-                                    return checked.indexOf(d.y) >= 0;
-                                });
-                                let newX = nest()
-                                    .key((d) => d.x) // group this.data by d.x
-                                    .entries(par.data)
-                                    .map((d) => d.key) // then return the unique list of d.x
-                                    .sort((a, b) => {return a < b ? -1 : a > b ? 1 : a >= b ? 0 : NaN;});
+                    // execute the tissue filtering when the modal window closes
+                    $(`#${par.divModal}`).on('hidden.bs.modal', (e)=>{
+                        let checked = [];
+                        $(`#${par.divModal}`).find(":input").each(function(){
+                            if($(this).prop("checked")) checked.push($(this).val());
+                        });
+                        // filter eQTL data based on selected tissues
+                        par.data = eqtls.filter((d)=>{
+                            return checked.indexOf(d.y) >= 0;
+                        });
+                        let newX = nest()
+                            .key((d) => d.x) // group this.data by d.x
+                            .entries(par.data)
+                            .map((d) => d.key) // then return the unique list of d.x
+                            .sort((a, b) => {return a < b ? -1 : a > b ? 1 : a >= b ? 0 : NaN;});
 
-                                // re-rendering
-                                bmap = renderBubbleMap(par, gene, tissues, exons, tissueSiteTable, urls, true);
-                                renderLdMap(par, bmap);
-
-                            });
-                        })
-
+                        // re-rendering
+                        bmap = renderBubbleMap(par, gene, tissues, exons, tissueSiteTable, urls, true);
+                    });
                 });
         });
 }
@@ -133,10 +120,6 @@ function setDimensions(par){
         left: par.margin.left,
         top: par.margin.top + par.miniPanelHeight + par.legendHeight
     };
-    par.ldPanelMargin = {
-        left: par.margin.left,
-        top: 0
-    };
     return par;
 }
 
@@ -166,42 +149,6 @@ function createSvg(rootId, width, height, svgId=undefined){
         .attr("height", height);
 
     return svg;
-}
-
-/**
- * Render the LD heat map
- * @param par {Object} the map's config object
- * @param bmap {BubbleMap} object of the bubble map because the LD rendering domain is based on the bubble map's focus domain.
- */
-function renderLdMap(par, bmap){
-    let ldMap = new HalfMap(par.ldData, par.ldCutoff, false, undefined, par.ldColorScheme, [0,1]);
-    $(`#${par.ldId}`).empty(); // jQuery syntax...
-    ldMap.addTooltip(par.ldId);
-    let ldCanvas = select(`#${par.ldId}`).append("canvas")
-        .attr("id", par.ldId + "-ld-canvas")
-        .attr("width", par.width)
-        .attr("height", par.width)
-        .style("position", "absolute");
-    let ldSvg = createSvg(par.ldId, par.width, par.width, undefined);
-    let ldG = ldSvg.append("g")
-        .attr("class", "ld")
-        .attr("id", "ldG")
-        .attr("transform", `translate(${par.ldPanelMargin.left}, ${par.ldPanelMargin.top})`);
-    ldMap.drawColorLegend(ldSvg, {x: par.ldPanelMargin.left, y: 100}, 10, "LD");
-    ldG.selectAll("*").remove(); // clear all child nodes in ldG before rendering
-    let ldConfig = {w:par.inWidth, top:par.ldPanelMargin.top, left:par.ldPanelMargin.left};
-    ldMap.draw(ldCanvas, ldG, ldConfig, [0,1], false, undefined, bmap.xScale.domain(), bmap.xScale.domain());
-
-    // update the brush event on the mini bubble map after LD map is rendered
-    // the brush needs to control of the LD map view range as well.
-    bmap.brush.on("brush", ()=>{
-        bmap.brushEvent();
-        ldG.selectAll("*").remove(); // clear all child nodes in ldG before rendering
-        ldMap.draw(ldCanvas, ldG, ldConfig, [0,1], false, undefined, bmap.xScale.domain(), bmap.xScale.domain());
-    });
-
-    // LD filters
-    renderLDFilters(par.divDashboard, ldMap, ldCanvas, ldG, ldConfig);
 }
 
 /**
@@ -676,43 +623,10 @@ function renderBmapFilters(id, infoId, modalId, bmap, bmapSvg, tissueSiteTable){
                 step: 0.1,
                 value: 0
             },
-        },
-        // {
-        //     id: 'variantPanel',
-        //     fontSize: '11px',
-        //     class: 'col-xs-12 col-sm-6 col-lg-2',
-        //     search: {
-        //         id: 'varLocator',
-        //         size: 20,
-        //         label: 'Variant locator',
-        //         placeholder: '  Variant or RS ID... '
-        //     },
-        // }
+        }
     ];
      // create each search section
     ////// Add custom DOMs that are not defined in the panels:
-
-    // Can't get tissue filter to work and don't need it. -DM
-
-    // // -- add the link to the tissue filter menu here
-    // let tiDiv = $('<div/>')
-    //     .attr('class', 'col-xs-12 col-sm-6 col-lg-1')
-    //      .css('padding-top', '4px')
-    //     .css('margin', '1px')
-    //     .css('font-size', '12px')
-    //     .appendTo($(`#${id}`));
-
-    // $('<span/>')
-    //     .attr('data-toggle', 'modal')
-    //     .attr('data-target', `#${modalId}`) // bMap-modal must be defined on the html
-    //     .css('margin-left', '2px')
-    //     .css('padding-top', '2px')
-    //     .css('color', '#0868ac')
-    //     .css('cursor', 'pointer')
-    //     .html('<i class="fas fa-filter"></i>Filter Tissues<br/>')
-    //     .appendTo(tiDiv);
-
-    ////// end adding custom DOMs
 
     // build the tissue menu
     let modalBody =  $(`#${modalId}`).find('.modal-body');
@@ -735,33 +649,12 @@ function renderBmapFilters(id, infoId, modalId, bmap, bmapSvg, tissueSiteTable){
         });
     }
 
-
     // Add all other eQTL filter panels
     panelBuilder(panels, id);
-
-    // // -- add the RS ID option here
-    // let rsDiv = $('<div/>')
-    //     .attr('class', 'col-xs-12 col-sm-6 col-lg-1')
-    //     .css('padding-top', '2px')
-    //     .css('margin', '1px')
-    //     .css('font-size', '12px')
-    //     .appendTo($(`#${id}`));
-    // let radioButton = $('<input/>')
-    //     .attr('id', 'rsSwitch')
-    //     .attr('type', 'checkbox')
-    //     .css('margin-left', '10px')
-    //     .appendTo(rsDiv);
-    // $('<label/>')
-    //     .css('margin-left', '2px')
-    //     .css('padding-top', '2px')
-    //     .css('font-size', '11px')
-    //     .html('Use RS ID')
-    //     .appendTo(rsDiv);
 
     ////// define the filter events
     let minP = 0;
     let minNes = 0;
-    let minLd = 0;
     let focusG = bmapSvg.select("#focusG");
     let miniG = bmapSvg.select("#miniG");
     const updateBubbles = ()=>{
@@ -779,7 +672,6 @@ function renderBmapFilters(id, infoId, modalId, bmap, bmapSvg, tissueSiteTable){
                 counts += 1;
                 return bmap.colorScale(d.value);
             });
-        // $(`#${infoId}`).text(`Total eQTL counts: ${counts}`)
         $(`#${infoId}`).text(`Total significant associations: ${counts}`)
     };
 
@@ -821,7 +713,7 @@ function renderBmapFilters(id, infoId, modalId, bmap, bmapSvg, tissueSiteTable){
         .attr('x', (d)=>bmap.xScaleMini(d))
         .attr('y', bmap.yScaleMini.range()[1])
         .attr('width', bmap.xScaleMini.bandwidth())
-        .attr('height', bmap.yScaleMini.bandwidth());
+        .attr('height', bmap.xScaleMini.bandwidth());
 
     $('#varLocator').keyup((e)=>{
         let v = $('#varLocator').val();
@@ -844,77 +736,6 @@ function renderBmapFilters(id, infoId, modalId, bmap, bmapSvg, tissueSiteTable){
             miniG.selectAll('.mini-marker')
                 .classed('highlighted', false);
         }
-
-    });
-
-    // rsId
-    $('#rsSwitch').change(()=>{
-        if ( $('#rsSwitch').is(':checked') ) {
-            focusG.selectAll('.bubble-map-xlabel')
-                .text((d)=>bmap.rsLookUp[d]);
-        } else {
-            focusG.selectAll('.bubble-map-xlabel')
-                .text((d)=>bmap.varLookUp[d]);
-        }
-
-    });
-}
-
-/**
- * Render the LD related filters
- * @param id {String} the <div> ID for rendering the filters
- * @param ldMap {HalfMap} of the LD
- * @param ldCanvas {D3} canvas object of the LD
- * @param ldG {D3} the <g> of the LD
- * @param ldConfig {Object} of the ld config
- */
-function renderLDFilters(id, ldMap, ldCanvas, ldG, ldConfig){
-    checkDomId(id);
-    let panels = [
-        {
-            id: 'ldPanel',
-            class: 'col-xs-12 col-sm-6 col-lg-3',
-            fontSize: '11px',
-            search:  {
-                id: 'ldLimit',
-                size: 3,
-                value: 0,
-                label: 'LD cutoff R<sup>2</sup>>='
-            },
-            slider: {
-                id: 'ldSlider',
-                type: 'range',
-                min: 0,
-                max: 1,
-                step: 0.1,
-                value: 0
-            },
-        }
-    ];
-    panelBuilder(panels, id);
-
-    // define the filter events:
-    let minLd = 0;
-
-    const updateLD = ()=>{
-        ldMap.filteredData = ldMap._filter(ldMap.data, minLd);
-        ldG.selectAll("*").remove();
-        ldMap.draw(ldCanvas, ldG, ldConfig, [0,1], false, undefined)
-    };
-     //---- LD filter events
-    $('#ldLimit').keydown((e)=>{
-        if(e.keyCode == 13) {
-            let v = parseFloat($('#ldLimit').val());
-            minLd = v;
-            updateLD();
-        }
-    });
-
-    $('#ldSlider').on('change mousemove', ()=>{
-        let v = $('#ldSlider').val();
-        $('#ldLimit').val(v);
-        minLd = v;
-        updateLD();
     });
 }
 

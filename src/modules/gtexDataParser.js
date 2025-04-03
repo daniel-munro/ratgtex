@@ -17,7 +17,7 @@ export function getGtexUrls(){
 
         // eqtl Dashboard specific
         // dyneqtl: host + 'association/dyneqtl',
-        dyneqtl: host + 'dyneqtl?geneId=',
+        dyneqtl: host + 'dyneqtl?',
         // snp: host + 'reference/variant?format=json&snpId=',
         // variantId: host + 'dataset/variant?format=json&variantId=',
         variantId: host + 'variant?variantId=',

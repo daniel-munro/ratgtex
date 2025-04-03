@@ -203,7 +203,8 @@ exons = pd.read_csv("../data/exon.v3.txt", sep="\t", dtype={"chromosome": str})
 
 top_assoc = pd.read_csv(
     "../data/eqtl/top_assoc.v3_rn7.txt", sep="\t", index_col=["tissue", "gene_id"]
-)  # Just for pval_nominal_threshold
+)
+top_assoc = top_assoc[["pval_nominal_threshold"]]
 eqtls = load_eqtls("../data/eqtl/eqtls_indep.v3_rn7.txt")
 sqtls = load_sqtls("../data/splice/sqtls_indep.v3_rn7.txt")
 
@@ -216,16 +217,15 @@ def dyneqtl():
     variant = request.args.get("variantId")
     gene = request.args.get("geneId")
     tissue = request.args.get("tissueSiteDetailId")
-    version = request.args.get("version")
-    expr = iqn[version][tissue].loc[gene, :]
-    rec = variant_record(variant, vcf[version][dataset[version][tissue]])
+    expr = iqn[tissue].loc[gene, :]
+    rec = variant_record(variant, ref_vcf)
     assert len(rec.alts) == 1, f"Multiple alt alleles: {variant}"
     gt = rec.samples
     geno = [genotype(gt[ind]["GT"]) for ind in expr.index]
     # ignoring error, nes, tStatistic, timing
     counts = [int(np.sum(np.array(geno) == x)) for x in [0, 1, 2]]
-    pval = cis_pval(tissue, version, gene, variant)
-    thresh = top_assoc[version].loc[(tissue, gene), "pval_nominal_threshold"]
+    pval = cis_pval(tissue, gene, variant)
+    thresh = top_assoc.loc[(tissue, gene), "pval_nominal_threshold"]
     info = {
         "data": list(expr),
         "geneId": gene,
@@ -292,8 +292,6 @@ def ld():
     d = single_tissue(gene)
     if d is None:
         return jsonify({"ld": []})
-    d["pos"] = [int(x.split(":")[1]) for x in d["variantId"]]
-    d = d.sort_values(by="pos")
     ids = d["variantId"].unique()
     geno = geno_matrix(ids, ref_vcf)
     # ldmat = np.corrcoef(geno) ** 2

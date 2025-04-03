@@ -99,9 +99,9 @@
 
     <script>
         function loadGene(info) {
-            $('#gene-title').text(`Gene: ${info.geneSymbol}`);
-            var desc = `${info.description}, ${info.geneId}, chr${info.chromosome}:${info.start} - ${info.end} (${info.strand})`;
-            $('#gene-description').text(desc);
+            $('#gene-title').html(`Gene: <i>${info.geneId}</i>`);
+            var desc = `${info.description}<br>${info.chromosome}:${info.start}-${info.end} (${info.strand})`;
+            $('#gene-description').html(desc);
             $('#gev-link').attr('href', '/gene-eqtl-visualizer/#' + info.geneId);
             info.statusInTissue.forEach(function(tissue) {
                 var status = `<p><strong>${tissue.tissueSiteDetailId}:</strong>`;
@@ -148,7 +148,7 @@
 
             $.ajax({
                 dataType: 'json',
-                url: `/api/v3/eqtl?version=${window.version}&geneId=${info.geneId}`,
+                url: `/api/v3/eqtl?geneId=${info.geneId}`,
                 success: function (data) {
                     $('#eqtl-table').append('<thead><tr><th>Tissue</th><th>Representative Variant ID</th><th>Ref</th><th>Alt</th><th>Adjusted P-Value</th><th>log<sub>2</sub>aFC</th></tr></thead><tbody>');
                     var cols = ['tissueSiteDetailId', 'variantId', 'ref', 'alt', 'pval_beta', 'log2_aFC'];
@@ -168,7 +168,7 @@
 
             $.ajax({
                 dataType: 'json',
-                url: `/api/v3/singleTissueEqtl?version=${window.version}&geneId=${info.geneId}`,
+                url: `/api/v3/singleTissueEqtl?geneId=${info.geneId}`,
                 success: function (data) {
                     // $('#eqtl-all-table').append('<thead><tr><th>Gene ID</th><th>Gene Symbol</th><th>Variant ID</th><th>P-Value</th><th>NES</th><th>Tissue</th></tr></thead><tbody>');
                     // var cols = ['geneId', 'geneSymbol', 'variantId', 'pValue', 'nes', 'tissueSiteDetailId'];
@@ -190,7 +190,7 @@
 
             $.ajax({
                 dataType: 'json',
-                url: `/api/v3/sqtl?version=${window.version}&geneId=${info.geneId}`,
+                url: `/api/v3/sqtl?geneId=${info.geneId}`,
                 success: function (data) {
                     $('#sqtl-table').append('<thead><tr><th>Tissue</th><th>Splice Junction ID</th><th>Representative Variant ID</th><th>Ref</th><th>Alt</th><th>Adjusted P-Value</th></tr></thead><tbody>');
                     var cols = ['tissueSiteDetailId', 'phenotypeId', 'variantId', 'ref', 'alt', 'pval_beta'];
@@ -211,14 +211,10 @@
         }
 
         $(document).ready(function () {
-            // var path = window.location.pathname.split('/');
-            // var gene = path[path.length - 1];
             var gene = window.location.hash.slice(1);  // slice removes hash
-            // var field = gene.substring(0, 7) == 'ENSRNOG' ? 'geneId' : 'geneSymbol';
             $.ajax({
                 dataType: 'json',
-                // url: `/api/v1/gene?${field}=${gene}`,
-                url: `/api/v3/gene?version=${window.version}&geneId=${gene}`,
+                url: `/api/v3/gene?geneId=${gene}`,
                 success: function (data) {
                     if (data.gene.length == 0) {
                         $('#gene-not-found').text(`Gene not found: ${gene}`);

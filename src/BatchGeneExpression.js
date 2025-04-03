@@ -94,7 +94,7 @@ export function launch(formId, menuId, submitId, heatmapRootId, violinRootId, ur
                     $(`#${formId}`).removeClass("in"); // for boostrap 3
 
                 // get the input list of genes
-                let glist = $('#genes').val().replace(/ /g, '').replace(/\n/g,'').toUpperCase().split(',').filter((d)=>d!='');
+                let glist = $('#genes').val().replace(/ /g, '').replace(/\n/g,'').split(',').filter((d)=>d!='');
                 if (glist.length == 0){
                     alert('Input Error: At least one gene must be provided.');
                     throw('Gene input error');
@@ -229,7 +229,8 @@ export function searchById(heatmapRootId, violinRootId, glist, tlist=undefined, 
 
 
                         select("#" + dmap.config.panels.main.id).selectAll(".exp-map-ylabel")
-                            .text((d) => geneDict[d]===undefined?d:geneDict[d].geneSymbol);
+                            // .text((d) => geneDict[d]===undefined?d:geneDict[d].geneSymbol);
+                            .text((d) => d);
 
                         // Add tissue color boxes //
                         _addTissueColors(dmap, tissueDict);
@@ -266,9 +267,10 @@ function _validateGenes(domId, genes, input){
             genes.forEach((g)=>{
                 // compile a list of all known IDs
                 allIds.push(g.geneId);
-                allIds.push(g.geneSymbolUpper);
+                // allIds.push(g.geneSymbolUpper);
             });
-            let missingGenes = input.filter((g)=>!allIds.includes(g.toLowerCase())&&!allIds.includes(g.toUpperCase()));
+            // let missingGenes = input.filter((g)=>!allIds.includes(g.toLowerCase())&&!allIds.includes(g.toUpperCase()));
+            let missingGenes = input.filter((g)=>!allIds.includes(g));
             if (missingGenes.length > 0) message = `Warning: Not all genes are found: ${missingGenes.join(",")}<br/>`;
         }
     }
@@ -346,7 +348,8 @@ function _customizeMouseEvents(dmap, tissueDict, geneDict, urls=getGtexUrls()) {
         const selected = select(this);
         dmap.objects.heatmap.cellMouseover(d, svg, selected); // call the default heatmap mouse over event first
         let tissue = tissueDict[d.x]===undefined?d.x:tissueDict[d.x].tissueSiteDetail;
-        let gene = geneDict[d.y]===undefined?d.y:geneDict[d.y].geneSymbol;
+        // let gene = geneDict[d.y]===undefined?d.y:geneDict[d.y].geneSymbol;
+        let gene = d.y;
 
         tooltip.show(`Tissue: ${tissue}<br/> Gene: ${gene}<br/> Median TPM: ${parseFloat(d.displayValue.toExponential()).toPrecision(4)}`)
 
