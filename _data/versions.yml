@@ -1,0 +1,98 @@
+v1:
+  genome: rn6
+  tissues:
+    - id: Adipose
+      name: Adipose
+    - id: BLA
+      name: Basolateral amygdala
+    - id: Brain
+      name: Brain hemisphere
+    - id: Eye
+      name: Eye
+    - id: IL
+      name: Infralimbic cortex
+    - id: LHb
+      name: Lateral habenula
+    - id: Liver
+      name: Liver
+    - id: NAcc1
+      name: Nucleus accumbens core (P50DA037844 Y1-5)
+    - id: NAcc2
+      name: Nucleus accumbens core (U01DA046077)
+    - id: OFC
+      name: Orbitofrontal cortex
+    - id: PL1
+      name: Prelimbic cortex (P50DA037844 Y1-5)
+    - id: PL2
+      name: Prelimbic cortex (U01DA046077)
+
+v2:
+  genome: rn7
+  tissues:
+    - id: Adipose
+      name: Adipose
+    - id: BLA
+      name: Basolateral amygdala
+    - id: Brain
+      name: Brain hemisphere
+    - id: Eye
+      name: Eye
+    - id: IL
+      name: Infralimbic cortex
+    - id: LHb
+      name: Lateral habenula
+    - id: Liver
+      name: Liver
+    - id: NAcc1
+      name: Nucleus accumbens core (P50DA037844 Y1-5)
+    - id: NAcc2
+      name: Nucleus accumbens core (U01DA046077)
+    - id: OFC
+      name: Orbitofrontal cortex
+    - id: PL1
+      name: Prelimbic cortex (P50DA037844 Y1-5)
+    - id: PL2
+ 
+v3:
+  genome: rn7
+  tissues:
+    - id: Adipose
+      name: Adipose
+    - id: BLA
+      name: Basolateral amygdala
+    - id: Brain
+      name: Brain hemisphere
+    - id: Eye
+      name: Eye
+    - id: IL
+      name: Infralimbic cortex
+    - id: LHb
+      name: Lateral habenula
+    - id: Liver
+      name: Liver
+    - id: NAcc
+      name: Nucleus accumbens core
+    - id: OFC
+      name: Orbitofrontal cortex
+    - id: PL
+      name: Prelimbic cortex
+    - id: pVTA
+      name: Posterior ventral tegmental area
+    - id: RMTg
+      name: Rostromedial tegmental nucleus
+
+v3_unmerged:
+  genome: rn7
+  tissues:
+    - id: NAcc1
+      name: Nucleus accumbens core (P50DA037844 Y1-5)
+    - id: NAcc2
+      name: Nucleus accumbens core (U01DA046077)
+    - id: NAcc3
+      name: Nucleus accumbens core (P50DA037844 Y5-10)
+    - id: PL1
+      name: Prelimbic cortex (P50DA037844 Y1-5)
+    - id: PL2
+      name: Prelimbic cortex (U01DA046077)
+    - id: PL3
+      name: Prelimbic cortex (P50DA037844 Y5-10)

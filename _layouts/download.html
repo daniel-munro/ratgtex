@@ -25,7 +25,7 @@
     <script src="/assets/js/main.js"></script>
 
 
-    <title>Download | RatGTEx</title>
+    <title>Download • RatGTEx</title>
 </head>
 
 <body>
@@ -33,68 +33,45 @@
 
     <div class="container">
 
+        {% assign version = page.version %}
+        {% assign genome = site.data.versions[version].genome %}
+        {% assign tissues = site.data.versions[version].tissues %}
+
         <h1>Download data</h1>
 
-        <p>See the <a href="/about/#data-specs">About page</a> for processing and data format specifications.</p>
+        <p>See the <a href="/about/#data-specs">About page</a> for processing, data format, and RatGTEx version number specifications. File names include the version number, and files that include genomic coordinates also include the genome build for clarity, even though only one genome build is used for each version.</p>
 
-        <p><a href="/data/{{ page.genome }}.gene.txt">Gene info</a></p>
+        <p><a href="/data/gene.{{ version }}.txt">Gene info</a></p>
 
         <h2>Gene expression</h2>
 
         <p>
-            <a href="/data/{{ page.genome }}.medianGeneExpression.txt.gz">Median TPM per gene per tissue</a>
+            <a href="/data/medianGeneExpression.{{ version }}.txt.gz">Median TPM per gene per tissue</a>
             <em style="color: gray;">Used for heatmap visualizations</em>
         </p>
 
         <strong>log2(readcount+1)</strong>
         <em style="color: gray;">Used to compute allelic fold change</em>
         <p>
-            <a href="/data/expr/Adipose.{{ page.genome }}.expr.log2.bed.gz">Adipose</a> |
-            <a href="/data/expr/BLA.{{ page.genome }}.expr.log2.bed.gz">BLA</a> |
-            <a href="/data/expr/Brain.{{ page.genome }}.expr.log2.bed.gz">Brain</a> |
-            <a href="/data/expr/Eye.{{ page.genome }}.expr.log2.bed.gz">Eye</a> |
-            <a href="/data/expr/IL.{{ page.genome }}.expr.log2.bed.gz">IL</a> |
-            <a href="/data/expr/LHb.{{ page.genome }}.expr.log2.bed.gz">LHb</a> |
-            <a href="/data/expr/Liver.{{ page.genome }}.expr.log2.bed.gz">Liver</a> |
-            <a href="/data/expr/NAcc.{{ page.genome }}.expr.log2.bed.gz">NAcc</a> |
-            <a href="/data/expr/NAcc2.{{ page.genome }}.expr.log2.bed.gz">NAcc2</a> |
-            <a href="/data/expr/OFC.{{ page.genome }}.expr.log2.bed.gz">OFC</a> |
-            <a href="/data/expr/PL.{{ page.genome }}.expr.log2.bed.gz">PL</a> |
-            <a href="/data/expr/PL2.{{ page.genome }}.expr.log2.bed.gz">PL2</a>
+            {% for tissue in tissues %}
+            <a href="/data/expr/expr.log2.{{ tissue.id }}.{{ version }}_{{ genome }}.bed.gz" title="{{ tissue.name }}">{{ tissue.id }}</a>{% unless forloop.last %} • {% endunless %}
+            {% endfor %}
         </p>
 
         <strong>TPM (transcripts per million)</strong>
         <em style="color: gray;">Relative abundance of transcripts</em>
         <p>
-            <a href="/data/expr/Adipose.{{ page.genome }}.expr.tpm.bed.gz">Adipose</a> |
-            <a href="/data/expr/BLA.{{ page.genome }}.expr.tpm.bed.gz">BLA</a> |
-            <a href="/data/expr/Brain.{{ page.genome }}.expr.tpm.bed.gz">Brain</a> |
-            <a href="/data/expr/Eye.{{ page.genome }}.expr.tpm.bed.gz">Eye</a> |
-            <a href="/data/expr/IL.{{ page.genome }}.expr.tpm.bed.gz">IL</a> |
-            <a href="/data/expr/LHb.{{ page.genome }}.expr.tpm.bed.gz">LHb</a> |
-            <a href="/data/expr/Liver.{{ page.genome }}.expr.tpm.bed.gz">Liver</a> |
-            <a href="/data/expr/NAcc.{{ page.genome }}.expr.tpm.bed.gz">NAcc</a> |
-            <a href="/data/expr/NAcc2.{{ page.genome }}.expr.tpm.bed.gz">NAcc2</a> |
-            <a href="/data/expr/OFC.{{ page.genome }}.expr.tpm.bed.gz">OFC</a> |
-            <a href="/data/expr/PL.{{ page.genome }}.expr.tpm.bed.gz">PL</a> |
-            <a href="/data/expr/PL2.{{ page.genome }}.expr.tpm.bed.gz">PL2</a>
+            {% for tissue in tissues %}
+            <a href="/data/expr/expr.tpm.{{ tissue.id }}.{{ version }}_{{ genome }}.bed.gz" title="{{ tissue.name }}">{{ tissue.id }}</a>{% unless forloop.last %} • {% endunless %}
+            {% endfor %}
         </p>
 
         <strong>Inverse-quantile normalized</strong>
         <em style="color: gray;">Used for eQTL mapping</em>
         <p>
-            <a href="/data/expr/Adipose.{{ page.genome }}.expr.iqn.bed.gz">Adipose</a> |
-            <a href="/data/expr/BLA.{{ page.genome }}.expr.iqn.bed.gz">BLA</a> |
-            <a href="/data/expr/Brain.{{ page.genome }}.expr.iqn.bed.gz">Brain</a> |
-            <a href="/data/expr/Eye.{{ page.genome }}.expr.iqn.bed.gz">Eye</a> |
-            <a href="/data/expr/IL.{{ page.genome }}.expr.iqn.bed.gz">IL</a> |
-            <a href="/data/expr/LHb.{{ page.genome }}.expr.iqn.bed.gz">LHb</a> |
-            <a href="/data/expr/Liver.{{ page.genome }}.expr.iqn.bed.gz">Liver</a> |
-            <a href="/data/expr/NAcc.{{ page.genome }}.expr.iqn.bed.gz">NAcc</a> |
-            <a href="/data/expr/NAcc2.{{ page.genome }}.expr.iqn.bed.gz">NAcc2</a> |
-            <a href="/data/expr/OFC.{{ page.genome }}.expr.iqn.bed.gz">OFC</a> |
-            <a href="/data/expr/PL.{{ page.genome }}.expr.iqn.bed.gz">PL</a> |
-            <a href="/data/expr/PL2.{{ page.genome }}.expr.iqn.bed.gz">PL2</a>
+            {% for tissue in tissues %}
+            <a href="/data/expr/expr.iqn.{{ tissue.id }}.{{ version }}_{{ genome }}.bed.gz" title="{{ tissue.name }}">{{ tissue.id }}</a>{% unless forloop.last %} • {% endunless %}
+            {% endfor %}
         </p>
 
         <br>
@@ -107,11 +84,11 @@
 
         <p>
             <ul>
-                <li><a href="/data/geno/BLA_NAcc2_PL2.{{ page.genome }}.vcf.gz">BLA_NAcc2_PL2.{{ page.genome }}.vcf.gz</a></li>
-                <li><a href="/data/geno/Eye.{{ page.genome }}.vcf.gz">Eye.{{ page.genome }}.vcf.gz</a></li>
-                <li><a href="/data/geno/IL_LHb_NAcc_OFC_PL.{{ page.genome }}.vcf.gz">IL_LHb_NAcc_OFC_PL.{{ page.genome }}.vcf.gz</a></li>
-                <li><a href="/data/geno/Adipose_Liver.{{ page.genome }}.vcf.gz">Adipose_Liver.{{ page.genome }}.vcf.gz</a></li>
-                <li><a href="/data/geno/Brain.{{ page.genome }}.vcf.gz">Brain.{{ page.genome }}.vcf.gz</a></li>
+                <li><a href="/data/geno/BLA_NAcc2_PL2.{{ genome }}.vcf.gz">BLA_NAcc2_PL2.{{ genome }}.vcf.gz</a></li>
+                <li><a href="/data/geno/Eye.{{ genome }}.vcf.gz">Eye.{{ genome }}.vcf.gz</a></li>
+                <li><a href="/data/geno/IL_LHb_NAcc_OFC_PL.{{ genome }}.vcf.gz">IL_LHb_NAcc_OFC_PL.{{ genome }}.vcf.gz</a></li>
+                <li><a href="/data/geno/Adipose_Liver.{{ genome }}.vcf.gz">Adipose_Liver.{{ genome }}.vcf.gz</a></li>
+                <li><a href="/data/geno/Brain.{{ genome }}.vcf.gz">Brain.{{ genome }}.vcf.gz</a></li>
             </ul>
         </p>
         
@@ -119,26 +96,17 @@
 
         <h2>Other info</h2>
 
-        <p><a href="/data/ref/{{ page.genome }}.RatGTEx_rats.tsv">Rat info (all tissues)</a></p>
+        <p><a href="/data/ref/RatGTEx_rats.{{ version }}.tsv">Rat info (all tissues)</a></p>
 
-        <p><a href="/data/ref/{{ page.genome }}.RatGTEx_samples.tsv">Sample info (all tissues)</a></p>
+        <p><a href="/data/ref/RatGTEx_samples.{{ version }}.tsv">Sample info (all tissues)</a></p>
 
         <strong>Rat IDs</strong>
         <em style="color: gray;">The final QC-filtered sample sets used for eQTL mapping</em>
         <br>
         <p>
-            <a href="/data/rat_ids/Adipose.{{ page.genome }}.rat_ids.txt">Adipose</a> |
-            <a href="/data/rat_ids/BLA.{{ page.genome }}.rat_ids.txt">BLA</a> |
-            <a href="/data/rat_ids/Brain.{{ page.genome }}.rat_ids.txt">Brain</a> |
-            <a href="/data/rat_ids/Eye.{{ page.genome }}.rat_ids.txt">Eye</a> |
-            <a href="/data/rat_ids/IL.{{ page.genome }}.rat_ids.txt">IL</a> |
-            <a href="/data/rat_ids/LHb.{{ page.genome }}.rat_ids.txt">LHb</a> |
-            <a href="/data/rat_ids/Liver.{{ page.genome }}.rat_ids.txt">Liver</a> |
-            <a href="/data/rat_ids/NAcc.{{ page.genome }}.rat_ids.txt">NAcc</a> |
-            <a href="/data/rat_ids/NAcc2.{{ page.genome }}.rat_ids.txt">NAcc2</a> |
-            <a href="/data/rat_ids/OFC.{{ page.genome }}.rat_ids.txt">OFC</a> |
-            <a href="/data/rat_ids/PL.{{ page.genome }}.rat_ids.txt">PL</a> |
-            <a href="/data/rat_ids/PL2.{{ page.genome }}.rat_ids.txt">PL2</a>
+            {% for tissue in tissues %}
+            <a href="/data/rat_ids/rat_ids.{{ tissue.id }}.{{ version }}.txt" title="{{ tissue.name }}">{{ tissue.id }}</a>{% unless forloop.last %} • {% endunless %}
+            {% endfor %}
         </p>
 
         <strong>RNA-Seq FASTQ file lists</strong>
@@ -147,35 +115,17 @@
         Each line includes one FASTQ path for single-end reads, or two FASTQ paths for paired-end reads, followed by the rat ID. FASTQ maps can include a mix of single-end and paired-end rows. These files may include mappings to samples that were filtered out during QC, so use the rat ID lists above to get the final sample sets.
         <br>
         <p>
-            <a href="/data/fastq_map/Adipose.{{ page.genome }}.fastq_map.txt">Adipose</a> |
-            <a href="/data/fastq_map/BLA.{{ page.genome }}.fastq_map.txt">BLA</a> |
-            <a href="/data/fastq_map/Brain.{{ page.genome }}.fastq_map.txt">Brain</a> |
-            <a href="/data/fastq_map/Eye.{{ page.genome }}.fastq_map.txt">Eye</a> |
-            <a href="/data/fastq_map/IL.{{ page.genome }}.fastq_map.txt">IL</a> |
-            <a href="/data/fastq_map/LHb.{{ page.genome }}.fastq_map.txt">LHb</a> |
-            <a href="/data/fastq_map/Liver.{{ page.genome }}.fastq_map.txt">Liver</a> |
-            <a href="/data/fastq_map/NAcc.{{ page.genome }}.fastq_map.txt">NAcc</a> |
-            <a href="/data/fastq_map/NAcc2.{{ page.genome }}.fastq_map.txt">NAcc2</a> |
-            <a href="/data/fastq_map/OFC.{{ page.genome }}.fastq_map.txt">OFC</a> |
-            <a href="/data/fastq_map/PL.{{ page.genome }}.fastq_map.txt">PL</a> |
-            <a href="/data/fastq_map/PL2.{{ page.genome }}.fastq_map.txt">PL2</a>
+            {% for tissue in tissues %}
+            <a href="/data/fastq_map/fastq_map.{{ tissue.id }}.{{ version }}.txt" title="{{ tissue.name }}">{{ tissue.id }}</a>{% unless forloop.last %} • {% endunless %}
+            {% endfor %}
         </p>
 
         <strong>Covariates</strong>
         <em style="color: gray;">used for eQTL mapping</em>
         <p>
-            <a href="/data/covar/Adipose.{{ page.genome }}.covar.txt">Adipose</a> |
-            <a href="/data/covar/BLA.{{ page.genome }}.covar.txt">BLA</a> |
-            <a href="/data/covar/Brain.{{ page.genome }}.covar.txt">Brain</a> |
-            <a href="/data/covar/Eye.{{ page.genome }}.covar.txt">Eye</a> |
-            <a href="/data/covar/IL.{{ page.genome }}.covar.txt">IL</a> |
-            <a href="/data/covar/LHb.{{ page.genome }}.covar.txt">LHb</a> |
-            <a href="/data/covar/Liver.{{ page.genome }}.covar.txt">Liver</a> |
-            <a href="/data/covar/NAcc.{{ page.genome }}.covar.txt">NAcc</a> |
-            <a href="/data/covar/NAcc2.{{ page.genome }}.covar.txt">NAcc2</a> |
-            <a href="/data/covar/OFC.{{ page.genome }}.covar.txt">OFC</a> |
-            <a href="/data/covar/PL.{{ page.genome }}.covar.txt">PL</a> |
-            <a href="/data/covar/PL2.{{ page.genome }}.covar.txt">PL2</a>
+            {% for tissue in tissues %}
+            <a href="/data/covar/covar.{{ tissue.id }}.{{ version }}.txt" title="{{ tissue.name }}">{{ tissue.id }}</a>{% unless forloop.last %} • {% endunless %}
+            {% endfor %}
         </p>
 
         <br>
@@ -183,7 +133,7 @@
         <h2>eQTLs</h2>
 
         <p>
-            <strong><a href="/data/eqtl/{{ page.genome }}.eqtls_indep.txt">Conditionally independent cis-eQTLs</a></strong>
+            <strong><a href="/data/eqtl/eqtls_indep.{{ version }}_{{ genome }}.txt">Conditionally independent cis-eQTLs</a></strong>
             <br>
             A table of cis-eQTLs from all tissues.
         </p>
@@ -191,22 +141,13 @@
         <strong>All significant cis-eQTL variant-gene pairs</strong>
 
         <p>
-            <a href="/data/eqtl/Adipose.{{ page.genome }}.cis_qtl_signif.txt.gz">Adipose</a> |
-            <a href="/data/eqtl/BLA.{{ page.genome }}.cis_qtl_signif.txt.gz">BLA</a> |
-            <a href="/data/eqtl/Brain.{{ page.genome }}.cis_qtl_signif.txt.gz">Brain</a> |
-            <a href="/data/eqtl/Eye.{{ page.genome }}.cis_qtl_signif.txt.gz">Eye</a> |
-            <a href="/data/eqtl/IL.{{ page.genome }}.cis_qtl_signif.txt.gz">IL</a> |
-            <a href="/data/eqtl/LHb.{{ page.genome }}.cis_qtl_signif.txt.gz">LHb</a> |
-            <a href="/data/eqtl/Liver.{{ page.genome }}.cis_qtl_signif.txt.gz">Liver</a> |
-            <a href="/data/eqtl/NAcc.{{ page.genome }}.cis_qtl_signif.txt.gz">NAcc</a> |
-            <a href="/data/eqtl/NAcc2.{{ page.genome }}.cis_qtl_signif.txt.gz">NAcc2</a> |
-            <a href="/data/eqtl/OFC.{{ page.genome }}.cis_qtl_signif.txt.gz">OFC</a> |
-            <a href="/data/eqtl/PL.{{ page.genome }}.cis_qtl_signif.txt.gz">PL</a> |
-            <a href="/data/eqtl/PL2.{{ page.genome }}.cis_qtl_signif.txt.gz">PL2</a>
+            {% for tissue in tissues %}
+            <a href="/data/eqtl/cis_qtl_signif.{{ tissue.id }}.{{ version }}_{{ genome }}.txt.gz" title="{{ tissue.name }}">{{ tissue.id }}</a>{% unless forloop.last %} • {% endunless %}
+            {% endfor %}
         </p>
 
         <p>
-            <strong><a href="/data/eqtl/{{ page.genome }}.top_assoc.txt">Top association per gene</a></strong>
+            <strong><a href="/data/eqtl/top_assoc.{{ version }}_{{ genome }}.txt">Top association per gene</a></strong>
             <br>
             A table of the strongest variant-gene association per gene per tissue, even if not significant. A
             q-value threshold of 0.05 was used to determine significant eQTLs.
@@ -216,18 +157,9 @@
         <br>
         All SNP-gene associations genome-wide with TSS distance &gt; 5 Mb and with an arbitrary cutoff of p &lt; 1e-5. No significance testing was performed.
         <p>
-            <a href="/data/eqtl/Adipose.{{ page.genome }}.trans_qtl_pairs.txt.gz">Adipose</a> |
-            <a href="/data/eqtl/BLA.{{ page.genome }}.trans_qtl_pairs.txt.gz">BLA</a> |
-            <a href="/data/eqtl/Brain.{{ page.genome }}.trans_qtl_pairs.txt.gz">Brain</a> |
-            <a href="/data/eqtl/Eye.{{ page.genome }}.trans_qtl_pairs.txt.gz">Eye</a> |
-            <a href="/data/eqtl/IL.{{ page.genome }}.trans_qtl_pairs.txt.gz">IL</a> |
-            <a href="/data/eqtl/LHb.{{ page.genome }}.trans_qtl_pairs.txt.gz">LHb</a> |
-            <a href="/data/eqtl/Liver.{{ page.genome }}.trans_qtl_pairs.txt.gz">Liver</a> |
-            <a href="/data/eqtl/NAcc.{{ page.genome }}.trans_qtl_pairs.txt.gz">NAcc</a> |
-            <a href="/data/eqtl/NAcc2.{{ page.genome }}.trans_qtl_pairs.txt.gz">NAcc2</a> |
-            <a href="/data/eqtl/OFC.{{ page.genome }}.trans_qtl_pairs.txt.gz">OFC</a> |
-            <a href="/data/eqtl/PL.{{ page.genome }}.trans_qtl_pairs.txt.gz">PL</a> |
-            <a href="/data/eqtl/PL2.{{ page.genome }}.trans_qtl_pairs.txt.gz">PL2</a>
+            {% for tissue in tissues %}
+            <a href="/data/eqtl/trans_qtl_pairs.{{ tissue.id }}.{{ version }}_{{ genome }}.txt.gz" title="{{ tissue.name }}">{{ tissue.id }}</a>{% unless forloop.last %} • {% endunless %}
+            {% endfor %}
         </p>
 
         <br>
@@ -237,61 +169,34 @@
         <strong>Splice phenotypes</strong>
         <em style="color: gray;">Relative usage of splice junctions within junction clusters</em>
         <p>
-            <a href="/data/splice/Adipose.{{ page.genome }}.leafcutter.bed.gz">Adipose</a> |
-            <a href="/data/splice/BLA.{{ page.genome }}.leafcutter.bed.gz">BLA</a> |
-            <a href="/data/splice/Brain.{{ page.genome }}.leafcutter.bed.gz">Brain</a> |
-            <a href="/data/splice/Eye.{{ page.genome }}.leafcutter.bed.gz">Eye</a> |
-            <a href="/data/splice/IL.{{ page.genome }}.leafcutter.bed.gz">IL</a> |
-            <a href="/data/splice/LHb.{{ page.genome }}.leafcutter.bed.gz">LHb</a> |
-            <a href="/data/splice/Liver.{{ page.genome }}.leafcutter.bed.gz">Liver</a> |
-            <a href="/data/splice/NAcc.{{ page.genome }}.leafcutter.bed.gz">NAcc</a> |
-            <a href="/data/splice/NAcc2.{{ page.genome }}.leafcutter.bed.gz">NAcc2</a> |
-            <a href="/data/splice/OFC.{{ page.genome }}.leafcutter.bed.gz">OFC</a> |
-            <a href="/data/splice/PL.{{ page.genome }}.leafcutter.bed.gz">PL</a> |
-            <a href="/data/splice/PL2.{{ page.genome }}.leafcutter.bed.gz">PL2</a>
+            {% for tissue in tissues %}
+            <a href="/data/splice/leafcutter.{{ tissue.id }}.{{ version }}_{{ genome }}.bed.gz" title="{{ tissue.name }}">{{ tissue.id }}</a>{% unless forloop.last %} • {% endunless %}
+            {% endfor %}
         </p>
 
         <strong>Covariates</strong>
         <em style="color: gray;">used for sQTL mapping</em>
         <p>
-            <a href="/data/splice/Adipose.{{ page.genome }}.covar_splice.txt">Adipose</a> |
-            <a href="/data/splice/BLA.{{ page.genome }}.covar_splice.txt">BLA</a> |
-            <a href="/data/splice/Brain.{{ page.genome }}.covar_splice.txt">Brain</a> |
-            <a href="/data/splice/Eye.{{ page.genome }}.covar_splice.txt">Eye</a> |
-            <a href="/data/splice/IL.{{ page.genome }}.covar_splice.txt">IL</a> |
-            <a href="/data/splice/LHb.{{ page.genome }}.covar_splice.txt">LHb</a> |
-            <a href="/data/splice/Liver.{{ page.genome }}.covar_splice.txt">Liver</a> |
-            <a href="/data/splice/NAcc.{{ page.genome }}.covar_splice.txt">NAcc</a> |
-            <a href="/data/splice/NAcc2.{{ page.genome }}.covar_splice.txt">NAcc2</a> |
-            <a href="/data/splice/OFC.{{ page.genome }}.covar_splice.txt">OFC</a> |
-            <a href="/data/splice/PL.{{ page.genome }}.covar_splice.txt">PL</a> |
-            <a href="/data/splice/PL2.{{ page.genome }}.covar_splice.txt">PL2</a>
+            {% for tissue in tissues %}
+            <a href="/data/splice/covar_splice.{{ tissue.id }}.{{ version }}.txt" title="{{ tissue.name }}">{{ tissue.id }}</a>{% unless forloop.last %} • {% endunless %}
+            {% endfor %}
         </p>
 
         <p>
-            <strong><a href="/data/splice/{{ page.genome }}.sqtls_indep.txt">Conditionally independent cis-sQTLs</a></strong>
+            <strong><a href="/data/splice/sqtls_indep.{{ version }}_{{ genome }}.txt">Conditionally independent cis-sQTLs</a></strong>
             <br>
             A table of cis-sQTLs from all tissues.
         </p>
 
         <strong>All significant cis-sQTL variant-phenotype pairs</strong>
         <p>
-            <a href="/data/splice/Adipose.{{ page.genome }}.splice.cis_qtl_signif.txt.gz">Adipose</a> |
-            <a href="/data/splice/BLA.{{ page.genome }}.splice.cis_qtl_signif.txt.gz">BLA</a> |
-            <a href="/data/splice/Brain.{{ page.genome }}.splice.cis_qtl_signif.txt.gz">Brain</a> |
-            <a href="/data/splice/Eye.{{ page.genome }}.splice.cis_qtl_signif.txt.gz">Eye</a> |
-            <a href="/data/splice/IL.{{ page.genome }}.splice.cis_qtl_signif.txt.gz">IL</a> |
-            <a href="/data/splice/LHb.{{ page.genome }}.splice.cis_qtl_signif.txt.gz">LHb</a> |
-            <a href="/data/splice/Liver.{{ page.genome }}.splice.cis_qtl_signif.txt.gz">Liver</a> |
-            <a href="/data/splice/NAcc.{{ page.genome }}.splice.cis_qtl_signif.txt.gz">NAcc</a> |
-            <a href="/data/splice/NAcc2.{{ page.genome }}.splice.cis_qtl_signif.txt.gz">NAcc2</a> |
-            <a href="/data/splice/OFC.{{ page.genome }}.splice.cis_qtl_signif.txt.gz">OFC</a> |
-            <a href="/data/splice/PL.{{ page.genome }}.splice.cis_qtl_signif.txt.gz">PL</a> |
-            <a href="/data/splice/PL2.{{ page.genome }}.splice.cis_qtl_signif.txt.gz">PL2</a>
+            {% for tissue in tissues %}
+            <a href="/data/splice/splice.cis_qtl_signif.{{ tissue.id }}.{{ version }}_{{ genome }}.txt.gz" title="{{ tissue.name }}">{{ tissue.id }}</a>{% unless forloop.last %} • {% endunless %}
+            {% endfor %}
         </p>
 
         <p>
-            <strong><a href="/data/splice/{{ page.genome }}.top_assoc_splice.txt">Top association per gene</a></strong>
+            <strong><a href="/data/splice/top_assoc_splice.{{ version }}_{{ genome }}.txt">Top association per gene</a></strong>
             <br>
             A table of the strongest variant-gene association per gene per tissue, even if not significant. A
             q-value threshold of 0.05 was used to determine significant sQTLs.
@@ -301,18 +206,9 @@
         <br>
         All SNP-phenotype associations genome-wide with TSS distance &gt; 5 Mb and with an arbitrary cutoff of p &lt; 1e-5. No significance testing was performed.
         <p>
-            <a href="/data/splice/Adipose.{{ page.genome }}.splice.trans_qtl_pairs.txt.gz">Adipose</a> |
-            <a href="/data/splice/BLA.{{ page.genome }}.splice.trans_qtl_pairs.txt.gz">BLA</a> |
-            <a href="/data/splice/Brain.{{ page.genome }}.splice.trans_qtl_pairs.txt.gz">Brain</a> |
-            <a href="/data/splice/Eye.{{ page.genome }}.splice.trans_qtl_pairs.txt.gz">Eye</a> |
-            <a href="/data/splice/IL.{{ page.genome }}.splice.trans_qtl_pairs.txt.gz">IL</a> |
-            <a href="/data/splice/LHb.{{ page.genome }}.splice.trans_qtl_pairs.txt.gz">LHb</a> |
-            <a href="/data/splice/Liver.{{ page.genome }}.splice.trans_qtl_pairs.txt.gz">Liver</a> |
-            <a href="/data/splice/NAcc.{{ page.genome }}.splice.trans_qtl_pairs.txt.gz">NAcc</a> |
-            <a href="/data/splice/NAcc2.{{ page.genome }}.splice.trans_qtl_pairs.txt.gz">NAcc2</a> |
-            <a href="/data/splice/OFC.{{ page.genome }}.splice.trans_qtl_pairs.txt.gz">OFC</a> |
-            <a href="/data/splice/PL.{{ page.genome }}.splice.trans_qtl_pairs.txt.gz">PL</a> |
-            <a href="/data/splice/PL2.{{ page.genome }}.splice.trans_qtl_pairs.txt.gz">PL2</a>
+            {% for tissue in tissues %}
+            <a href="/data/splice/splice.trans_qtl_pairs.{{ tissue.id }}.{{ version }}_{{ genome }}.txt.gz" title="{{ tissue.name }}">{{ tissue.id }}</a>{% unless forloop.last %} • {% endunless %}
+            {% endfor %}
         </p>
 
         <br>
