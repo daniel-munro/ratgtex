@@ -1,6 +1,5 @@
 <!doctype html>
 <html lang="en">
-
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -10,8 +9,6 @@
         integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css"
         integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css"
-        crossorigin="anonymous">
     <link rel="stylesheet" href="/assets/css/main.css">
     <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="96x96" href="/assets/images/favicon-96x96.png">
@@ -24,36 +21,16 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
         crossorigin="anonymous"></script>
-    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js" crossorigin="anonymous"></script>
     <script src="/assets/js/main.js"></script>
 
-    <title>Samples • RatGTEx</title>
+    <title>{% if page.title %}{{ page.title }} • {% endif %}RatGTEx</title>
 </head>
 
 <body>
     {% include navigation.html %}
 
     <div class="container">
-
-        <h1>RatGTEx Samples</h1>
-
-        <h2>Rat table</h2>
-        <p><a href="/data/ref/RatGTEx_rats.{{ page.version }}.tsv">(Download TSV)</a></p>
-
-        {% include rats.{{ page.version }}.html %}
-
-    <hr>
-
-        <h2>Sample table</h2>
-        <p><a href="/data/ref/RatGTEx_samples.{{ page.version }}.tsv">(Download TSV)</a></p>
-
-        {% include samples.{{ page.version }}.html %}
-
+        {{ content }}
     </div>
-    <script>
-        $('#rat-table').DataTable();
-        $('#sample-table').DataTable();
-    </script>
 </body>
-
 </html>

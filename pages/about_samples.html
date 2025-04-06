@@ -1,0 +1,28 @@
+---
+permalink: /about/samples/
+layout: base
+title: Samples
+version: v3
+---
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css" crossorigin="anonymous">
+
+<h1>RatGTEx Samples</h1>
+
+<h2>Rat table</h2>
+<p><a href="/data/ref/RatGTEx_rats.{{ page.version }}.tsv">(Download TSV)</a></p>
+
+{% include rats.{{ page.version }}.html %}
+
+<hr>
+
+<h2>Sample table</h2>
+<p><a href="/data/ref/RatGTEx_samples.{{ page.version }}.tsv">(Download TSV)</a></p>
+
+{% include samples.{{ page.version }}.html %}
+
+<script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js" crossorigin="anonymous"></script>
+<script>
+    $('#rat-table').DataTable();
+    $('#sample-table').DataTable();
+</script>

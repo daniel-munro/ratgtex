@@ -218,7 +218,7 @@ def dyneqtl():
     gene = request.args.get("geneId")
     tissue = request.args.get("tissueSiteDetailId")
     expr = iqn[tissue].loc[gene, :]
-    rec = variant_record(variant, ref_vcf)
+    rec = variant_record(variant, vcf[dataset[tissue]])
     assert len(rec.alts) == 1, f"Multiple alt alleles: {variant}"
     gt = rec.samples
     geno = [genotype(gt[ind]["GT"]) for ind in expr.index]

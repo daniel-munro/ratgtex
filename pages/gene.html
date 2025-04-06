@@ -1,0 +1,203 @@
+---
+permalink: /gene/
+title: Gene Info
+layout: base
+---
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css" crossorigin="anonymous">
+<link rel="stylesheet" type="text/css" href="/assets/css/violin.css">
+<link rel="stylesheet" type="text/css" href="/assets/css/eqtlDashboard.css">
+<link rel="stylesheet" type="text/css" href="/assets/css/tissueGroup.css">
+
+<style>
+    .gene-expr-vplot-option-label {
+        margin-left: 10px;
+        margin-right: 5px;
+    }
+</style>
+
+<div>
+    <h3 id="gene-not-found"></h3>
+</div>
+
+<div id="gene-info">
+
+    <h3 id="gene-title"></h3>
+    <p id="gene-description"></p>
+
+    <h5>Gene expression &amp; eQTL status per tissue</h5>
+    <span id="gene-status"></span>
+
+    <hr class="my-4">
+
+    <h5>Alternative splicing &amp; sQTL status per tissue</h5>
+    <span id="gene-status-splice"></span>
+
+    <hr class="my-4">
+
+    <h5>Expression per tissue</h5>
+    <p><em>If the gene is expressed in very few samples in a tissue, it may not be plotted below, even if it is labeled as "Expressed" in that tissue at the top of this page.</em></p>
+    <div id="gene-expr-vplot" style="max-width: 800px;"></div>
+
+    <hr class="my-4">
+
+    <p>
+        <a id="gev-link" href=""><button class="btn btn-primary">Visualize cis-eQTLs</button></a>
+    </p>
+
+    <hr class="my-4">
+
+    <h5>Significant cis-eQTLs in any tissue</h5>
+    <p><em>Conditionally independent. Top eSNP shown per eQTL, randomly chosen among the top eSNPs in case of
+            ties.</em></p>
+    <table id="eqtl-table"></table>
+
+    <hr class="my-4">
+
+    <h5>All significantly associated cis-window SNPs for the above genes</h5>
+    <table id="eqtl-all-table"></table>
+
+    <hr class="my-4">
+
+    <h5>Significant cis-sQTLs in any tissue</h5>
+    <p><em>Conditionally independent. Top sSNP shown per sQTL, randomly chosen among the top sSNPs in case of
+            ties.</em></p>
+    <table id="sqtl-table"></table>
+
+    <br>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/file-saver@1.3.3/FileSaver.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js" crossorigin="anonymous"></script>
+<script src="/assets/js/gene-expression-violin-plot.bundle.min.js"></script>
+
+<script>
+    function loadGene(info) {
+        $('#gene-title').html(`Gene: <i>${info.geneId}</i>`);
+        var desc = `${info.description}<br>${info.chromosome}:${info.start}-${info.end} (${info.strand})`;
+        $('#gene-description').html(desc);
+        $('#gev-link').attr('href', '/gene-eqtl-visualizer/#' + info.geneId);
+        info.statusInTissue.forEach(function(tissue) {
+            var status = `<p><strong>${tissue.tissueSiteDetailId}:</strong>`;
+            if (tissue.expressed) {
+                status += ' <span class="badge bg-primary">Expressed</span>';
+                if (tissue.testedEqtl) {
+                    status += ' <span class="badge bg-info">Tested for cis-eQTLs</span>';
+                    if (tissue.eqtl) {
+                        status += ' <span class="badge bg-success">At least one cis-eQTL</span>';
+                    } else {
+                        status += ' <span class="badge bg-secondary">No significant cis-eQTLs</span>';
+                    }
+                } else {
+                    status += ' <span class="badge bg-secondary">Not tested for cis-eQTLs</span>';
+                }
+            } else {
+                status += ' <span class="badge bg-secondary">Not expressed</span>';
+            }
+            status += `</p>`;
+            $('#gene-status').append(status);
+        });
+        info.statusInTissue.forEach(function(tissue) {
+            var status = `<p><strong>${tissue.tissueSiteDetailId}:</strong>`;
+            if (tissue.altSplice) {
+                status += ' <span class="badge bg-primary">Alt. spliced</span>';
+                if (tissue.testedSqtl) {
+                    status += ' <span class="badge bg-info">Tested for cis-sQTLs</span>';
+                    if (tissue.sqtl) {
+                        status += ' <span class="badge bg-success">At least one cis-sQTL</span>';
+                    } else {
+                        status += ' <span class="badge bg-secondary">No significant cis-sQTLs</span>';
+                    }
+                } else {
+                    status += ' <span class="badge bg-secondary">Not tested for cis-sQTLs</span>';
+                }
+            } else {
+                status += ' <span class="badge bg-secondary">No alt. splicing detected</span>';
+            }
+            status += `</p>`;
+            $('#gene-status-splice').append(status);
+        });
+
+        GeneExpressionViolinPlot.launch('gene-expr-vplot', 'gene-expr-vplot-tooltip', info.geneId);
+
+        $.ajax({
+            dataType: 'json',
+            url: `/api/v3/eqtl?geneId=${info.geneId}`,
+            success: function (data) {
+                $('#eqtl-table').append('<thead><tr><th>Tissue</th><th>Representative Variant ID</th><th>Ref</th><th>Alt</th><th>Adjusted P-Value</th><th>log<sub>2</sub>aFC</th></tr></thead><tbody>');
+                var cols = ['tissueSiteDetailId', 'variantId', 'ref', 'alt', 'pval_beta', 'log2_aFC'];
+                $(data['eqtl']).each(function (i, rowData) {
+                    var row = $('<tr></tr>');
+                    $(cols).each(function (j, col) {
+                        row.append($(`<td>${rowData[col]}</td>`));
+                    });
+                    $('#eqtl-table').append(row);
+                });
+                $('#eqtl-table').append('</tbody>');
+                $('#eqtl-table').DataTable({
+                    order: [[4, 'asc']] // sort by p-value
+                });
+            }
+        });
+
+        $.ajax({
+            dataType: 'json',
+            url: `/api/v3/singleTissueEqtl?geneId=${info.geneId}`,
+            success: function (data) {
+                // $('#eqtl-all-table').append('<thead><tr><th>Gene ID</th><th>Gene Symbol</th><th>Variant ID</th><th>P-Value</th><th>NES</th><th>Tissue</th></tr></thead><tbody>');
+                // var cols = ['geneId', 'geneSymbol', 'variantId', 'pValue', 'nes', 'tissueSiteDetailId'];
+                $('#eqtl-all-table').append('<thead><tr><th>Tissue</th><th>Variant ID</th><th>P-Value</th><th>NES</th></tr></thead><tbody>');
+                var cols = ['tissueSiteDetailId', 'variantId', 'pValue', 'nes'];
+                $(data['singleTissueEqtl']).each(function (i, rowData) {
+                    var row = $('<tr></tr>');
+                    $(cols).each(function (j, col) {
+                        row.append($(`<td>${rowData[col]}</td>`));
+                    });
+                    $('#eqtl-all-table').append(row);
+                });
+                $('#eqtl-all-table').append('</tbody>');
+                $('#eqtl-all-table').DataTable({
+                    order: [[2, 'asc']] // sort by p-value
+                });
+            }
+        });
+
+        $.ajax({
+            dataType: 'json',
+            url: `/api/v3/sqtl?geneId=${info.geneId}`,
+            success: function (data) {
+                $('#sqtl-table').append('<thead><tr><th>Tissue</th><th>Splice Junction ID</th><th>Representative Variant ID</th><th>Ref</th><th>Alt</th><th>Adjusted P-Value</th></tr></thead><tbody>');
+                var cols = ['tissueSiteDetailId', 'phenotypeId', 'variantId', 'ref', 'alt', 'pval_beta'];
+                $(data['sqtl']).each(function (i, rowData) {
+                    var row = $('<tr></tr>');
+                    $(cols).each(function (j, col) {
+                        row.append($(`<td>${rowData[col]}</td>`));
+                    });
+                    $('#sqtl-table').append(row);
+                });
+                $('#sqtl-table').append('</tbody>');
+                $('#sqtl-table').DataTable({
+                    order: [[5, 'asc']] // sort by p-value
+                });
+            }
+        });
+
+    }
+
+    $(document).ready(function () {
+        var gene = window.location.hash.slice(1);  // slice removes hash
+        $.ajax({
+            dataType: 'json',
+            url: `/api/v3/gene?geneId=${gene}`,
+            success: function (data) {
+                if (data.gene.length == 0) {
+                    $('#gene-not-found').text(`Gene not found: ${gene}`);
+                    $('#gene-info').hide();
+                } else {
+                    loadGene(data.gene[0]);
+                }
+            }
+        });
+    });
+</script>

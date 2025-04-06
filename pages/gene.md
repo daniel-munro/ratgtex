@@ -1,4 +1,0 @@
----
-permalink: /gene/
-layout: gene
----

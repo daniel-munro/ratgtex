@@ -1,3 +1,5 @@
+set -e
+
 bundle exec jekyll build
 cd _site
 ln -s ../data data
