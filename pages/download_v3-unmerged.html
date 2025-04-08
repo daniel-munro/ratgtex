@@ -1,0 +1,145 @@
+---
+permalink: /download/v3-unmerged/
+title: Download v3 unmerged
+layout: base
+version: v3
+version_unmerged: v3-unmerged
+---
+
+{% assign version = page.version %}
+{% assign genome = site.data.versions[page.version_unmerged].genome %}
+{% assign tissues = site.data.versions[page.version_unmerged].tissues %}
+
+<p>Download pages: <a href="/download/v1/">v1</a> • <a href="/download/v2/">v2</a> • <a href="/download/">v3</a> • v3 unmerged • <a href="/download/study-data/">Study data</a></p>
+
+<h1>Download unmerged data</h1>
+
+<p>Some tissues have RNA-seq datasets from multiple studies that were merged for the v3 release. This page contains input files and results for those individual datasets run without merging.</p>
+
+<h2>Gene expression</h2>
+
+<strong>log2(readcount+1)</strong>
+<em style="color: gray;">Used to compute allelic fold change</em>
+<p>
+    {% for tissue in tissues %}
+    <a href="/data/expr/expr.log2.{{ tissue.id }}.{{ version }}_{{ genome }}.bed.gz" title="{{ tissue.name }}">{{ tissue.id }}</a>{% unless forloop.last %} • {% endunless %}
+    {% endfor %}
+</p>
+
+<strong>TPM (transcripts per million)</strong>
+<em style="color: gray;">Relative abundance of transcripts</em>
+<p>
+    {% for tissue in tissues %}
+    <a href="/data/expr/expr.tpm.{{ tissue.id }}.{{ version }}_{{ genome }}.bed.gz" title="{{ tissue.name }}">{{ tissue.id }}</a>{% unless forloop.last %} • {% endunless %}
+    {% endfor %}
+</p>
+
+<strong>Inverse-quantile normalized</strong>
+<p>
+    {% for tissue in tissues %}
+    <a href="/data/expr/expr.iqn.{{ tissue.id }}.{{ version }}_{{ genome }}.bed.gz" title="{{ tissue.name }}">{{ tissue.id }}</a>{% unless forloop.last %} • {% endunless %}
+    {% endfor %}
+</p>
+
+<strong>Filtered inverse-quantile normalized</strong>
+<em style="color: gray;">Used for eQTL mapping</em>
+<p>
+    {% for tissue in tissues %}
+    <a href="/data/expr/expr.iqn.filtered.{{ tissue.id }}.{{ version }}_{{ genome }}.bed.gz" title="{{ tissue.name }}">{{ tissue.id }}</a>{% unless forloop.last %} • {% endunless %}
+    {% endfor %}
+</p>
+
+<br>
+
+<h2>Other info</h2>
+
+<strong>Rat IDs</strong>
+<em style="color: gray;">The final QC-filtered sample sets used for eQTL mapping</em>
+<br>
+<p>
+    {% for tissue in tissues %}
+    <a href="/data/rat_ids/rat_ids.{{ tissue.id }}.{{ version }}.txt" title="{{ tissue.name }}">{{ tissue.id }}</a>{% unless forloop.last %} • {% endunless %}
+    {% endfor %}
+</p>
+
+<strong>RNA-Seq FASTQ file lists</strong>
+<em style="color: gray;">with corresponding rat IDs</em>
+<br>
+Each line includes one FASTQ path for single-end reads, or two FASTQ paths for paired-end reads, followed by the rat ID. FASTQ maps can include a mix of single-end and paired-end rows. These files may include mappings to samples that were filtered out during QC, so use the rat ID lists above to get the final sample sets.
+<br>
+<p>
+    {% for tissue in tissues %}
+    <a href="/data/fastq_map/fastq_map.{{ tissue.id }}.{{ version }}.txt" title="{{ tissue.name }}">{{ tissue.id }}</a>{% unless forloop.last %} • {% endunless %}
+    {% endfor %}
+</p>
+
+<strong>Covariates</strong>
+<em style="color: gray;">used for eQTL mapping</em>
+<p>
+    {% for tissue in tissues %}
+    <a href="/data/covar/covar.{{ tissue.id }}.{{ version }}.txt" title="{{ tissue.name }}">{{ tissue.id }}</a>{% unless forloop.last %} • {% endunless %}
+    {% endfor %}
+</p>
+
+<br>
+
+<h2>eQTLs</h2>
+
+<p>
+    <strong><a href="/data/eqtl/eqtls_indep.{{ version }}_{{ genome }}.txt">Conditionally independent cis-eQTLs</a></strong>
+    <br>
+    A table of cis-eQTLs from all tissues.
+</p>
+
+<strong>All significant cis-eQTL variant-gene pairs</strong>
+
+<p>
+    {% for tissue in tissues %}
+    <a href="/data/eqtl/cis_qtl_signif.{{ tissue.id }}.{{ version }}_{{ genome }}.txt.gz" title="{{ tissue.name }}">{{ tissue.id }}</a>{% unless forloop.last %} • {% endunless %}
+    {% endfor %}
+</p>
+
+<strong>trans-eQTLs</strong>
+<br>
+All SNP-gene associations genome-wide with TSS distance &gt; 5 Mb and with an arbitrary cutoff of p &lt; 1e-5. No significance testing was performed.
+<p>
+    {% for tissue in tissues %}
+    <a href="/data/eqtl/trans_qtl_pairs.{{ tissue.id }}.{{ version }}_{{ genome }}.txt.gz" title="{{ tissue.name }}">{{ tissue.id }}</a>{% unless forloop.last %} • {% endunless %}
+    {% endfor %}
+</p>
+
+<br>
+
+<h2>sQTLs</h2>
+
+<strong>Splice phenotypes</strong>
+<em style="color: gray;">Relative usage of splice junctions within junction clusters</em>
+<p>
+    {% for tissue in tissues %}
+    <a href="/data/splice/leafcutter.{{ tissue.id }}.{{ version }}_{{ genome }}.bed.gz" title="{{ tissue.name }}">{{ tissue.id }}</a>{% unless forloop.last %} • {% endunless %}
+    {% endfor %}
+</p>
+
+<strong>Covariates</strong>
+<em style="color: gray;">used for sQTL mapping</em>
+<p>
+    {% for tissue in tissues %}
+    <a href="/data/splice/covar_splice.{{ tissue.id }}.{{ version }}.txt" title="{{ tissue.name }}">{{ tissue.id }}</a>{% unless forloop.last %} • {% endunless %}
+    {% endfor %}
+</p>
+
+<strong>All significant cis-sQTL variant-phenotype pairs</strong>
+<p>
+    {% for tissue in tissues %}
+    <a href="/data/splice/splice.cis_qtl_signif.{{ tissue.id }}.{{ version }}_{{ genome }}.txt.gz" title="{{ tissue.name }}">{{ tissue.id }}</a>{% unless forloop.last %} • {% endunless %}
+    {% endfor %}
+</p>
+
+<strong>trans-sQTLs</strong>
+<br>
+All SNP-phenotype associations genome-wide with TSS distance &gt; 5 Mb and with an arbitrary cutoff of p &lt; 1e-5. No significance testing was performed.
+<p>
+    {% for tissue in tissues %}
+    <a href="/data/splice/splice.trans_qtl_pairs.{{ tissue.id }}.{{ version }}_{{ genome }}.txt.gz" title="{{ tissue.name }}">{{ tissue.id }}</a>{% unless forloop.last %} • {% endunless %}
+    {% endfor %}
+</p>

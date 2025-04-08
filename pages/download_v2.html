@@ -1,21 +1,26 @@
 ---
+permalink: /download/v2/
+title: Download v2
 layout: base
+version: v2
 ---
 
 {% assign version = page.version %}
 {% assign genome = site.data.versions[version].genome %}
 {% assign tissues = site.data.versions[version].tissues %}
 
-<h1>Download data</h1>
+<p>Download pages: <a href="/download/v1/">v1</a> • v2 • <a href="/download/">v3</a> • <a href="/download/v3-unmerged/">v3 unmerged</a> • <a href="/download/study-data/">Study data</a></p>
+
+<h1>Download v2 data</h1>
 
 <p>See the <a href="/about/#data-specs">About page</a> for processing, data format, and RatGTEx version number specifications. File names include the version number, and files that include genomic coordinates also include the genome build for clarity, even though only one genome build is used for each version.</p>
 
-<p><a href="/data/gene.{{ version }}.txt">Gene info</a></p>
+<p><a href="/data/{{ version }}/gene.{{ version }}.txt">Gene info</a></p>
 
 <h2>Gene expression</h2>
 
 <p>
-    <a href="/data/medianGeneExpression.{{ version }}.txt.gz">Median TPM per gene per tissue</a>
+    <a href="/data/{{ version }}/medianGeneExpression.{{ version }}.txt.gz">Median TPM per gene per tissue</a>
     <em style="color: gray;">Used for heatmap visualizations</em>
 </p>
 
@@ -23,7 +28,7 @@ layout: base
 <em style="color: gray;">Used to compute allelic fold change</em>
 <p>
     {% for tissue in tissues %}
-    <a href="/data/expr/expr.log2.{{ tissue.id }}.{{ version }}_{{ genome }}.bed.gz" title="{{ tissue.name }}">{{ tissue.id }}</a>{% unless forloop.last %} • {% endunless %}
+    <a href="/data/{{ version }}/expr/expr.log2.{{ tissue.id }}.{{ version }}_{{ genome }}.bed.gz" title="{{ tissue.name }}">{{ tissue.id }}</a>{% unless forloop.last %} • {% endunless %}
     {% endfor %}
 </p>
 
@@ -31,14 +36,14 @@ layout: base
 <em style="color: gray;">Relative abundance of transcripts</em>
 <p>
     {% for tissue in tissues %}
-    <a href="/data/expr/expr.tpm.{{ tissue.id }}.{{ version }}_{{ genome }}.bed.gz" title="{{ tissue.name }}">{{ tissue.id }}</a>{% unless forloop.last %} • {% endunless %}
+    <a href="/data/{{ version }}/expr/expr.tpm.{{ tissue.id }}.{{ version }}_{{ genome }}.bed.gz" title="{{ tissue.name }}">{{ tissue.id }}</a>{% unless forloop.last %} • {% endunless %}
     {% endfor %}
 </p>
 
 <strong>Inverse-quantile normalized</strong>
 <p>
     {% for tissue in tissues %}
-    <a href="/data/expr/expr.iqn.{{ tissue.id }}.{{ version }}_{{ genome }}.bed.gz" title="{{ tissue.name }}">{{ tissue.id }}</a>{% unless forloop.last %} • {% endunless %}
+    <a href="/data/{{ version }}/expr/expr.iqn.{{ tissue.id }}.{{ version }}_{{ genome }}.bed.gz" title="{{ tissue.name }}">{{ tissue.id }}</a>{% unless forloop.last %} • {% endunless %}
     {% endfor %}
 </p>
 
@@ -46,7 +51,7 @@ layout: base
 <em style="color: gray;">Used for eQTL mapping</em>
 <p>
     {% for tissue in tissues %}
-    <a href="/data/expr/expr.iqn.filtered.{{ tissue.id }}.{{ version }}_{{ genome }}.bed.gz" title="{{ tissue.name }}">{{ tissue.id }}</a>{% unless forloop.last %} • {% endunless %}
+    <a href="/data/{{ version }}/expr/expr.iqn.filtered.{{ tissue.id }}.{{ version }}_{{ genome }}.bed.gz" title="{{ tissue.name }}">{{ tissue.id }}</a>{% unless forloop.last %} • {% endunless %}
     {% endfor %}
 </p>
 
@@ -60,11 +65,11 @@ layout: base
 
 <p>
     <ul>
-        <li><a href="/data/geno/BLA_NAcc2_PL2.{{ genome }}.vcf.gz">BLA_NAcc2_PL2.{{ genome }}.vcf.gz</a></li>
-        <li><a href="/data/geno/Eye.{{ genome }}.vcf.gz">Eye.{{ genome }}.vcf.gz</a></li>
-        <li><a href="/data/geno/IL_LHb_NAcc_OFC_PL.{{ genome }}.vcf.gz">IL_LHb_NAcc_OFC_PL.{{ genome }}.vcf.gz</a></li>
-        <li><a href="/data/geno/Adipose_Liver.{{ genome }}.vcf.gz">Adipose_Liver.{{ genome }}.vcf.gz</a></li>
-        <li><a href="/data/geno/Brain.{{ genome }}.vcf.gz">Brain.{{ genome }}.vcf.gz</a></li>
+        <li><a href="/data/{{ version }}/geno/Adipose_Liver.{{ genome }}.vcf.gz">Adipose_Liver.{{ genome }}.vcf.gz</a></li>
+        <li><a href="/data/{{ version }}/geno/BLA_NAcc2_PL2.{{ genome }}.vcf.gz">BLA_NAcc2_PL2.{{ genome }}.vcf.gz</a></li>
+        <li><a href="/data/{{ version }}/geno/Brain.{{ genome }}.vcf.gz">Brain.{{ genome }}.vcf.gz</a></li>
+        <li><a href="/data/{{ version }}/geno/Eye.{{ genome }}.vcf.gz">Eye.{{ genome }}.vcf.gz</a></li>
+        <li><a href="/data/{{ version }}/geno/IL_LHb_NAcc1_OFC_PL1.{{ genome }}.vcf.gz">IL_LHb_NAcc1_OFC_PL1.{{ genome }}.vcf.gz</a></li>
     </ul>
 </p>
 
@@ -72,16 +77,16 @@ layout: base
 
 <h2>Other info</h2>
 
-<p><a href="/data/ref/RatGTEx_rats.{{ version }}.tsv">Rat info (all tissues)</a></p>
+<p><a href="/data/{{ version }}/ref/RatGTEx_rats.{{ version }}.tsv">Rat info (all tissues)</a></p>
 
-<p><a href="/data/ref/RatGTEx_samples.{{ version }}.tsv">Sample info (all tissues)</a></p>
+<p><a href="/data/{{ version }}/ref/RatGTEx_samples.{{ version }}.tsv">Sample info (all tissues)</a></p>
 
 <strong>Rat IDs</strong>
 <em style="color: gray;">The final QC-filtered sample sets used for eQTL mapping</em>
 <br>
 <p>
     {% for tissue in tissues %}
-    <a href="/data/rat_ids/rat_ids.{{ tissue.id }}.{{ version }}.txt" title="{{ tissue.name }}">{{ tissue.id }}</a>{% unless forloop.last %} • {% endunless %}
+    <a href="/data/{{ version }}/rat_ids/rat_ids.{{ tissue.id }}.{{ version }}.txt" title="{{ tissue.name }}">{{ tissue.id }}</a>{% unless forloop.last %} • {% endunless %}
     {% endfor %}
 </p>
 
@@ -92,7 +97,7 @@ Each line includes one FASTQ path for single-end reads, or two FASTQ paths for p
 <br>
 <p>
     {% for tissue in tissues %}
-    <a href="/data/fastq_map/fastq_map.{{ tissue.id }}.{{ version }}.txt" title="{{ tissue.name }}">{{ tissue.id }}</a>{% unless forloop.last %} • {% endunless %}
+    <a href="/data/{{ version }}/fastq_map/fastq_map.{{ tissue.id }}.{{ version }}.txt" title="{{ tissue.name }}">{{ tissue.id }}</a>{% unless forloop.last %} • {% endunless %}
     {% endfor %}
 </p>
 
@@ -100,7 +105,7 @@ Each line includes one FASTQ path for single-end reads, or two FASTQ paths for p
 <em style="color: gray;">used for eQTL mapping</em>
 <p>
     {% for tissue in tissues %}
-    <a href="/data/covar/covar.{{ tissue.id }}.{{ version }}.txt" title="{{ tissue.name }}">{{ tissue.id }}</a>{% unless forloop.last %} • {% endunless %}
+    <a href="/data/{{ version }}/covar/covar.{{ tissue.id }}.{{ version }}.txt" title="{{ tissue.name }}">{{ tissue.id }}</a>{% unless forloop.last %} • {% endunless %}
     {% endfor %}
 </p>
 
@@ -109,7 +114,7 @@ Each line includes one FASTQ path for single-end reads, or two FASTQ paths for p
 <h2>eQTLs</h2>
 
 <p>
-    <strong><a href="/data/eqtl/eqtls_indep.{{ version }}_{{ genome }}.txt">Conditionally independent cis-eQTLs</a></strong>
+    <strong><a href="/data/{{ version }}/eqtl/eqtls_indep.{{ version }}_{{ genome }}.txt">Conditionally independent cis-eQTLs</a></strong>
     <br>
     A table of cis-eQTLs from all tissues.
 </p>
@@ -118,12 +123,12 @@ Each line includes one FASTQ path for single-end reads, or two FASTQ paths for p
 
 <p>
     {% for tissue in tissues %}
-    <a href="/data/eqtl/cis_qtl_signif.{{ tissue.id }}.{{ version }}_{{ genome }}.txt.gz" title="{{ tissue.name }}">{{ tissue.id }}</a>{% unless forloop.last %} • {% endunless %}
+    <a href="/data/{{ version }}/eqtl/cis_qtl_signif.{{ tissue.id }}.{{ version }}_{{ genome }}.txt.gz" title="{{ tissue.name }}">{{ tissue.id }}</a>{% unless forloop.last %} • {% endunless %}
     {% endfor %}
 </p>
 
 <p>
-    <strong><a href="/data/eqtl/top_assoc.{{ version }}_{{ genome }}.txt">Top association per gene</a></strong>
+    <strong><a href="/data/{{ version }}/eqtl/top_assoc.{{ version }}_{{ genome }}.txt">Top association per gene</a></strong>
     <br>
     A table of the strongest variant-gene association per gene per tissue, even if not significant. A
     q-value threshold of 0.05 was used to determine significant eQTLs.
@@ -134,7 +139,7 @@ Each line includes one FASTQ path for single-end reads, or two FASTQ paths for p
 All SNP-gene associations genome-wide with TSS distance &gt; 5 Mb and with an arbitrary cutoff of p &lt; 1e-5. No significance testing was performed.
 <p>
     {% for tissue in tissues %}
-    <a href="/data/eqtl/trans_qtl_pairs.{{ tissue.id }}.{{ version }}_{{ genome }}.txt.gz" title="{{ tissue.name }}">{{ tissue.id }}</a>{% unless forloop.last %} • {% endunless %}
+    <a href="/data/{{ version }}/eqtl/trans_qtl_pairs.{{ tissue.id }}.{{ version }}_{{ genome }}.txt.gz" title="{{ tissue.name }}">{{ tissue.id }}</a>{% unless forloop.last %} • {% endunless %}
     {% endfor %}
 </p>
 
@@ -146,7 +151,7 @@ All SNP-gene associations genome-wide with TSS distance &gt; 5 Mb and with an ar
 <em style="color: gray;">Relative usage of splice junctions within junction clusters</em>
 <p>
     {% for tissue in tissues %}
-    <a href="/data/splice/leafcutter.{{ tissue.id }}.{{ version }}_{{ genome }}.bed.gz" title="{{ tissue.name }}">{{ tissue.id }}</a>{% unless forloop.last %} • {% endunless %}
+    <a href="/data/{{ version }}/splice/leafcutter.{{ tissue.id }}.{{ version }}_{{ genome }}.bed.gz" title="{{ tissue.name }}">{{ tissue.id }}</a>{% unless forloop.last %} • {% endunless %}
     {% endfor %}
 </p>
 
@@ -154,12 +159,12 @@ All SNP-gene associations genome-wide with TSS distance &gt; 5 Mb and with an ar
 <em style="color: gray;">used for sQTL mapping</em>
 <p>
     {% for tissue in tissues %}
-    <a href="/data/splice/covar_splice.{{ tissue.id }}.{{ version }}.txt" title="{{ tissue.name }}">{{ tissue.id }}</a>{% unless forloop.last %} • {% endunless %}
+    <a href="/data/{{ version }}/splice/covar_splice.{{ tissue.id }}.{{ version }}.txt" title="{{ tissue.name }}">{{ tissue.id }}</a>{% unless forloop.last %} • {% endunless %}
     {% endfor %}
 </p>
 
 <p>
-    <strong><a href="/data/splice/sqtls_indep.{{ version }}_{{ genome }}.txt">Conditionally independent cis-sQTLs</a></strong>
+    <strong><a href="/data/{{ version }}/splice/sqtls_indep.{{ version }}_{{ genome }}.txt">Conditionally independent cis-sQTLs</a></strong>
     <br>
     A table of cis-sQTLs from all tissues.
 </p>
@@ -167,12 +172,12 @@ All SNP-gene associations genome-wide with TSS distance &gt; 5 Mb and with an ar
 <strong>All significant cis-sQTL variant-phenotype pairs</strong>
 <p>
     {% for tissue in tissues %}
-    <a href="/data/splice/splice.cis_qtl_signif.{{ tissue.id }}.{{ version }}_{{ genome }}.txt.gz" title="{{ tissue.name }}">{{ tissue.id }}</a>{% unless forloop.last %} • {% endunless %}
+    <a href="/data/{{ version }}/splice/splice.cis_qtl_signif.{{ tissue.id }}.{{ version }}_{{ genome }}.txt.gz" title="{{ tissue.name }}">{{ tissue.id }}</a>{% unless forloop.last %} • {% endunless %}
     {% endfor %}
 </p>
 
 <p>
-    <strong><a href="/data/splice/top_assoc_splice.{{ version }}_{{ genome }}.txt">Top association per gene</a></strong>
+    <strong><a href="/data/{{ version }}/splice/top_assoc_splice.{{ version }}_{{ genome }}.txt">Top association per gene</a></strong>
     <br>
     A table of the strongest variant-gene association per gene per tissue, even if not significant. A
     q-value threshold of 0.05 was used to determine significant sQTLs.
@@ -183,17 +188,8 @@ All SNP-gene associations genome-wide with TSS distance &gt; 5 Mb and with an ar
 All SNP-phenotype associations genome-wide with TSS distance &gt; 5 Mb and with an arbitrary cutoff of p &lt; 1e-5. No significance testing was performed.
 <p>
     {% for tissue in tissues %}
-    <a href="/data/splice/splice.trans_qtl_pairs.{{ tissue.id }}.{{ version }}_{{ genome }}.txt.gz" title="{{ tissue.name }}">{{ tissue.id }}</a>{% unless forloop.last %} • {% endunless %}
+    <a href="/data/{{ version }}/splice/splice.trans_qtl_pairs.{{ tissue.id }}.{{ version }}_{{ genome }}.txt.gz" title="{{ tissue.name }}">{{ tissue.id }}</a>{% unless forloop.last %} • {% endunless %}
     {% endfor %}
-</p>
-
-<br>
-
-<h2>API</h2>
-
-<p>
-    Different types of data used for visualizations, including expression, eQTLs, and reference annotations, can
-    be accessed via API. See the <a href="/about/api/">API documentation</a> for details.
 </p>
 
 <br>

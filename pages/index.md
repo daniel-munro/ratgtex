@@ -9,14 +9,18 @@ layout: base
 
 This portal provides gene expression, eQTL, and sQTL data for multiple rat tissues. It is managed by the [NIDA Center of Excellence for Genetics, Genomics, and Epigenetics of Substance Use Disorders in Outbred Rats (P30DA060810)](https://ratgenes.org).
 
+### Data Release v3
+
+The data and visualizations on this site are for the RatGTEx v3 release. The main changes from v2 are:
+
+- Four tissue datasets from two new projects have been added, including two new brain regions, posterior ventral tegmental area (pVTA) and rostral medial tegmental nucleus (RMTg).
+- Samples of the same tissue from different projects are now analyzed as a single dataset, increasing the sample size and statistical power for eQTL mapping.
+- The rn7 (`mRatBN7.2`) genome assembly is still used, but RefSeq gene annotations are now used instead of Ensembl.
+- Genotype data for all tissues have been updated.
+
+The previous versions using rn6 and rn7 are now referred to as v1 and v2, respectively, and are still available from the [Download](/download/) page.
+
 ### Tissues
-
-The raw data for the tissues in this portal come from multiple studies. The processed data, however, may differ from the results reported in each study for a couple reasons:
-
-1. Different processing decisions could be made for each study, while the data in this portal are processed uniformly to facilitate comparison across tissues.
-2. The published study results are immutable, while new versions of data in this portal may be released, for example to improve quality or to use updated reference genome and annotations.
-
-Nevertheless, we also host the original results from individual studies on the [Download](/download/#studies) page when available.
 
 <table class="table table-sm w-auto">
     <caption>Sample sizes reflect the final post-QC datasets.</caption>
@@ -45,9 +49,14 @@ For the tissues above whose originating study has been published (see below), yo
 
 ### Associated Studies
 
-More info on the [ratgenes.org eQTL page](https://ratgenes.org/research-projects/eqtl/). Additional publications will be posted when available.
+The raw data for the tissues in this portal come from multiple studies. The processed data, however, may differ from the results reported in each study for a couple reasons:
 
-Tissues from the same study are from the same set of rats, though the final subsets per tissue differ slightly after quality control filtering. See the [sample info page](/about/samples/) for details.
+1. Different processing decisions could be made for each study, while the data in this portal are processed uniformly to facilitate comparison across tissues.
+2. The published study results are immutable, while new versions of data in this portal may be released, for example to improve quality or to use updated reference genome and annotations.
+
+Nevertheless, we also host the original results from individual studies on the [Download](/download/#studies) page when available.
+
+More info on the [ratgenes.org eQTL page](https://ratgenes.org/research-projects/eqtl/). Additional publications will be posted when available.
 
 ##### P50DA037844 Y1-5, Project 2: Socially-acquired nicotine self-administration
 

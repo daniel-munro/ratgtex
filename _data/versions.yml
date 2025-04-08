@@ -81,7 +81,7 @@ v3:
     - id: RMTg
       name: Rostromedial tegmental nucleus
 
-v3_unmerged:
+v3-unmerged:
   genome: rn7
   tissues:
     - id: NAcc1

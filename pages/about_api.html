@@ -709,10 +709,6 @@ permalink: /about/api/
     },
     "geneId" : {
       "type" : "string",
-      "example" : "ENSRNOG00000021424"
-    },
-    "geneSymbol" : {
-      "type" : "string",
       "example" : "Cd300lf"
     },
     "genotypes" : {
@@ -774,10 +770,6 @@ permalink: /about/api/
           },
           "geneId" : {
             "type" : "string",
-            "example" : "ENSRNOG00000021424"
-          },
-          "geneSymbol" : {
-            "type" : "string",
             "example" : "Cd300lf"
           },
           "log2_aFC" : {
@@ -819,7 +811,7 @@ permalink: /about/api/
           },
           "chromosome" : {
             "type" : "string",
-            "example" : "1"
+            "example" : "chr1"
           },
           "pos" : {
             "type" : "integer",
@@ -848,7 +840,7 @@ permalink: /about/api/
         "properties" : {
           "chromosome" : {
             "type" : "string",
-            "example" : "10"
+            "example" : "chr1"
           },
           "end" : {
             "type" : "integer",
@@ -856,7 +848,7 @@ permalink: /about/api/
           },
           "exonId" : {
             "type" : "string",
-            "example" : "ENSRNOG00000021424_1"
+            "example" : "Cd300lf_1"
           },
           "exonNumber" : {
             "type" : "integer",
@@ -867,10 +859,6 @@ permalink: /about/api/
             "example" : "exon"
           },
           "geneId" : {
-            "type" : "string",
-            "example" : "ENSRNOG00000021424"
-          },
-          "geneSymbol" : {
             "type" : "string",
             "example" : "Cd300lf"
           },
@@ -885,7 +873,7 @@ permalink: /about/api/
           },
           "transcriptId" : {
             "type" : "string",
-            "example" : "ENSRNOG00000021424"
+            "example" : "Cd300lf"
           }
         }
       }
@@ -902,7 +890,7 @@ permalink: /about/api/
         "properties" : {
           "chromosome" : {
             "type" : "string",
-            "example" : "10"
+            "example" : "chr1"
           },
           "description" : {
             "type" : "string",
@@ -950,10 +938,6 @@ permalink: /about/api/
           },
           "geneId" : {
             "type" : "string",
-            "example" : "ENSRNOG00000021424"
-          },
-          "geneSymbol" : {
-            "type" : "string",
             "example" : "Cd300lf"
           },
           "hasEqtl" : {
@@ -998,7 +982,7 @@ permalink: /about/api/
       "properties" : {
         "gene" : {
           "type" : "string",
-          "example" : "((ENSRNOG00000027513:209.196,ENSRNOG00000017843:209.196):759.14,ENSRNOG00000017895:968.336);"
+          "example" : "((Polr3k:209.196,Rtel1:209.196):759.14,Eno1:968.336);"
         },
         "tissue" : {
           "type" : "string",
@@ -1013,11 +997,7 @@ permalink: /about/api/
         "properties" : {
           "geneId" : {
             "type" : "string",
-            "example" : "ENSRNOG00000017843"
-          },
-          "geneSymbol" : {
-            "type" : "string",
-            "example" : "Polr3k"
+            "example" : "Rtel1"
           },
           "median" : {
             "type" : "number",
@@ -1042,17 +1022,9 @@ permalink: /about/api/
         "properties" : {
           "chromosome" : {
             "type" : "string",
-            "example" : "17"
+            "example" : "chr1"
           },
           "geneId" : {
-            "type" : "string",
-            "example" : "ENSRNOG00000016560"
-          },
-          "geneSymbol" : {
-            "type" : "string",
-            "example" : "Card19"
-          },
-          "geneSymbolUpper" : {
             "type" : "string",
             "example" : "Card19"
           },
@@ -1095,15 +1067,11 @@ permalink: /about/api/
           },
           "geneId" : {
             "type" : "string",
-            "example" : "ENSRNOG00000021424"
-          },
-          "geneSymbol" : {
-            "type" : "string",
             "example" : "Cd300lf"
           },
           "phenotypeId" : {
             "type" : "string",
-            "example" : "10:103673824:103677398:clu_5465_-:ENSRNOG00000021424"
+            "example" : "chr10:103673824:103677398:clu_5465_-:Cd300lf"
           },
           "pval_beta" : {
             "type" : "number",
@@ -1144,11 +1112,11 @@ permalink: /about/api/
           },
           "dataset" : {
             "type" : "string",
-            "example" : "IL_LHb_NAcc_OFC_PL"
+            "example" : "ratgtex_v3_round10_5"
           },
           "datasetId" : {
             "type" : "string",
-            "example" : "ratgtex_v1"
+            "example" : "ratgtex_v3"
           },
           "eGeneCount" : {
             "type" : "integer",
@@ -1201,13 +1169,9 @@ permalink: /about/api/
         "properties" : {
           "datasetId" : {
             "type" : "string",
-            "example" : "ratgtex_v1"
+            "example" : "ratgtex_v3"
           },
           "geneId" : {
-            "type" : "string",
-            "example" : "ENSRNOG00000030478"
-          },
-          "geneSymbol" : {
             "type" : "string",
             "example" : "AY172581.9"
           },
@@ -1295,9 +1259,9 @@ permalink: /about/api/
         <div id="header">
           <div id="api-_">
             <h2 id="welcome-to-apidoc">API and SDK Documentation</h2>
-              <div class="app-desc">Version: 2.0.0</div>
+              <div class="app-desc">Version: 3.0.0</div>
             <hr>
-            <div>This API provides data for the visualizations in the RatGTEx data portal. This version (v2) provides data for both rn6 (Rnor_6.0) and rn7 (mRatBN7.2) genome assemblies.</div>
+            <div>This API provides data for the visualizations in the RatGTEx data portal. This version (v3) provides data for RatGTEx data release v3, which uses the rn7 (mRatBN7.2) genome assembly.</div>
           </div>
         </div>
         <div id="sections">
@@ -1337,7 +1301,7 @@ permalink: /about/api/
                           <div class="tab-pane active" id="examples-EQTL-dyneqtlGet-0-curl">
                            <pre class="prettyprint"><code class="language-bsh">curl -X GET\
 -H "Accept: application/json"\
-"https://ratgtex.org/api/v2/dyneqtl?geneId=&genome=&tissueSiteDetailId=&variantId="</code></pre>
+"https://ratgtex.org/api/v3/dyneqtl?geneId=&tissueSiteDetailId=&variantId="</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-EQTL-dyneqtlGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -1353,12 +1317,11 @@ public class EQTLApiExample {
     public static void main(String[] args) {
         
         EQTLApi apiInstance = new EQTLApi();
-        String geneId = geneId_example; // String | Ensembl gene ID
-        String genome = genome_example; // String | Genome build (rn6 or rn7)
+        String geneId = geneId_example; // String | Gene ID
         String tissueSiteDetailId = tissueSiteDetailId_example; // String | Tissue ID
         String variantId = variantId_example; // String | Variant ID
         try {
-            inline_response_200 result = apiInstance.dyneqtlGet(geneId, genome, tissueSiteDetailId, variantId);
+            inline_response_200 result = apiInstance.dyneqtlGet(geneId, tissueSiteDetailId, variantId);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling EQTLApi#dyneqtlGet");
@@ -1375,12 +1338,11 @@ public class EQTLApiExample {
 
     public static void main(String[] args) {
         EQTLApi apiInstance = new EQTLApi();
-        String geneId = geneId_example; // String | Ensembl gene ID
-        String genome = genome_example; // String | Genome build (rn6 or rn7)
+        String geneId = geneId_example; // String | Gene ID
         String tissueSiteDetailId = tissueSiteDetailId_example; // String | Tissue ID
         String variantId = variantId_example; // String | Variant ID
         try {
-            inline_response_200 result = apiInstance.dyneqtlGet(geneId, genome, tissueSiteDetailId, variantId);
+            inline_response_200 result = apiInstance.dyneqtlGet(geneId, tissueSiteDetailId, variantId);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling EQTLApi#dyneqtlGet");
@@ -1394,15 +1356,13 @@ public class EQTLApiExample {
   <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
   </div> -->
                             <div class="tab-pane" id="examples-EQTL-dyneqtlGet-0-objc">
-                              <pre class="prettyprint"><code class="language-cpp">String *geneId = geneId_example; // Ensembl gene ID
-String *genome = genome_example; // Genome build (rn6 or rn7)
+                              <pre class="prettyprint"><code class="language-cpp">String *geneId = geneId_example; // Gene ID
 String *tissueSiteDetailId = tissueSiteDetailId_example; // Tissue ID
 String *variantId = variantId_example; // Variant ID
 
 EQTLApi *apiInstance = [[EQTLApi alloc] init];
 
 [apiInstance dyneqtlGetWith:geneId
-    genome:genome
     tissueSiteDetailId:tissueSiteDetailId
     variantId:variantId
               completionHandler: ^(inline_response_200 output, NSError* error) {
@@ -1420,8 +1380,7 @@ EQTLApi *apiInstance = [[EQTLApi alloc] init];
                               <pre class="prettyprint"><code class="language-js">var RatGtexRestApi = require('rat_gtex_rest_api');
 
 var api = new RatGtexRestApi.EQTLApi()
-var geneId = geneId_example; // {{String}} Ensembl gene ID
-var genome = genome_example; // {{String}} Genome build (rn6 or rn7)
+var geneId = geneId_example; // {{String}} Gene ID
 var tissueSiteDetailId = tissueSiteDetailId_example; // {{String}} Tissue ID
 var variantId = variantId_example; // {{String}} Variant ID
 
@@ -1432,7 +1391,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.dyneqtlGet(geneId, genome, tissueSiteDetailId, variantId, callback);
+api.dyneqtlGet(geneId, tissueSiteDetailId, variantId, callback);
 </code></pre>
                             </div>
 
@@ -1454,14 +1413,13 @@ namespace Example
         {
 
             var apiInstance = new EQTLApi();
-            var geneId = geneId_example;  // String | Ensembl gene ID
-            var genome = genome_example;  // String | Genome build (rn6 or rn7)
+            var geneId = geneId_example;  // String | Gene ID
             var tissueSiteDetailId = tissueSiteDetailId_example;  // String | Tissue ID
             var variantId = variantId_example;  // String | Variant ID
 
             try
             {
-                inline_response_200 result = apiInstance.dyneqtlGet(geneId, genome, tissueSiteDetailId, variantId);
+                inline_response_200 result = apiInstance.dyneqtlGet(geneId, tissueSiteDetailId, variantId);
                 Debug.WriteLine(result);
             }
             catch (Exception e)
@@ -1479,13 +1437,12 @@ namespace Example
 require_once(__DIR__ . '/vendor/autoload.php');
 
 $api_instance = new Swagger\Client\ApiEQTLApi();
-$geneId = geneId_example; // String | Ensembl gene ID
-$genome = genome_example; // String | Genome build (rn6 or rn7)
+$geneId = geneId_example; // String | Gene ID
 $tissueSiteDetailId = tissueSiteDetailId_example; // String | Tissue ID
 $variantId = variantId_example; // String | Variant ID
 
 try {
-    $result = $api_instance->dyneqtlGet($geneId, $genome, $tissueSiteDetailId, $variantId);
+    $result = $api_instance->dyneqtlGet($geneId, $tissueSiteDetailId, $variantId);
     print_r($result);
 } catch (Exception $e) {
     echo 'Exception when calling EQTLApi->dyneqtlGet: ', $e->getMessage(), PHP_EOL;
@@ -1499,13 +1456,12 @@ use WWW::SwaggerClient::Configuration;
 use WWW::SwaggerClient::EQTLApi;
 
 my $api_instance = WWW::SwaggerClient::EQTLApi->new();
-my $geneId = geneId_example; # String | Ensembl gene ID
-my $genome = genome_example; # String | Genome build (rn6 or rn7)
+my $geneId = geneId_example; # String | Gene ID
 my $tissueSiteDetailId = tissueSiteDetailId_example; # String | Tissue ID
 my $variantId = variantId_example; # String | Variant ID
 
 eval { 
-    my $result = $api_instance->dyneqtlGet(geneId => $geneId, genome => $genome, tissueSiteDetailId => $tissueSiteDetailId, variantId => $variantId);
+    my $result = $api_instance->dyneqtlGet(geneId => $geneId, tissueSiteDetailId => $tissueSiteDetailId, variantId => $variantId);
     print Dumper($result);
 };
 if ($@) {
@@ -1522,13 +1478,12 @@ from pprint import pprint
 
 # create an instance of the API class
 api_instance = swagger_client.EQTLApi()
-geneId = geneId_example # String | Ensembl gene ID
-genome = genome_example # String | Genome build (rn6 or rn7)
+geneId = geneId_example # String | Gene ID
 tissueSiteDetailId = tissueSiteDetailId_example # String | Tissue ID
 variantId = variantId_example # String | Variant ID
 
 try: 
-    api_response = api_instance.dyneqtl_get(geneId, genome, tissueSiteDetailId, variantId)
+    api_response = api_instance.dyneqtl_get(geneId, tissueSiteDetailId, variantId)
     pprint(api_response)
 except ApiException as e:
     print("Exception when calling EQTLApi->dyneqtlGet: %s\n" % e)</code></pre>
@@ -1559,29 +1514,7 @@ except ApiException as e:
                                                 </span>
                                 
                                                     <div class="inner description">
-                                                        Ensembl gene ID
-                                                    </div>
-                                            </div>
-                                                <div class="inner required">
-                                                    Required
-                                                </div>
-                                        </div>
-                                    </div>
-                                </td>
-                                </tr>
-                                <tr><td style="width:150px;">genome*</td>
-                                <td>
-                                
-                                
-                                    <div id="d2e199_dyneqtlGet_genome">
-                                        <div class="json-schema-view">
-                                            <div class="primitive">
-                                                <span class="type">
-                                                    String
-                                                </span>
-                                
-                                                    <div class="inner description">
-                                                        Genome build (rn6 or rn7)
+                                                        Gene ID
                                                     </div>
                                             </div>
                                                 <div class="inner required">
@@ -1660,11 +1593,7 @@ except ApiException as e:
         "$ref" : "#/components/schemas/inline_response_200"
       }
     }
-  },
-  "x-responseValueType" : [ {
-    "x-path" : "geneId",
-    "x-valueType" : "https://identifiers.org/ensembl"
-  } ]
+  }
 };
                                         var schema = schemaWrapper.content["application/json"].schema;
                                         if (schema.$ref != null) {
@@ -1727,7 +1656,7 @@ except ApiException as e:
                           <div class="tab-pane active" id="examples-EQTL-eqtlGet-0-curl">
                            <pre class="prettyprint"><code class="language-bsh">curl -X GET\
 -H "Accept: application/json"\
-"https://ratgtex.org/api/v2/eqtl?geneId=&genome="</code></pre>
+"https://ratgtex.org/api/v3/eqtl?geneId="</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-EQTL-eqtlGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -1743,10 +1672,9 @@ public class EQTLApiExample {
     public static void main(String[] args) {
         
         EQTLApi apiInstance = new EQTLApi();
-        String geneId = geneId_example; // String | Ensembl gene ID
-        String genome = genome_example; // String | Genome build (rn6 or rn7)
+        String geneId = geneId_example; // String | Gene ID
         try {
-            inline_response_200_1 result = apiInstance.eqtlGet(geneId, genome);
+            inline_response_200_1 result = apiInstance.eqtlGet(geneId);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling EQTLApi#eqtlGet");
@@ -1763,10 +1691,9 @@ public class EQTLApiExample {
 
     public static void main(String[] args) {
         EQTLApi apiInstance = new EQTLApi();
-        String geneId = geneId_example; // String | Ensembl gene ID
-        String genome = genome_example; // String | Genome build (rn6 or rn7)
+        String geneId = geneId_example; // String | Gene ID
         try {
-            inline_response_200_1 result = apiInstance.eqtlGet(geneId, genome);
+            inline_response_200_1 result = apiInstance.eqtlGet(geneId);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling EQTLApi#eqtlGet");
@@ -1780,13 +1707,11 @@ public class EQTLApiExample {
   <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
   </div> -->
                             <div class="tab-pane" id="examples-EQTL-eqtlGet-0-objc">
-                              <pre class="prettyprint"><code class="language-cpp">String *geneId = geneId_example; // Ensembl gene ID
-String *genome = genome_example; // Genome build (rn6 or rn7)
+                              <pre class="prettyprint"><code class="language-cpp">String *geneId = geneId_example; // Gene ID
 
 EQTLApi *apiInstance = [[EQTLApi alloc] init];
 
 [apiInstance eqtlGetWith:geneId
-    genome:genome
               completionHandler: ^(inline_response_200_1 output, NSError* error) {
                             if (output) {
                                 NSLog(@"%@", output);
@@ -1802,8 +1727,7 @@ EQTLApi *apiInstance = [[EQTLApi alloc] init];
                               <pre class="prettyprint"><code class="language-js">var RatGtexRestApi = require('rat_gtex_rest_api');
 
 var api = new RatGtexRestApi.EQTLApi()
-var geneId = geneId_example; // {{String}} Ensembl gene ID
-var genome = genome_example; // {{String}} Genome build (rn6 or rn7)
+var geneId = geneId_example; // {{String}} Gene ID
 
 var callback = function(error, data, response) {
   if (error) {
@@ -1812,7 +1736,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.eqtlGet(geneId, genome, callback);
+api.eqtlGet(geneId, callback);
 </code></pre>
                             </div>
 
@@ -1834,12 +1758,11 @@ namespace Example
         {
 
             var apiInstance = new EQTLApi();
-            var geneId = geneId_example;  // String | Ensembl gene ID
-            var genome = genome_example;  // String | Genome build (rn6 or rn7)
+            var geneId = geneId_example;  // String | Gene ID
 
             try
             {
-                inline_response_200_1 result = apiInstance.eqtlGet(geneId, genome);
+                inline_response_200_1 result = apiInstance.eqtlGet(geneId);
                 Debug.WriteLine(result);
             }
             catch (Exception e)
@@ -1857,11 +1780,10 @@ namespace Example
 require_once(__DIR__ . '/vendor/autoload.php');
 
 $api_instance = new Swagger\Client\ApiEQTLApi();
-$geneId = geneId_example; // String | Ensembl gene ID
-$genome = genome_example; // String | Genome build (rn6 or rn7)
+$geneId = geneId_example; // String | Gene ID
 
 try {
-    $result = $api_instance->eqtlGet($geneId, $genome);
+    $result = $api_instance->eqtlGet($geneId);
     print_r($result);
 } catch (Exception $e) {
     echo 'Exception when calling EQTLApi->eqtlGet: ', $e->getMessage(), PHP_EOL;
@@ -1875,11 +1797,10 @@ use WWW::SwaggerClient::Configuration;
 use WWW::SwaggerClient::EQTLApi;
 
 my $api_instance = WWW::SwaggerClient::EQTLApi->new();
-my $geneId = geneId_example; # String | Ensembl gene ID
-my $genome = genome_example; # String | Genome build (rn6 or rn7)
+my $geneId = geneId_example; # String | Gene ID
 
 eval { 
-    my $result = $api_instance->eqtlGet(geneId => $geneId, genome => $genome);
+    my $result = $api_instance->eqtlGet(geneId => $geneId);
     print Dumper($result);
 };
 if ($@) {
@@ -1896,11 +1817,10 @@ from pprint import pprint
 
 # create an instance of the API class
 api_instance = swagger_client.EQTLApi()
-geneId = geneId_example # String | Ensembl gene ID
-genome = genome_example # String | Genome build (rn6 or rn7)
+geneId = geneId_example # String | Gene ID
 
 try: 
-    api_response = api_instance.eqtl_get(geneId, genome)
+    api_response = api_instance.eqtl_get(geneId)
     pprint(api_response)
 except ApiException as e:
     print("Exception when calling EQTLApi->eqtlGet: %s\n" % e)</code></pre>
@@ -1931,29 +1851,7 @@ except ApiException as e:
                                                 </span>
                                 
                                                     <div class="inner description">
-                                                        Ensembl gene ID
-                                                    </div>
-                                            </div>
-                                                <div class="inner required">
-                                                    Required
-                                                </div>
-                                        </div>
-                                    </div>
-                                </td>
-                                </tr>
-                                <tr><td style="width:150px;">genome*</td>
-                                <td>
-                                
-                                
-                                    <div id="d2e199_eqtlGet_genome">
-                                        <div class="json-schema-view">
-                                            <div class="primitive">
-                                                <span class="type">
-                                                    String
-                                                </span>
-                                
-                                                    <div class="inner description">
-                                                        Genome build (rn6 or rn7)
+                                                        Gene ID
                                                     </div>
                                             </div>
                                                 <div class="inner required">
@@ -1988,11 +1886,7 @@ except ApiException as e:
         "$ref" : "#/components/schemas/inline_response_200_1"
       }
     }
-  },
-  "x-responseValueType" : [ {
-    "x-path" : "eqtl[0].geneId",
-    "x-valueType" : "https://identifiers.org/ensembl"
-  } ]
+  }
 };
                                         var schema = schemaWrapper.content["application/json"].schema;
                                         if (schema.$ref != null) {
@@ -2055,7 +1949,7 @@ except ApiException as e:
                           <div class="tab-pane active" id="examples-EQTL-singleTissueEqtlGet-0-curl">
                            <pre class="prettyprint"><code class="language-bsh">curl -X GET\
 -H "Accept: application/json"\
-"https://ratgtex.org/api/v2/singleTissueEqtl?geneId=&genome="</code></pre>
+"https://ratgtex.org/api/v3/singleTissueEqtl?geneId="</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-EQTL-singleTissueEqtlGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -2071,10 +1965,9 @@ public class EQTLApiExample {
     public static void main(String[] args) {
         
         EQTLApi apiInstance = new EQTLApi();
-        String geneId = geneId_example; // String | Ensembl gene ID
-        String genome = genome_example; // String | Genome build (rn6 or rn7)
+        String geneId = geneId_example; // String | Gene ID
         try {
-            inline_response_200_6 result = apiInstance.singleTissueEqtlGet(geneId, genome);
+            inline_response_200_6 result = apiInstance.singleTissueEqtlGet(geneId);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling EQTLApi#singleTissueEqtlGet");
@@ -2091,10 +1984,9 @@ public class EQTLApiExample {
 
     public static void main(String[] args) {
         EQTLApi apiInstance = new EQTLApi();
-        String geneId = geneId_example; // String | Ensembl gene ID
-        String genome = genome_example; // String | Genome build (rn6 or rn7)
+        String geneId = geneId_example; // String | Gene ID
         try {
-            inline_response_200_6 result = apiInstance.singleTissueEqtlGet(geneId, genome);
+            inline_response_200_6 result = apiInstance.singleTissueEqtlGet(geneId);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling EQTLApi#singleTissueEqtlGet");
@@ -2108,13 +2000,11 @@ public class EQTLApiExample {
   <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
   </div> -->
                             <div class="tab-pane" id="examples-EQTL-singleTissueEqtlGet-0-objc">
-                              <pre class="prettyprint"><code class="language-cpp">String *geneId = geneId_example; // Ensembl gene ID
-String *genome = genome_example; // Genome build (rn6 or rn7)
+                              <pre class="prettyprint"><code class="language-cpp">String *geneId = geneId_example; // Gene ID
 
 EQTLApi *apiInstance = [[EQTLApi alloc] init];
 
 [apiInstance singleTissueEqtlGetWith:geneId
-    genome:genome
               completionHandler: ^(inline_response_200_6 output, NSError* error) {
                             if (output) {
                                 NSLog(@"%@", output);
@@ -2130,8 +2020,7 @@ EQTLApi *apiInstance = [[EQTLApi alloc] init];
                               <pre class="prettyprint"><code class="language-js">var RatGtexRestApi = require('rat_gtex_rest_api');
 
 var api = new RatGtexRestApi.EQTLApi()
-var geneId = geneId_example; // {{String}} Ensembl gene ID
-var genome = genome_example; // {{String}} Genome build (rn6 or rn7)
+var geneId = geneId_example; // {{String}} Gene ID
 
 var callback = function(error, data, response) {
   if (error) {
@@ -2140,7 +2029,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.singleTissueEqtlGet(geneId, genome, callback);
+api.singleTissueEqtlGet(geneId, callback);
 </code></pre>
                             </div>
 
@@ -2162,12 +2051,11 @@ namespace Example
         {
 
             var apiInstance = new EQTLApi();
-            var geneId = geneId_example;  // String | Ensembl gene ID
-            var genome = genome_example;  // String | Genome build (rn6 or rn7)
+            var geneId = geneId_example;  // String | Gene ID
 
             try
             {
-                inline_response_200_6 result = apiInstance.singleTissueEqtlGet(geneId, genome);
+                inline_response_200_6 result = apiInstance.singleTissueEqtlGet(geneId);
                 Debug.WriteLine(result);
             }
             catch (Exception e)
@@ -2185,11 +2073,10 @@ namespace Example
 require_once(__DIR__ . '/vendor/autoload.php');
 
 $api_instance = new Swagger\Client\ApiEQTLApi();
-$geneId = geneId_example; // String | Ensembl gene ID
-$genome = genome_example; // String | Genome build (rn6 or rn7)
+$geneId = geneId_example; // String | Gene ID
 
 try {
-    $result = $api_instance->singleTissueEqtlGet($geneId, $genome);
+    $result = $api_instance->singleTissueEqtlGet($geneId);
     print_r($result);
 } catch (Exception $e) {
     echo 'Exception when calling EQTLApi->singleTissueEqtlGet: ', $e->getMessage(), PHP_EOL;
@@ -2203,11 +2090,10 @@ use WWW::SwaggerClient::Configuration;
 use WWW::SwaggerClient::EQTLApi;
 
 my $api_instance = WWW::SwaggerClient::EQTLApi->new();
-my $geneId = geneId_example; # String | Ensembl gene ID
-my $genome = genome_example; # String | Genome build (rn6 or rn7)
+my $geneId = geneId_example; # String | Gene ID
 
 eval { 
-    my $result = $api_instance->singleTissueEqtlGet(geneId => $geneId, genome => $genome);
+    my $result = $api_instance->singleTissueEqtlGet(geneId => $geneId);
     print Dumper($result);
 };
 if ($@) {
@@ -2224,11 +2110,10 @@ from pprint import pprint
 
 # create an instance of the API class
 api_instance = swagger_client.EQTLApi()
-geneId = geneId_example # String | Ensembl gene ID
-genome = genome_example # String | Genome build (rn6 or rn7)
+geneId = geneId_example # String | Gene ID
 
 try: 
-    api_response = api_instance.single_tissue_eqtl_get(geneId, genome)
+    api_response = api_instance.single_tissue_eqtl_get(geneId)
     pprint(api_response)
 except ApiException as e:
     print("Exception when calling EQTLApi->singleTissueEqtlGet: %s\n" % e)</code></pre>
@@ -2259,29 +2144,7 @@ except ApiException as e:
                                                 </span>
                                 
                                                     <div class="inner description">
-                                                        Ensembl gene ID
-                                                    </div>
-                                            </div>
-                                                <div class="inner required">
-                                                    Required
-                                                </div>
-                                        </div>
-                                    </div>
-                                </td>
-                                </tr>
-                                <tr><td style="width:150px;">genome*</td>
-                                <td>
-                                
-                                
-                                    <div id="d2e199_singleTissueEqtlGet_genome">
-                                        <div class="json-schema-view">
-                                            <div class="primitive">
-                                                <span class="type">
-                                                    String
-                                                </span>
-                                
-                                                    <div class="inner description">
-                                                        Genome build (rn6 or rn7)
+                                                        Gene ID
                                                     </div>
                                             </div>
                                                 <div class="inner required">
@@ -2316,11 +2179,7 @@ except ApiException as e:
         "$ref" : "#/components/schemas/inline_response_200_6"
       }
     }
-  },
-  "x-responseValueType" : [ {
-    "x-path" : "singleTissueEqtl[0].geneId",
-    "x-valueType" : "https://identifiers.org/ensembl"
-  } ]
+  }
 };
                                         var schema = schemaWrapper.content["application/json"].schema;
                                         if (schema.$ref != null) {
@@ -2386,7 +2245,7 @@ except ApiException as e:
                           <div class="tab-pane active" id="examples-Expression-medianGeneExpressionGet-0-curl">
                            <pre class="prettyprint"><code class="language-bsh">curl -X GET\
 -H "Accept: application/json"\
-"https://ratgtex.org/api/v2/medianGeneExpression?geneId=&genome=&tissueSiteDetailId="</code></pre>
+"https://ratgtex.org/api/v3/medianGeneExpression?geneId=&tissueSiteDetailId="</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Expression-medianGeneExpressionGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -2402,11 +2261,10 @@ public class ExpressionApiExample {
     public static void main(String[] args) {
         
         ExpressionApi apiInstance = new ExpressionApi();
-        array[String] geneId = ; // array[String] | One or more Ensembl gene IDs.
-        String genome = genome_example; // String | Genome build (rn6 or rn7)
+        array[String] geneId = ; // array[String] | One or more gene IDs.
         array[String] tissueSiteDetailId = ; // array[String] | One or more tissue IDs. If omitted, all tissues are included.
         try {
-            inline_response_200_5 result = apiInstance.medianGeneExpressionGet(geneId, genome, tissueSiteDetailId);
+            inline_response_200_5 result = apiInstance.medianGeneExpressionGet(geneId, tissueSiteDetailId);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling ExpressionApi#medianGeneExpressionGet");
@@ -2423,11 +2281,10 @@ public class ExpressionApiExample {
 
     public static void main(String[] args) {
         ExpressionApi apiInstance = new ExpressionApi();
-        array[String] geneId = ; // array[String] | One or more Ensembl gene IDs.
-        String genome = genome_example; // String | Genome build (rn6 or rn7)
+        array[String] geneId = ; // array[String] | One or more gene IDs.
         array[String] tissueSiteDetailId = ; // array[String] | One or more tissue IDs. If omitted, all tissues are included.
         try {
-            inline_response_200_5 result = apiInstance.medianGeneExpressionGet(geneId, genome, tissueSiteDetailId);
+            inline_response_200_5 result = apiInstance.medianGeneExpressionGet(geneId, tissueSiteDetailId);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling ExpressionApi#medianGeneExpressionGet");
@@ -2441,14 +2298,12 @@ public class ExpressionApiExample {
   <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
   </div> -->
                             <div class="tab-pane" id="examples-Expression-medianGeneExpressionGet-0-objc">
-                              <pre class="prettyprint"><code class="language-cpp">array[String] *geneId = ; // One or more Ensembl gene IDs.
-String *genome = genome_example; // Genome build (rn6 or rn7)
+                              <pre class="prettyprint"><code class="language-cpp">array[String] *geneId = ; // One or more gene IDs.
 array[String] *tissueSiteDetailId = ; // One or more tissue IDs. If omitted, all tissues are included. (optional)
 
 ExpressionApi *apiInstance = [[ExpressionApi alloc] init];
 
 [apiInstance medianGeneExpressionGetWith:geneId
-    genome:genome
     tissueSiteDetailId:tissueSiteDetailId
               completionHandler: ^(inline_response_200_5 output, NSError* error) {
                             if (output) {
@@ -2465,8 +2320,7 @@ ExpressionApi *apiInstance = [[ExpressionApi alloc] init];
                               <pre class="prettyprint"><code class="language-js">var RatGtexRestApi = require('rat_gtex_rest_api');
 
 var api = new RatGtexRestApi.ExpressionApi()
-var geneId = ; // {{array[String]}} One or more Ensembl gene IDs.
-var genome = genome_example; // {{String}} Genome build (rn6 or rn7)
+var geneId = ; // {{array[String]}} One or more gene IDs.
 var opts = { 
   'tissueSiteDetailId':  // {{array[String]}} One or more tissue IDs. If omitted, all tissues are included.
 };
@@ -2477,7 +2331,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.medianGeneExpressionGet(geneId, genome, opts, callback);
+api.medianGeneExpressionGet(geneId, opts, callback);
 </code></pre>
                             </div>
 
@@ -2499,13 +2353,12 @@ namespace Example
         {
 
             var apiInstance = new ExpressionApi();
-            var geneId = new array[String](); // array[String] | One or more Ensembl gene IDs.
-            var genome = genome_example;  // String | Genome build (rn6 or rn7)
+            var geneId = new array[String](); // array[String] | One or more gene IDs.
             var tissueSiteDetailId = new array[String](); // array[String] | One or more tissue IDs. If omitted, all tissues are included. (optional) 
 
             try
             {
-                inline_response_200_5 result = apiInstance.medianGeneExpressionGet(geneId, genome, tissueSiteDetailId);
+                inline_response_200_5 result = apiInstance.medianGeneExpressionGet(geneId, tissueSiteDetailId);
                 Debug.WriteLine(result);
             }
             catch (Exception e)
@@ -2523,12 +2376,11 @@ namespace Example
 require_once(__DIR__ . '/vendor/autoload.php');
 
 $api_instance = new Swagger\Client\ApiExpressionApi();
-$geneId = ; // array[String] | One or more Ensembl gene IDs.
-$genome = genome_example; // String | Genome build (rn6 or rn7)
+$geneId = ; // array[String] | One or more gene IDs.
 $tissueSiteDetailId = ; // array[String] | One or more tissue IDs. If omitted, all tissues are included.
 
 try {
-    $result = $api_instance->medianGeneExpressionGet($geneId, $genome, $tissueSiteDetailId);
+    $result = $api_instance->medianGeneExpressionGet($geneId, $tissueSiteDetailId);
     print_r($result);
 } catch (Exception $e) {
     echo 'Exception when calling ExpressionApi->medianGeneExpressionGet: ', $e->getMessage(), PHP_EOL;
@@ -2542,12 +2394,11 @@ use WWW::SwaggerClient::Configuration;
 use WWW::SwaggerClient::ExpressionApi;
 
 my $api_instance = WWW::SwaggerClient::ExpressionApi->new();
-my $geneId = []; # array[String] | One or more Ensembl gene IDs.
-my $genome = genome_example; # String | Genome build (rn6 or rn7)
+my $geneId = []; # array[String] | One or more gene IDs.
 my $tissueSiteDetailId = []; # array[String] | One or more tissue IDs. If omitted, all tissues are included.
 
 eval { 
-    my $result = $api_instance->medianGeneExpressionGet(geneId => $geneId, genome => $genome, tissueSiteDetailId => $tissueSiteDetailId);
+    my $result = $api_instance->medianGeneExpressionGet(geneId => $geneId, tissueSiteDetailId => $tissueSiteDetailId);
     print Dumper($result);
 };
 if ($@) {
@@ -2564,12 +2415,11 @@ from pprint import pprint
 
 # create an instance of the API class
 api_instance = swagger_client.ExpressionApi()
-geneId =  # array[String] | One or more Ensembl gene IDs.
-genome = genome_example # String | Genome build (rn6 or rn7)
+geneId =  # array[String] | One or more gene IDs.
 tissueSiteDetailId =  # array[String] | One or more tissue IDs. If omitted, all tissues are included. (optional)
 
 try: 
-    api_response = api_instance.median_gene_expression_get(geneId, genome, tissueSiteDetailId=tissueSiteDetailId)
+    api_response = api_instance.median_gene_expression_get(geneId, tissueSiteDetailId=tissueSiteDetailId)
     pprint(api_response)
 except ApiException as e:
     print("Exception when calling ExpressionApi->medianGeneExpressionGet: %s\n" % e)</code></pre>
@@ -2600,29 +2450,7 @@ except ApiException as e:
                                                 </span>
                                 
                                                     <div class="inner description">
-                                                        One or more Ensembl gene IDs.
-                                                    </div>
-                                            </div>
-                                                <div class="inner required">
-                                                    Required
-                                                </div>
-                                        </div>
-                                    </div>
-                                </td>
-                                </tr>
-                                <tr><td style="width:150px;">genome*</td>
-                                <td>
-                                
-                                
-                                    <div id="d2e199_medianGeneExpressionGet_genome">
-                                        <div class="json-schema-view">
-                                            <div class="primitive">
-                                                <span class="type">
-                                                    String
-                                                </span>
-                                
-                                                    <div class="inner description">
-                                                        Genome build (rn6 or rn7)
+                                                        One or more gene IDs.
                                                     </div>
                                             </div>
                                                 <div class="inner required">
@@ -2676,11 +2504,7 @@ except ApiException as e:
         "$ref" : "#/components/schemas/inline_response_200_5"
       }
     }
-  },
-  "x-responseValueType" : [ {
-    "x-path" : "medianGeneExpression[0].geneId",
-    "x-valueType" : "https://identifiers.org/ensembl"
-  } ]
+  }
 };
                                         var schema = schemaWrapper.content["application/json"].schema;
                                         if (schema.$ref != null) {
@@ -2743,7 +2567,7 @@ except ApiException as e:
                           <div class="tab-pane active" id="examples-Expression-topExpressedGeneGet-0-curl">
                            <pre class="prettyprint"><code class="language-bsh">curl -X GET\
 -H "Accept: application/json"\
-"https://ratgtex.org/api/v2/topExpressedGene?filterMtGene=&genome=&tissueSiteDetailId="</code></pre>
+"https://ratgtex.org/api/v3/topExpressedGene?filterMtGene=&tissueSiteDetailId="</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Expression-topExpressedGeneGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -2759,11 +2583,10 @@ public class ExpressionApiExample {
     public static void main(String[] args) {
         
         ExpressionApi apiInstance = new ExpressionApi();
-        String genome = genome_example; // String | Genome build (rn6 or rn7)
         String tissueSiteDetailId = tissueSiteDetailId_example; // String | Tissue ID
         Boolean filterMtGene = true; // Boolean | Whether mitochondrial genes should be omitted from the top gene list
         try {
-            inline_response_200_9 result = apiInstance.topExpressedGeneGet(genome, tissueSiteDetailId, filterMtGene);
+            inline_response_200_9 result = apiInstance.topExpressedGeneGet(tissueSiteDetailId, filterMtGene);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling ExpressionApi#topExpressedGeneGet");
@@ -2780,11 +2603,10 @@ public class ExpressionApiExample {
 
     public static void main(String[] args) {
         ExpressionApi apiInstance = new ExpressionApi();
-        String genome = genome_example; // String | Genome build (rn6 or rn7)
         String tissueSiteDetailId = tissueSiteDetailId_example; // String | Tissue ID
         Boolean filterMtGene = true; // Boolean | Whether mitochondrial genes should be omitted from the top gene list
         try {
-            inline_response_200_9 result = apiInstance.topExpressedGeneGet(genome, tissueSiteDetailId, filterMtGene);
+            inline_response_200_9 result = apiInstance.topExpressedGeneGet(tissueSiteDetailId, filterMtGene);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling ExpressionApi#topExpressedGeneGet");
@@ -2798,14 +2620,12 @@ public class ExpressionApiExample {
   <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
   </div> -->
                             <div class="tab-pane" id="examples-Expression-topExpressedGeneGet-0-objc">
-                              <pre class="prettyprint"><code class="language-cpp">String *genome = genome_example; // Genome build (rn6 or rn7)
-String *tissueSiteDetailId = tissueSiteDetailId_example; // Tissue ID
+                              <pre class="prettyprint"><code class="language-cpp">String *tissueSiteDetailId = tissueSiteDetailId_example; // Tissue ID
 Boolean *filterMtGene = true; // Whether mitochondrial genes should be omitted from the top gene list (optional)
 
 ExpressionApi *apiInstance = [[ExpressionApi alloc] init];
 
-[apiInstance topExpressedGeneGetWith:genome
-    tissueSiteDetailId:tissueSiteDetailId
+[apiInstance topExpressedGeneGetWith:tissueSiteDetailId
     filterMtGene:filterMtGene
               completionHandler: ^(inline_response_200_9 output, NSError* error) {
                             if (output) {
@@ -2822,7 +2642,6 @@ ExpressionApi *apiInstance = [[ExpressionApi alloc] init];
                               <pre class="prettyprint"><code class="language-js">var RatGtexRestApi = require('rat_gtex_rest_api');
 
 var api = new RatGtexRestApi.ExpressionApi()
-var genome = genome_example; // {{String}} Genome build (rn6 or rn7)
 var tissueSiteDetailId = tissueSiteDetailId_example; // {{String}} Tissue ID
 var opts = { 
   'filterMtGene': true // {{Boolean}} Whether mitochondrial genes should be omitted from the top gene list
@@ -2834,7 +2653,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.topExpressedGeneGet(genome, tissueSiteDetailId, opts, callback);
+api.topExpressedGeneGet(tissueSiteDetailId, opts, callback);
 </code></pre>
                             </div>
 
@@ -2856,13 +2675,12 @@ namespace Example
         {
 
             var apiInstance = new ExpressionApi();
-            var genome = genome_example;  // String | Genome build (rn6 or rn7)
             var tissueSiteDetailId = tissueSiteDetailId_example;  // String | Tissue ID
             var filterMtGene = true;  // Boolean | Whether mitochondrial genes should be omitted from the top gene list (optional) 
 
             try
             {
-                inline_response_200_9 result = apiInstance.topExpressedGeneGet(genome, tissueSiteDetailId, filterMtGene);
+                inline_response_200_9 result = apiInstance.topExpressedGeneGet(tissueSiteDetailId, filterMtGene);
                 Debug.WriteLine(result);
             }
             catch (Exception e)
@@ -2880,12 +2698,11 @@ namespace Example
 require_once(__DIR__ . '/vendor/autoload.php');
 
 $api_instance = new Swagger\Client\ApiExpressionApi();
-$genome = genome_example; // String | Genome build (rn6 or rn7)
 $tissueSiteDetailId = tissueSiteDetailId_example; // String | Tissue ID
 $filterMtGene = true; // Boolean | Whether mitochondrial genes should be omitted from the top gene list
 
 try {
-    $result = $api_instance->topExpressedGeneGet($genome, $tissueSiteDetailId, $filterMtGene);
+    $result = $api_instance->topExpressedGeneGet($tissueSiteDetailId, $filterMtGene);
     print_r($result);
 } catch (Exception $e) {
     echo 'Exception when calling ExpressionApi->topExpressedGeneGet: ', $e->getMessage(), PHP_EOL;
@@ -2899,12 +2716,11 @@ use WWW::SwaggerClient::Configuration;
 use WWW::SwaggerClient::ExpressionApi;
 
 my $api_instance = WWW::SwaggerClient::ExpressionApi->new();
-my $genome = genome_example; # String | Genome build (rn6 or rn7)
 my $tissueSiteDetailId = tissueSiteDetailId_example; # String | Tissue ID
 my $filterMtGene = true; # Boolean | Whether mitochondrial genes should be omitted from the top gene list
 
 eval { 
-    my $result = $api_instance->topExpressedGeneGet(genome => $genome, tissueSiteDetailId => $tissueSiteDetailId, filterMtGene => $filterMtGene);
+    my $result = $api_instance->topExpressedGeneGet(tissueSiteDetailId => $tissueSiteDetailId, filterMtGene => $filterMtGene);
     print Dumper($result);
 };
 if ($@) {
@@ -2921,12 +2737,11 @@ from pprint import pprint
 
 # create an instance of the API class
 api_instance = swagger_client.ExpressionApi()
-genome = genome_example # String | Genome build (rn6 or rn7)
 tissueSiteDetailId = tissueSiteDetailId_example # String | Tissue ID
 filterMtGene = true # Boolean | Whether mitochondrial genes should be omitted from the top gene list (optional)
 
 try: 
-    api_response = api_instance.top_expressed_gene_get(genome, tissueSiteDetailId, filterMtGene=filterMtGene)
+    api_response = api_instance.top_expressed_gene_get(tissueSiteDetailId, filterMtGene=filterMtGene)
     pprint(api_response)
 except ApiException as e:
     print("Exception when calling ExpressionApi->topExpressedGeneGet: %s\n" % e)</code></pre>
@@ -2960,28 +2775,6 @@ except ApiException as e:
                                                         Whether mitochondrial genes should be omitted from the top gene list
                                                     </div>
                                             </div>
-                                        </div>
-                                    </div>
-                                </td>
-                                </tr>
-                                <tr><td style="width:150px;">genome*</td>
-                                <td>
-                                
-                                
-                                    <div id="d2e199_topExpressedGeneGet_genome">
-                                        <div class="json-schema-view">
-                                            <div class="primitive">
-                                                <span class="type">
-                                                    String
-                                                </span>
-                                
-                                                    <div class="inner description">
-                                                        Genome build (rn6 or rn7)
-                                                    </div>
-                                            </div>
-                                                <div class="inner required">
-                                                    Required
-                                                </div>
                                         </div>
                                     </div>
                                 </td>
@@ -3033,11 +2826,7 @@ except ApiException as e:
         "$ref" : "#/components/schemas/inline_response_200_9"
       }
     }
-  },
-  "x-responseValueType" : [ {
-    "x-path" : "topExpressedGene[0].geneId",
-    "x-valueType" : "https://identifiers.org/ensembl"
-  } ]
+  }
 };
                                         var schema = schemaWrapper.content["application/json"].schema;
                                         if (schema.$ref != null) {
@@ -3103,7 +2892,7 @@ except ApiException as e:
                           <div class="tab-pane active" id="examples-Reference-exonGet-0-curl">
                            <pre class="prettyprint"><code class="language-bsh">curl -X GET\
 -H "Accept: application/json"\
-"https://ratgtex.org/api/v2/exon?geneId=&genome="</code></pre>
+"https://ratgtex.org/api/v3/exon?geneId="</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Reference-exonGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -3119,10 +2908,9 @@ public class ReferenceApiExample {
     public static void main(String[] args) {
         
         ReferenceApi apiInstance = new ReferenceApi();
-        String geneId = geneId_example; // String | Ensembl gene ID
-        String genome = genome_example; // String | Genome build (rn6 or rn7)
+        String geneId = geneId_example; // String | Gene ID
         try {
-            inline_response_200_2 result = apiInstance.exonGet(geneId, genome);
+            inline_response_200_2 result = apiInstance.exonGet(geneId);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling ReferenceApi#exonGet");
@@ -3139,10 +2927,9 @@ public class ReferenceApiExample {
 
     public static void main(String[] args) {
         ReferenceApi apiInstance = new ReferenceApi();
-        String geneId = geneId_example; // String | Ensembl gene ID
-        String genome = genome_example; // String | Genome build (rn6 or rn7)
+        String geneId = geneId_example; // String | Gene ID
         try {
-            inline_response_200_2 result = apiInstance.exonGet(geneId, genome);
+            inline_response_200_2 result = apiInstance.exonGet(geneId);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling ReferenceApi#exonGet");
@@ -3156,13 +2943,11 @@ public class ReferenceApiExample {
   <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
   </div> -->
                             <div class="tab-pane" id="examples-Reference-exonGet-0-objc">
-                              <pre class="prettyprint"><code class="language-cpp">String *geneId = geneId_example; // Ensembl gene ID
-String *genome = genome_example; // Genome build (rn6 or rn7)
+                              <pre class="prettyprint"><code class="language-cpp">String *geneId = geneId_example; // Gene ID
 
 ReferenceApi *apiInstance = [[ReferenceApi alloc] init];
 
 [apiInstance exonGetWith:geneId
-    genome:genome
               completionHandler: ^(inline_response_200_2 output, NSError* error) {
                             if (output) {
                                 NSLog(@"%@", output);
@@ -3178,8 +2963,7 @@ ReferenceApi *apiInstance = [[ReferenceApi alloc] init];
                               <pre class="prettyprint"><code class="language-js">var RatGtexRestApi = require('rat_gtex_rest_api');
 
 var api = new RatGtexRestApi.ReferenceApi()
-var geneId = geneId_example; // {{String}} Ensembl gene ID
-var genome = genome_example; // {{String}} Genome build (rn6 or rn7)
+var geneId = geneId_example; // {{String}} Gene ID
 
 var callback = function(error, data, response) {
   if (error) {
@@ -3188,7 +2972,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.exonGet(geneId, genome, callback);
+api.exonGet(geneId, callback);
 </code></pre>
                             </div>
 
@@ -3210,12 +2994,11 @@ namespace Example
         {
 
             var apiInstance = new ReferenceApi();
-            var geneId = geneId_example;  // String | Ensembl gene ID
-            var genome = genome_example;  // String | Genome build (rn6 or rn7)
+            var geneId = geneId_example;  // String | Gene ID
 
             try
             {
-                inline_response_200_2 result = apiInstance.exonGet(geneId, genome);
+                inline_response_200_2 result = apiInstance.exonGet(geneId);
                 Debug.WriteLine(result);
             }
             catch (Exception e)
@@ -3233,11 +3016,10 @@ namespace Example
 require_once(__DIR__ . '/vendor/autoload.php');
 
 $api_instance = new Swagger\Client\ApiReferenceApi();
-$geneId = geneId_example; // String | Ensembl gene ID
-$genome = genome_example; // String | Genome build (rn6 or rn7)
+$geneId = geneId_example; // String | Gene ID
 
 try {
-    $result = $api_instance->exonGet($geneId, $genome);
+    $result = $api_instance->exonGet($geneId);
     print_r($result);
 } catch (Exception $e) {
     echo 'Exception when calling ReferenceApi->exonGet: ', $e->getMessage(), PHP_EOL;
@@ -3251,11 +3033,10 @@ use WWW::SwaggerClient::Configuration;
 use WWW::SwaggerClient::ReferenceApi;
 
 my $api_instance = WWW::SwaggerClient::ReferenceApi->new();
-my $geneId = geneId_example; # String | Ensembl gene ID
-my $genome = genome_example; # String | Genome build (rn6 or rn7)
+my $geneId = geneId_example; # String | Gene ID
 
 eval { 
-    my $result = $api_instance->exonGet(geneId => $geneId, genome => $genome);
+    my $result = $api_instance->exonGet(geneId => $geneId);
     print Dumper($result);
 };
 if ($@) {
@@ -3272,11 +3053,10 @@ from pprint import pprint
 
 # create an instance of the API class
 api_instance = swagger_client.ReferenceApi()
-geneId = geneId_example # String | Ensembl gene ID
-genome = genome_example # String | Genome build (rn6 or rn7)
+geneId = geneId_example # String | Gene ID
 
 try: 
-    api_response = api_instance.exon_get(geneId, genome)
+    api_response = api_instance.exon_get(geneId)
     pprint(api_response)
 except ApiException as e:
     print("Exception when calling ReferenceApi->exonGet: %s\n" % e)</code></pre>
@@ -3307,29 +3087,7 @@ except ApiException as e:
                                                 </span>
                                 
                                                     <div class="inner description">
-                                                        Ensembl gene ID
-                                                    </div>
-                                            </div>
-                                                <div class="inner required">
-                                                    Required
-                                                </div>
-                                        </div>
-                                    </div>
-                                </td>
-                                </tr>
-                                <tr><td style="width:150px;">genome*</td>
-                                <td>
-                                
-                                
-                                    <div id="d2e199_exonGet_genome">
-                                        <div class="json-schema-view">
-                                            <div class="primitive">
-                                                <span class="type">
-                                                    String
-                                                </span>
-                                
-                                                    <div class="inner description">
-                                                        Genome build (rn6 or rn7)
+                                                        Gene ID
                                                     </div>
                                             </div>
                                                 <div class="inner required">
@@ -3364,14 +3122,7 @@ except ApiException as e:
         "$ref" : "#/components/schemas/inline_response_200_2"
       }
     }
-  },
-  "x-responseValueType" : [ {
-    "x-path" : "exon[0].geneId",
-    "x-valueType" : "https://identifiers.org/ensembl"
-  }, {
-    "x-path" : "transcriptId",
-    "x-valueType" : "https://identifiers.org/ensembl"
-  } ]
+  }
 };
                                         var schema = schemaWrapper.content["application/json"].schema;
                                         if (schema.$ref != null) {
@@ -3434,7 +3185,7 @@ except ApiException as e:
                           <div class="tab-pane active" id="examples-Reference-geneGet-0-curl">
                            <pre class="prettyprint"><code class="language-bsh">curl -X GET\
 -H "Accept: application/json"\
-"https://ratgtex.org/api/v2/gene?geneId=&genome="</code></pre>
+"https://ratgtex.org/api/v3/gene?geneId="</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Reference-geneGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -3450,10 +3201,9 @@ public class ReferenceApiExample {
     public static void main(String[] args) {
         
         ReferenceApi apiInstance = new ReferenceApi();
-        array[String] geneId = ; // array[String] | One or more Ensembl gene IDs or gene symbols (they can be mixed)
-        String genome = genome_example; // String | Genome build (rn6 or rn7)
+        array[String] geneId = ; // array[String] | One or more gene IDs
         try {
-            inline_response_200_3 result = apiInstance.geneGet(geneId, genome);
+            inline_response_200_3 result = apiInstance.geneGet(geneId);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling ReferenceApi#geneGet");
@@ -3470,10 +3220,9 @@ public class ReferenceApiExample {
 
     public static void main(String[] args) {
         ReferenceApi apiInstance = new ReferenceApi();
-        array[String] geneId = ; // array[String] | One or more Ensembl gene IDs or gene symbols (they can be mixed)
-        String genome = genome_example; // String | Genome build (rn6 or rn7)
+        array[String] geneId = ; // array[String] | One or more gene IDs
         try {
-            inline_response_200_3 result = apiInstance.geneGet(geneId, genome);
+            inline_response_200_3 result = apiInstance.geneGet(geneId);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling ReferenceApi#geneGet");
@@ -3487,13 +3236,11 @@ public class ReferenceApiExample {
   <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
   </div> -->
                             <div class="tab-pane" id="examples-Reference-geneGet-0-objc">
-                              <pre class="prettyprint"><code class="language-cpp">array[String] *geneId = ; // One or more Ensembl gene IDs or gene symbols (they can be mixed)
-String *genome = genome_example; // Genome build (rn6 or rn7)
+                              <pre class="prettyprint"><code class="language-cpp">array[String] *geneId = ; // One or more gene IDs
 
 ReferenceApi *apiInstance = [[ReferenceApi alloc] init];
 
 [apiInstance geneGetWith:geneId
-    genome:genome
               completionHandler: ^(inline_response_200_3 output, NSError* error) {
                             if (output) {
                                 NSLog(@"%@", output);
@@ -3509,8 +3256,7 @@ ReferenceApi *apiInstance = [[ReferenceApi alloc] init];
                               <pre class="prettyprint"><code class="language-js">var RatGtexRestApi = require('rat_gtex_rest_api');
 
 var api = new RatGtexRestApi.ReferenceApi()
-var geneId = ; // {{array[String]}} One or more Ensembl gene IDs or gene symbols (they can be mixed)
-var genome = genome_example; // {{String}} Genome build (rn6 or rn7)
+var geneId = ; // {{array[String]}} One or more gene IDs
 
 var callback = function(error, data, response) {
   if (error) {
@@ -3519,7 +3265,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.geneGet(geneId, genome, callback);
+api.geneGet(geneId, callback);
 </code></pre>
                             </div>
 
@@ -3541,12 +3287,11 @@ namespace Example
         {
 
             var apiInstance = new ReferenceApi();
-            var geneId = new array[String](); // array[String] | One or more Ensembl gene IDs or gene symbols (they can be mixed)
-            var genome = genome_example;  // String | Genome build (rn6 or rn7)
+            var geneId = new array[String](); // array[String] | One or more gene IDs
 
             try
             {
-                inline_response_200_3 result = apiInstance.geneGet(geneId, genome);
+                inline_response_200_3 result = apiInstance.geneGet(geneId);
                 Debug.WriteLine(result);
             }
             catch (Exception e)
@@ -3564,11 +3309,10 @@ namespace Example
 require_once(__DIR__ . '/vendor/autoload.php');
 
 $api_instance = new Swagger\Client\ApiReferenceApi();
-$geneId = ; // array[String] | One or more Ensembl gene IDs or gene symbols (they can be mixed)
-$genome = genome_example; // String | Genome build (rn6 or rn7)
+$geneId = ; // array[String] | One or more gene IDs
 
 try {
-    $result = $api_instance->geneGet($geneId, $genome);
+    $result = $api_instance->geneGet($geneId);
     print_r($result);
 } catch (Exception $e) {
     echo 'Exception when calling ReferenceApi->geneGet: ', $e->getMessage(), PHP_EOL;
@@ -3582,11 +3326,10 @@ use WWW::SwaggerClient::Configuration;
 use WWW::SwaggerClient::ReferenceApi;
 
 my $api_instance = WWW::SwaggerClient::ReferenceApi->new();
-my $geneId = []; # array[String] | One or more Ensembl gene IDs or gene symbols (they can be mixed)
-my $genome = genome_example; # String | Genome build (rn6 or rn7)
+my $geneId = []; # array[String] | One or more gene IDs
 
 eval { 
-    my $result = $api_instance->geneGet(geneId => $geneId, genome => $genome);
+    my $result = $api_instance->geneGet(geneId => $geneId);
     print Dumper($result);
 };
 if ($@) {
@@ -3603,11 +3346,10 @@ from pprint import pprint
 
 # create an instance of the API class
 api_instance = swagger_client.ReferenceApi()
-geneId =  # array[String] | One or more Ensembl gene IDs or gene symbols (they can be mixed)
-genome = genome_example # String | Genome build (rn6 or rn7)
+geneId =  # array[String] | One or more gene IDs
 
 try: 
-    api_response = api_instance.gene_get(geneId, genome)
+    api_response = api_instance.gene_get(geneId)
     pprint(api_response)
 except ApiException as e:
     print("Exception when calling ReferenceApi->geneGet: %s\n" % e)</code></pre>
@@ -3638,29 +3380,7 @@ except ApiException as e:
                                                 </span>
                                 
                                                     <div class="inner description">
-                                                        One or more Ensembl gene IDs or gene symbols (they can be mixed)
-                                                    </div>
-                                            </div>
-                                                <div class="inner required">
-                                                    Required
-                                                </div>
-                                        </div>
-                                    </div>
-                                </td>
-                                </tr>
-                                <tr><td style="width:150px;">genome*</td>
-                                <td>
-                                
-                                
-                                    <div id="d2e199_geneGet_genome">
-                                        <div class="json-schema-view">
-                                            <div class="primitive">
-                                                <span class="type">
-                                                    String
-                                                </span>
-                                
-                                                    <div class="inner description">
-                                                        Genome build (rn6 or rn7)
+                                                        One or more gene IDs
                                                     </div>
                                             </div>
                                                 <div class="inner required">
@@ -3695,11 +3415,7 @@ except ApiException as e:
         "$ref" : "#/components/schemas/inline_response_200_3"
       }
     }
-  },
-  "x-responseValueType" : [ {
-    "x-path" : "gene[0].geneId",
-    "x-valueType" : "https://identifiers.org/ensembl"
-  } ]
+  }
 };
                                         var schema = schemaWrapper.content["application/json"].schema;
                                         if (schema.$ref != null) {
@@ -3762,7 +3478,7 @@ except ApiException as e:
                           <div class="tab-pane active" id="examples-Reference-ldGet-0-curl">
                            <pre class="prettyprint"><code class="language-bsh">curl -X GET\
 -H "Accept: application/json"\
-"https://ratgtex.org/api/v2/ld?geneId=&genome="</code></pre>
+"https://ratgtex.org/api/v3/ld?geneId="</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Reference-ldGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -3778,10 +3494,9 @@ public class ReferenceApiExample {
     public static void main(String[] args) {
         
         ReferenceApi apiInstance = new ReferenceApi();
-        String geneId = geneId_example; // String | Ensembl gene ID
-        String genome = genome_example; // String | Genome build (rn6 or rn7)
+        String geneId = geneId_example; // String | Gene ID
         try {
-            inline_response_200_4 result = apiInstance.ldGet(geneId, genome);
+            inline_response_200_4 result = apiInstance.ldGet(geneId);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling ReferenceApi#ldGet");
@@ -3798,10 +3513,9 @@ public class ReferenceApiExample {
 
     public static void main(String[] args) {
         ReferenceApi apiInstance = new ReferenceApi();
-        String geneId = geneId_example; // String | Ensembl gene ID
-        String genome = genome_example; // String | Genome build (rn6 or rn7)
+        String geneId = geneId_example; // String | Gene ID
         try {
-            inline_response_200_4 result = apiInstance.ldGet(geneId, genome);
+            inline_response_200_4 result = apiInstance.ldGet(geneId);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling ReferenceApi#ldGet");
@@ -3815,13 +3529,11 @@ public class ReferenceApiExample {
   <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
   </div> -->
                             <div class="tab-pane" id="examples-Reference-ldGet-0-objc">
-                              <pre class="prettyprint"><code class="language-cpp">String *geneId = geneId_example; // Ensembl gene ID
-String *genome = genome_example; // Genome build (rn6 or rn7)
+                              <pre class="prettyprint"><code class="language-cpp">String *geneId = geneId_example; // Gene ID
 
 ReferenceApi *apiInstance = [[ReferenceApi alloc] init];
 
 [apiInstance ldGetWith:geneId
-    genome:genome
               completionHandler: ^(inline_response_200_4 output, NSError* error) {
                             if (output) {
                                 NSLog(@"%@", output);
@@ -3837,8 +3549,7 @@ ReferenceApi *apiInstance = [[ReferenceApi alloc] init];
                               <pre class="prettyprint"><code class="language-js">var RatGtexRestApi = require('rat_gtex_rest_api');
 
 var api = new RatGtexRestApi.ReferenceApi()
-var geneId = geneId_example; // {{String}} Ensembl gene ID
-var genome = genome_example; // {{String}} Genome build (rn6 or rn7)
+var geneId = geneId_example; // {{String}} Gene ID
 
 var callback = function(error, data, response) {
   if (error) {
@@ -3847,7 +3558,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.ldGet(geneId, genome, callback);
+api.ldGet(geneId, callback);
 </code></pre>
                             </div>
 
@@ -3869,12 +3580,11 @@ namespace Example
         {
 
             var apiInstance = new ReferenceApi();
-            var geneId = geneId_example;  // String | Ensembl gene ID
-            var genome = genome_example;  // String | Genome build (rn6 or rn7)
+            var geneId = geneId_example;  // String | Gene ID
 
             try
             {
-                inline_response_200_4 result = apiInstance.ldGet(geneId, genome);
+                inline_response_200_4 result = apiInstance.ldGet(geneId);
                 Debug.WriteLine(result);
             }
             catch (Exception e)
@@ -3892,11 +3602,10 @@ namespace Example
 require_once(__DIR__ . '/vendor/autoload.php');
 
 $api_instance = new Swagger\Client\ApiReferenceApi();
-$geneId = geneId_example; // String | Ensembl gene ID
-$genome = genome_example; // String | Genome build (rn6 or rn7)
+$geneId = geneId_example; // String | Gene ID
 
 try {
-    $result = $api_instance->ldGet($geneId, $genome);
+    $result = $api_instance->ldGet($geneId);
     print_r($result);
 } catch (Exception $e) {
     echo 'Exception when calling ReferenceApi->ldGet: ', $e->getMessage(), PHP_EOL;
@@ -3910,11 +3619,10 @@ use WWW::SwaggerClient::Configuration;
 use WWW::SwaggerClient::ReferenceApi;
 
 my $api_instance = WWW::SwaggerClient::ReferenceApi->new();
-my $geneId = geneId_example; # String | Ensembl gene ID
-my $genome = genome_example; # String | Genome build (rn6 or rn7)
+my $geneId = geneId_example; # String | Gene ID
 
 eval { 
-    my $result = $api_instance->ldGet(geneId => $geneId, genome => $genome);
+    my $result = $api_instance->ldGet(geneId => $geneId);
     print Dumper($result);
 };
 if ($@) {
@@ -3931,11 +3639,10 @@ from pprint import pprint
 
 # create an instance of the API class
 api_instance = swagger_client.ReferenceApi()
-geneId = geneId_example # String | Ensembl gene ID
-genome = genome_example # String | Genome build (rn6 or rn7)
+geneId = geneId_example # String | Gene ID
 
 try: 
-    api_response = api_instance.ld_get(geneId, genome)
+    api_response = api_instance.ld_get(geneId)
     pprint(api_response)
 except ApiException as e:
     print("Exception when calling ReferenceApi->ldGet: %s\n" % e)</code></pre>
@@ -3966,29 +3673,7 @@ except ApiException as e:
                                                 </span>
                                 
                                                     <div class="inner description">
-                                                        Ensembl gene ID
-                                                    </div>
-                                            </div>
-                                                <div class="inner required">
-                                                    Required
-                                                </div>
-                                        </div>
-                                    </div>
-                                </td>
-                                </tr>
-                                <tr><td style="width:150px;">genome*</td>
-                                <td>
-                                
-                                
-                                    <div id="d2e199_ldGet_genome">
-                                        <div class="json-schema-view">
-                                            <div class="primitive">
-                                                <span class="type">
-                                                    String
-                                                </span>
-                                
-                                                    <div class="inner description">
-                                                        Genome build (rn6 or rn7)
+                                                        Gene ID
                                                     </div>
                                             </div>
                                                 <div class="inner required">
@@ -4086,7 +3771,7 @@ except ApiException as e:
                           <div class="tab-pane active" id="examples-Reference-tissueInfoGet-0-curl">
                            <pre class="prettyprint"><code class="language-bsh">curl -X GET\
 -H "Accept: application/json"\
-"https://ratgtex.org/api/v2/tissueInfo?genome="</code></pre>
+"https://ratgtex.org/api/v3/tissueInfo"</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Reference-tissueInfoGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -4102,9 +3787,8 @@ public class ReferenceApiExample {
     public static void main(String[] args) {
         
         ReferenceApi apiInstance = new ReferenceApi();
-        String genome = genome_example; // String | Genome build (rn6 or rn7)
         try {
-            inline_response_200_8 result = apiInstance.tissueInfoGet(genome);
+            inline_response_200_8 result = apiInstance.tissueInfoGet();
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling ReferenceApi#tissueInfoGet");
@@ -4121,9 +3805,8 @@ public class ReferenceApiExample {
 
     public static void main(String[] args) {
         ReferenceApi apiInstance = new ReferenceApi();
-        String genome = genome_example; // String | Genome build (rn6 or rn7)
         try {
-            inline_response_200_8 result = apiInstance.tissueInfoGet(genome);
+            inline_response_200_8 result = apiInstance.tissueInfoGet();
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling ReferenceApi#tissueInfoGet");
@@ -4137,12 +3820,11 @@ public class ReferenceApiExample {
   <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
   </div> -->
                             <div class="tab-pane" id="examples-Reference-tissueInfoGet-0-objc">
-                              <pre class="prettyprint"><code class="language-cpp">String *genome = genome_example; // Genome build (rn6 or rn7)
-
+                              <pre class="prettyprint"><code class="language-cpp">
 ReferenceApi *apiInstance = [[ReferenceApi alloc] init];
 
-[apiInstance tissueInfoGetWith:genome
-              completionHandler: ^(inline_response_200_8 output, NSError* error) {
+[apiInstance tissueInfoGetWithCompletionHandler: 
+              ^(inline_response_200_8 output, NSError* error) {
                             if (output) {
                                 NSLog(@"%@", output);
                             }
@@ -4157,8 +3839,6 @@ ReferenceApi *apiInstance = [[ReferenceApi alloc] init];
                               <pre class="prettyprint"><code class="language-js">var RatGtexRestApi = require('rat_gtex_rest_api');
 
 var api = new RatGtexRestApi.ReferenceApi()
-var genome = genome_example; // {{String}} Genome build (rn6 or rn7)
-
 var callback = function(error, data, response) {
   if (error) {
     console.error(error);
@@ -4166,7 +3846,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.tissueInfoGet(genome, callback);
+api.tissueInfoGet(callback);
 </code></pre>
                             </div>
 
@@ -4188,11 +3868,10 @@ namespace Example
         {
 
             var apiInstance = new ReferenceApi();
-            var genome = genome_example;  // String | Genome build (rn6 or rn7)
 
             try
             {
-                inline_response_200_8 result = apiInstance.tissueInfoGet(genome);
+                inline_response_200_8 result = apiInstance.tissueInfoGet();
                 Debug.WriteLine(result);
             }
             catch (Exception e)
@@ -4210,10 +3889,9 @@ namespace Example
 require_once(__DIR__ . '/vendor/autoload.php');
 
 $api_instance = new Swagger\Client\ApiReferenceApi();
-$genome = genome_example; // String | Genome build (rn6 or rn7)
 
 try {
-    $result = $api_instance->tissueInfoGet($genome);
+    $result = $api_instance->tissueInfoGet();
     print_r($result);
 } catch (Exception $e) {
     echo 'Exception when calling ReferenceApi->tissueInfoGet: ', $e->getMessage(), PHP_EOL;
@@ -4227,10 +3905,9 @@ use WWW::SwaggerClient::Configuration;
 use WWW::SwaggerClient::ReferenceApi;
 
 my $api_instance = WWW::SwaggerClient::ReferenceApi->new();
-my $genome = genome_example; # String | Genome build (rn6 or rn7)
 
 eval { 
-    my $result = $api_instance->tissueInfoGet(genome => $genome);
+    my $result = $api_instance->tissueInfoGet();
     print Dumper($result);
 };
 if ($@) {
@@ -4247,10 +3924,9 @@ from pprint import pprint
 
 # create an instance of the API class
 api_instance = swagger_client.ReferenceApi()
-genome = genome_example # String | Genome build (rn6 or rn7)
 
 try: 
-    api_response = api_instance.tissue_info_get(genome)
+    api_response = api_instance.tissue_info_get()
     pprint(api_response)
 except ApiException as e:
     print("Exception when calling ReferenceApi->tissueInfoGet: %s\n" % e)</code></pre>
@@ -4263,35 +3939,6 @@ except ApiException as e:
 
 
 
-                            <div class="methodsubtabletitle">Query parameters</div>
-                            <table id="methodsubtable">
-                              <tr>
-                                <th width="150px">Name</th>
-                                <th>Description</th>
-                              </tr>
-                                <tr><td style="width:150px;">genome*</td>
-                                <td>
-                                
-                                
-                                    <div id="d2e199_tissueInfoGet_genome">
-                                        <div class="json-schema-view">
-                                            <div class="primitive">
-                                                <span class="type">
-                                                    String
-                                                </span>
-                                
-                                                    <div class="inner description">
-                                                        Genome build (rn6 or rn7)
-                                                    </div>
-                                            </div>
-                                                <div class="inner required">
-                                                    Required
-                                                </div>
-                                        </div>
-                                    </div>
-                                </td>
-                                </tr>
-                            </table>
 
                           <h2>Responses</h2>
                             <h3> Status: 200 - Success </h3>
@@ -4379,7 +4026,7 @@ except ApiException as e:
                           <div class="tab-pane active" id="examples-Reference-variantGet-0-curl">
                            <pre class="prettyprint"><code class="language-bsh">curl -X GET\
 -H "Accept: application/json"\
-"https://ratgtex.org/api/v2/variant?genome=&variantId="</code></pre>
+"https://ratgtex.org/api/v3/variant?variantId="</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-Reference-variantGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -4395,10 +4042,9 @@ public class ReferenceApiExample {
     public static void main(String[] args) {
         
         ReferenceApi apiInstance = new ReferenceApi();
-        String genome = genome_example; // String | Genome build (rn6 or rn7)
         array[String] variantId = ; // array[String] | Variant ID
         try {
-            inline_response_200_10 result = apiInstance.variantGet(genome, variantId);
+            inline_response_200_10 result = apiInstance.variantGet(variantId);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling ReferenceApi#variantGet");
@@ -4415,10 +4061,9 @@ public class ReferenceApiExample {
 
     public static void main(String[] args) {
         ReferenceApi apiInstance = new ReferenceApi();
-        String genome = genome_example; // String | Genome build (rn6 or rn7)
         array[String] variantId = ; // array[String] | Variant ID
         try {
-            inline_response_200_10 result = apiInstance.variantGet(genome, variantId);
+            inline_response_200_10 result = apiInstance.variantGet(variantId);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling ReferenceApi#variantGet");
@@ -4432,13 +4077,11 @@ public class ReferenceApiExample {
   <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
   </div> -->
                             <div class="tab-pane" id="examples-Reference-variantGet-0-objc">
-                              <pre class="prettyprint"><code class="language-cpp">String *genome = genome_example; // Genome build (rn6 or rn7)
-array[String] *variantId = ; // Variant ID
+                              <pre class="prettyprint"><code class="language-cpp">array[String] *variantId = ; // Variant ID
 
 ReferenceApi *apiInstance = [[ReferenceApi alloc] init];
 
-[apiInstance variantGetWith:genome
-    variantId:variantId
+[apiInstance variantGetWith:variantId
               completionHandler: ^(inline_response_200_10 output, NSError* error) {
                             if (output) {
                                 NSLog(@"%@", output);
@@ -4454,7 +4097,6 @@ ReferenceApi *apiInstance = [[ReferenceApi alloc] init];
                               <pre class="prettyprint"><code class="language-js">var RatGtexRestApi = require('rat_gtex_rest_api');
 
 var api = new RatGtexRestApi.ReferenceApi()
-var genome = genome_example; // {{String}} Genome build (rn6 or rn7)
 var variantId = ; // {{array[String]}} Variant ID
 
 var callback = function(error, data, response) {
@@ -4464,7 +4106,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.variantGet(genome, variantId, callback);
+api.variantGet(variantId, callback);
 </code></pre>
                             </div>
 
@@ -4486,12 +4128,11 @@ namespace Example
         {
 
             var apiInstance = new ReferenceApi();
-            var genome = genome_example;  // String | Genome build (rn6 or rn7)
             var variantId = new array[String](); // array[String] | Variant ID
 
             try
             {
-                inline_response_200_10 result = apiInstance.variantGet(genome, variantId);
+                inline_response_200_10 result = apiInstance.variantGet(variantId);
                 Debug.WriteLine(result);
             }
             catch (Exception e)
@@ -4509,11 +4150,10 @@ namespace Example
 require_once(__DIR__ . '/vendor/autoload.php');
 
 $api_instance = new Swagger\Client\ApiReferenceApi();
-$genome = genome_example; // String | Genome build (rn6 or rn7)
 $variantId = ; // array[String] | Variant ID
 
 try {
-    $result = $api_instance->variantGet($genome, $variantId);
+    $result = $api_instance->variantGet($variantId);
     print_r($result);
 } catch (Exception $e) {
     echo 'Exception when calling ReferenceApi->variantGet: ', $e->getMessage(), PHP_EOL;
@@ -4527,11 +4167,10 @@ use WWW::SwaggerClient::Configuration;
 use WWW::SwaggerClient::ReferenceApi;
 
 my $api_instance = WWW::SwaggerClient::ReferenceApi->new();
-my $genome = genome_example; # String | Genome build (rn6 or rn7)
 my $variantId = []; # array[String] | Variant ID
 
 eval { 
-    my $result = $api_instance->variantGet(genome => $genome, variantId => $variantId);
+    my $result = $api_instance->variantGet(variantId => $variantId);
     print Dumper($result);
 };
 if ($@) {
@@ -4548,11 +4187,10 @@ from pprint import pprint
 
 # create an instance of the API class
 api_instance = swagger_client.ReferenceApi()
-genome = genome_example # String | Genome build (rn6 or rn7)
 variantId =  # array[String] | Variant ID
 
 try: 
-    api_response = api_instance.variant_get(genome, variantId)
+    api_response = api_instance.variant_get(variantId)
     pprint(api_response)
 except ApiException as e:
     print("Exception when calling ReferenceApi->variantGet: %s\n" % e)</code></pre>
@@ -4571,28 +4209,6 @@ except ApiException as e:
                                 <th width="150px">Name</th>
                                 <th>Description</th>
                               </tr>
-                                <tr><td style="width:150px;">genome*</td>
-                                <td>
-                                
-                                
-                                    <div id="d2e199_variantGet_genome">
-                                        <div class="json-schema-view">
-                                            <div class="primitive">
-                                                <span class="type">
-                                                    String
-                                                </span>
-                                
-                                                    <div class="inner description">
-                                                        Genome build (rn6 or rn7)
-                                                    </div>
-                                            </div>
-                                                <div class="inner required">
-                                                    Required
-                                                </div>
-                                        </div>
-                                    </div>
-                                </td>
-                                </tr>
                                 <tr><td style="width:150px;">variantId*</td>
                                 <td>
                                 
@@ -4706,7 +4322,7 @@ except ApiException as e:
                           <div class="tab-pane active" id="examples-SQTL-sqtlGet-0-curl">
                            <pre class="prettyprint"><code class="language-bsh">curl -X GET\
 -H "Accept: application/json"\
-"https://ratgtex.org/api/v2/sqtl?geneId=&genome="</code></pre>
+"https://ratgtex.org/api/v3/sqtl?geneId="</code></pre>
                           </div>
                           <div class="tab-pane" id="examples-SQTL-sqtlGet-0-java">
                             <pre class="prettyprint"><code class="language-java">import io.swagger.client.*;
@@ -4722,10 +4338,9 @@ public class SQTLApiExample {
     public static void main(String[] args) {
         
         SQTLApi apiInstance = new SQTLApi();
-        String geneId = geneId_example; // String | Ensembl gene ID
-        String genome = genome_example; // String | Genome build (rn6 or rn7)
+        String geneId = geneId_example; // String | Gene ID
         try {
-            inline_response_200_7 result = apiInstance.sqtlGet(geneId, genome);
+            inline_response_200_7 result = apiInstance.sqtlGet(geneId);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling SQTLApi#sqtlGet");
@@ -4742,10 +4357,9 @@ public class SQTLApiExample {
 
     public static void main(String[] args) {
         SQTLApi apiInstance = new SQTLApi();
-        String geneId = geneId_example; // String | Ensembl gene ID
-        String genome = genome_example; // String | Genome build (rn6 or rn7)
+        String geneId = geneId_example; // String | Gene ID
         try {
-            inline_response_200_7 result = apiInstance.sqtlGet(geneId, genome);
+            inline_response_200_7 result = apiInstance.sqtlGet(geneId);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling SQTLApi#sqtlGet");
@@ -4759,13 +4373,11 @@ public class SQTLApiExample {
   <pre class="prettyprint language-json prettyprinted" data-type="json"><code>Coming Soon!</code></pre>
   </div> -->
                             <div class="tab-pane" id="examples-SQTL-sqtlGet-0-objc">
-                              <pre class="prettyprint"><code class="language-cpp">String *geneId = geneId_example; // Ensembl gene ID
-String *genome = genome_example; // Genome build (rn6 or rn7)
+                              <pre class="prettyprint"><code class="language-cpp">String *geneId = geneId_example; // Gene ID
 
 SQTLApi *apiInstance = [[SQTLApi alloc] init];
 
 [apiInstance sqtlGetWith:geneId
-    genome:genome
               completionHandler: ^(inline_response_200_7 output, NSError* error) {
                             if (output) {
                                 NSLog(@"%@", output);
@@ -4781,8 +4393,7 @@ SQTLApi *apiInstance = [[SQTLApi alloc] init];
                               <pre class="prettyprint"><code class="language-js">var RatGtexRestApi = require('rat_gtex_rest_api');
 
 var api = new RatGtexRestApi.SQTLApi()
-var geneId = geneId_example; // {{String}} Ensembl gene ID
-var genome = genome_example; // {{String}} Genome build (rn6 or rn7)
+var geneId = geneId_example; // {{String}} Gene ID
 
 var callback = function(error, data, response) {
   if (error) {
@@ -4791,7 +4402,7 @@ var callback = function(error, data, response) {
     console.log('API called successfully. Returned data: ' + data);
   }
 };
-api.sqtlGet(geneId, genome, callback);
+api.sqtlGet(geneId, callback);
 </code></pre>
                             </div>
 
@@ -4813,12 +4424,11 @@ namespace Example
         {
 
             var apiInstance = new SQTLApi();
-            var geneId = geneId_example;  // String | Ensembl gene ID
-            var genome = genome_example;  // String | Genome build (rn6 or rn7)
+            var geneId = geneId_example;  // String | Gene ID
 
             try
             {
-                inline_response_200_7 result = apiInstance.sqtlGet(geneId, genome);
+                inline_response_200_7 result = apiInstance.sqtlGet(geneId);
                 Debug.WriteLine(result);
             }
             catch (Exception e)
@@ -4836,11 +4446,10 @@ namespace Example
 require_once(__DIR__ . '/vendor/autoload.php');
 
 $api_instance = new Swagger\Client\ApiSQTLApi();
-$geneId = geneId_example; // String | Ensembl gene ID
-$genome = genome_example; // String | Genome build (rn6 or rn7)
+$geneId = geneId_example; // String | Gene ID
 
 try {
-    $result = $api_instance->sqtlGet($geneId, $genome);
+    $result = $api_instance->sqtlGet($geneId);
     print_r($result);
 } catch (Exception $e) {
     echo 'Exception when calling SQTLApi->sqtlGet: ', $e->getMessage(), PHP_EOL;
@@ -4854,11 +4463,10 @@ use WWW::SwaggerClient::Configuration;
 use WWW::SwaggerClient::SQTLApi;
 
 my $api_instance = WWW::SwaggerClient::SQTLApi->new();
-my $geneId = geneId_example; # String | Ensembl gene ID
-my $genome = genome_example; # String | Genome build (rn6 or rn7)
+my $geneId = geneId_example; # String | Gene ID
 
 eval { 
-    my $result = $api_instance->sqtlGet(geneId => $geneId, genome => $genome);
+    my $result = $api_instance->sqtlGet(geneId => $geneId);
     print Dumper($result);
 };
 if ($@) {
@@ -4875,11 +4483,10 @@ from pprint import pprint
 
 # create an instance of the API class
 api_instance = swagger_client.SQTLApi()
-geneId = geneId_example # String | Ensembl gene ID
-genome = genome_example # String | Genome build (rn6 or rn7)
+geneId = geneId_example # String | Gene ID
 
 try: 
-    api_response = api_instance.sqtl_get(geneId, genome)
+    api_response = api_instance.sqtl_get(geneId)
     pprint(api_response)
 except ApiException as e:
     print("Exception when calling SQTLApi->sqtlGet: %s\n" % e)</code></pre>
@@ -4910,29 +4517,7 @@ except ApiException as e:
                                                 </span>
                                 
                                                     <div class="inner description">
-                                                        Ensembl gene ID
-                                                    </div>
-                                            </div>
-                                                <div class="inner required">
-                                                    Required
-                                                </div>
-                                        </div>
-                                    </div>
-                                </td>
-                                </tr>
-                                <tr><td style="width:150px;">genome*</td>
-                                <td>
-                                
-                                
-                                    <div id="d2e199_sqtlGet_genome">
-                                        <div class="json-schema-view">
-                                            <div class="primitive">
-                                                <span class="type">
-                                                    String
-                                                </span>
-                                
-                                                    <div class="inner description">
-                                                        Genome build (rn6 or rn7)
+                                                        Gene ID
                                                     </div>
                                             </div>
                                                 <div class="inner required">
@@ -4967,11 +4552,7 @@ except ApiException as e:
         "$ref" : "#/components/schemas/inline_response_200_7"
       }
     }
-  },
-  "x-responseValueType" : [ {
-    "x-path" : "sqtl[0].geneId",
-    "x-valueType" : "https://identifiers.org/ensembl"
-  } ]
+  }
 };
                                         var schema = schemaWrapper.content["application/json"].schema;
                                         if (schema.$ref != null) {
@@ -6121,7 +5702,7 @@ except ApiException as e:
       this.isPrimitive = !this.isAny && !this.isArray && !this.isObject;
   
       //
-      this.showToggle = this.schema.description || this.schema.title || this.isPrimitive && (this.schema.minimum || this.schema.maximum || this.schema.exclusiveMinimum || this.schema.exclusiveMaximum);
+      this.showToggle = this.schema.description || this.schema.title || this.isPrimitive && (this.schema.minimum || this.schema.maximum || this.schema.exclusiveMinimum || this.schema.exclusiveMaximum || this.schema.maxLength || this.schema.minLength || this.schema.pattern || this.schema.format);
   
       // populate isRequired property down to properties
       if (this.schema && Array.isArray(this.schema.required)) {

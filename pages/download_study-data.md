@@ -4,6 +4,8 @@ title: Download study data
 layout: base
 ---
 
+<p>Download pages: <a href="/download/v1/">v1</a> • <a href="/download/v2/">v2</a> • <a href="/download/">v3</a> • <a href="/download/v3-unmerged/">v3 unmerged</a> • Study data</p>
+
 # Original study data
 
 The processed data on the main Download page may differ from the results reported in each original study for a couple reasons:

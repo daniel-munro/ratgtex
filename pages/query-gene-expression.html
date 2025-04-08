@@ -1,0 +1,100 @@
+---
+permalink: /query-gene-expression/
+title: Gene Expression Heatmap
+layout: base
+query_gene_expression_examples: "Polr3k, Rtel1, Eno1, Nit2, Map4, Fam107a, Mrap2, Calr3, Vkorc1, Wwox, Pnpo, Eif4g1, Prmt1, Mfsd14b, Adgrg6, Ak1"
+---
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/css/select2.min.css">
+<link rel="stylesheet" type="text/css" href="/assets/css/tissueGroup.css">
+<link rel="stylesheet" type="text/css" href="/assets/css/dendrogram.css">
+<link rel="stylesheet" type="text/css" href="/assets/css/expressMap.css">
+<link rel="stylesheet" type="text/css" href="/assets/css/violin.css">
+
+<div>
+    <h3>Heatmap for a query gene list</h3>
+    <hr>
+    <div class="col-sm-12">
+        <p>
+            The rows of the heatmap are user-specific genes, columns are tissues (color-coded by the tissue
+            types), and colors are scaled by the median expression values. By default, the gene rows and tissue
+            columns are hierarchically clustered using the Euclidean distance and average linkage method.
+        </p>
+    </div>
+    <hr>
+</div>
+<!-- input form -->
+<p>
+    <button class="btn btn-secondary btn-sm" type="button" data-bs-toggle="collapse"
+        data-bs-target="#collapseForm" aria-expanded="false" aria-controls="collapseForm">
+        <i class="fa fa-bars"></i>
+    </button>
+</p>
+
+<div class="row collapse show" id="collapseForm">
+    <div class="col-sm-12">
+        <form id="geneExpressionForm" style="background:#f2f7fd; padding: 5px;">
+            <div class="form-group row">
+                <!-- form-group for optimum spacing between the label and its associated form input element -->
+                <div class="col-sm-12 col-md-2">
+                    <label for="genes" class="align-top">Enter gene symbols</label>
+                    <ul style="font-size:12px; list-style-type:square; padding-left: 15px;">
+                        <li>Limited to 50 entries.</li>
+                        <li><a href="#" id="searchExample">A search example</a></li>
+                    </ul>
+                    <textarea id="genes" rows="20" class="form-control" style="font-size:12px;"></textarea>
+                    <br />
+
+                    <div id="batchSubmit" class="btn btn-primary btn-sm" style="margin-bottom:1em;">Search</div>
+
+                </div>
+                <div class="col-xs-12 col-md-10">
+                    <label>Select Tissue(s)</label>
+                    <div id="tissueMenu" class="form-group row">
+                        <!-- tissue menu check boxes -->
+                    </div>
+                </div>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+<hr />
+
+<div class="row">
+    <div class="col-xs-12">
+        <i id="spinner" class="fas fa-sync fa-spin" style="display:none;"></i>
+    </div>
+</div>
+<div class="row">
+    <div id="searchResult" class="col-xs-12 col-md-12">
+        <div class="row" style="margin-left: 10px;">
+            <div id="heatmapRoot" class="col-xs-12 col-md-12"></div> <!-- the heatmap Div -->
+            <div id="violinRoot" class="col-xs-12 col-md-12"></div>
+        </div>
+
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/js/select2.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/file-saver@1.3.3/FileSaver.min.js"></script>
+<script src="/assets/js/expression-map.bundle.min.js"></script>
+<script>
+    $(document).ready(batchGeneQuery);
+    function batchGeneQuery() {
+        const heatmapRootId = "heatmapRoot";
+        const violinRootId = "violinRoot";
+        const submitId = 'batchSubmit';
+        const menuId = "tissueMenu";
+        const formId = "collapseForm";
+
+        $('#searchExample').click(function () {
+            $('#genes').val("{{ page.query_gene_expression_examples }}");
+            return false; // this prevents a # sign being added to the URL...
+        });
+        BatchGeneExpression.launch(formId, menuId, submitId, heatmapRootId, violinRootId);
+    }
+
+</script>

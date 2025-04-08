@@ -1,0 +1,67 @@
+---
+permalink: /top-expressed/
+title: Top Expressed Genes
+layout: base
+---
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/css/select2.min.css">
+<link rel="stylesheet" type="text/css" href="/assets/css/dendrogram.css">
+<link rel="stylesheet" type="text/css" href="/assets/css/expressMap.css">
+<link rel="stylesheet" type="text/css" href="/assets/css/violin.css">
+
+<div id="downloadTempDiv" style="display:none;"></div> <!-- a hidden div for svg download, a temp solution-->
+<div id="tooltip" class="exp-map-tooltip"></div>
+<!--a hidden div for the mouseover tooltip-->
+
+<div>
+    <h3>Heatmap for top expressed genes</h3>
+    <hr>
+    <div class="col-sm-12">
+        <p>
+            Select a tissue to view its top 50 expressed genes and all of their available expression data across
+            all tissues.
+        <ul>
+            <li>By default, mitochondrial genes are excluded from the top expressed gene list.</li>
+            <li>The rows of the heatmap are genes, columns are tissues (color-coded by the tissue types), and
+                colors are scaled by median expression values.</li>
+            <li>By default, the gene rows and tissue columns are hierarchically clustered using the Euclidean
+                distance and average linkage method.</li>
+        </ul>
+        </p>
+    </div>
+    <hr>
+</div>
+<!-- the tissue menu -->
+<div class="row">
+    <div class="col-xs-12 col-md-6 col-lg-4">
+        <form>
+            <div class="form-group">
+                <select id="datasetSelector" name="datasetSelector" class="form-control">
+                    <option></option>
+                </select>
+            </div>
+        </form>
+    </div>
+    <div class="col-xs-12 col-md-6">
+        <i id="spinner" class="fas fa-sync fa-spin" style="display:none;"></i>
+
+    </div>
+</div>
+<div id="messageBox" style="color:#4eb3d3;"></div>
+<div id="expMapToolbar" style="display:none;"></div> <!-- the toolbar Div -->
+<div id="heatmapRoot"></div> <!-- the heatmap Div -->
+<div id="violinRoot"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/js/select2.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/file-saver@1.3.3/FileSaver.min.js"></script>
+<script src="/assets/js/expression-map.bundle.min.js"></script>
+<script>
+    $(document).ready(function () {
+        BatchGeneExpression.createDatasetMenu("datasetSelector");
+    });
+    $("#datasetSelector").change(function () {
+        const tissueId = $(this).val();
+        BatchGeneExpression.launchTopExpressed(tissueId, "heatmapRoot", "violinRoot");
+    });
+</script>
