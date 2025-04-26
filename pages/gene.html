@@ -26,6 +26,10 @@ layout: base
     <h3 id="gene-title"></h3>
     <p id="gene-description"></p>
 
+    <p>
+        <a id="phenogen-link" target="_blank" href=""><button class="btn btn-primary">View in PhenoGen</button></a>
+    </p>
+
     <h5>Gene expression &amp; eQTL status per tissue</h5>
     <span id="gene-status"></span>
 
@@ -78,6 +82,7 @@ layout: base
         var desc = `${info.description}<br>${info.chromosome}:${info.start}-${info.end} (${info.strand})`;
         $('#gene-description').html(desc);
         $('#gev-link').attr('href', '/gene-eqtl-visualizer/#' + info.geneId);
+        $('#phenogen-link').attr('href', 'https://phenogen.org/gene.jsp?speciesCB=Rn&auto=Y&geneTxt=' + info.geneId);
         info.statusInTissue.forEach(function(tissue) {
             var status = `<p><strong>${tissue.tissueSiteDetailId}:</strong>`;
             if (tissue.expressed) {
