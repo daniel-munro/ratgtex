@@ -334,6 +334,9 @@ def single_tissue_eqtl():
     d = single_tissue(gene)
     if d is None:
         return jsonify({"singleTissueEqtl": []})
+    # Format p-values to 3 decimal places
+    if 'pValue' in d.columns:
+        d['pValue'] = d['pValue'].apply(lambda x: float(f"{x:.3e}") if pd.notnull(x) else x)
     info = d.to_dict(orient="records")
     return jsonify({"singleTissueEqtl": info})
 
