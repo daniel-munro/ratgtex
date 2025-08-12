@@ -28,7 +28,7 @@ import {nest} from "d3-collection";
 import {scaleBand, scaleLinear} from "d3-scale";
 import {area} from "d3-shape";
 import {axisTop, axisBottom, axisLeft} from "d3-axis";
-import {select, selectAll, event} from "d3-selection";
+import {select, selectAll} from "d3-selection";
 import {brush} from "d3-brush";
 import {randomNormal} from "d3-random";
 
@@ -330,13 +330,13 @@ export default class GroupedViolin {
      */
     addBrush(dom){
         const theBrush = brush();
-        theBrush.on("end", ()=>{this.zoom(dom, theBrush)});
+        theBrush.on("end", (event)=>{this.zoom(dom, theBrush, event)});
         dom.append("g")
             .attr("class", "brush")
             .call(theBrush);
     }
 
-    zoom(dom, theBrush){
+    zoom(dom, theBrush, event){
         let s = event.selection,
             idelTimeout,
             idelDelay = 350;

@@ -216,6 +216,9 @@ function _submit(tissueGroups, dashboardId, menuId, pairId, submitId, formId, me
 
         // clear the previous dashboard search results if any
         $(`#${dashboardId}`).html('');
+        
+        // clear the previous error messages
+        $(`#${messageBoxId}`).html('');
 
         ////// validate tissue inputs and convert them to tissue IDs //////
         let queryTissueIds = parseTissueGroupMenu(tissueGroups, menuId);
@@ -248,6 +251,10 @@ function _submit(tissueGroups, dashboardId, menuId, pairId, submitId, formId, me
             });
         });
 
+        // track if any valid pairs were processed
+        let validPairsProcessed = 0;
+        let totalPairs = pairs.length;
+
         // for each gene-variant pair
         pairs.forEach(function(pair, i){
             pair.replace(/ /g, ""); // remove all spaces
@@ -273,6 +280,9 @@ function _submit(tissueGroups, dashboardId, menuId, pairId, submitId, formId, me
                         throw errorMessage;
                     }
 
+                    // increment valid pairs counter
+                    validPairsProcessed++;
+
                     // calculate eQTLs and display the eQTL violin plots
                     _renderEqtlPlot(tissueDict, dashboardId, gene, variant, queryTissueIds, i, urls);
 
@@ -283,6 +293,21 @@ function _submit(tissueGroups, dashboardId, menuId, pairId, submitId, formId, me
                 )
                 .catch(function(err){
                     console.error(err);
+                    
+                    // check if all pairs have been processed and none were valid
+                    if (validPairsProcessed === 0 && $(`#${messageBoxId}`).text().length > 0) {
+                        // scroll to the message box and make it more prominent
+                        $(`#${messageBoxId}`).css({
+                            'background-color': '#fff3cd',
+                            'border': '1px solid #ffeaa7',
+                            'border-radius': '4px',
+                            'padding': '10px',
+                            'margin': '10px 0'
+                        });
+                        $('html, body').animate({
+                            scrollTop: $(`#${messageBoxId}`).offset().top - 50
+                        }, 500);
+                    }
                 });
         });
     };

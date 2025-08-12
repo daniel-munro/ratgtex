@@ -14,11 +14,20 @@ def genotype(gt: tuple) -> int:
 
 def variant_record(variant_id, vcf):
     """Get record for one variant from VCF"""
-    chrom, pos = variant_id.split(":")
-    pos = int(pos)
-    recs = list(vcf.fetch(chrom, pos - 1, pos, reopen=True))
-    assert len(recs) == 1, f"Genotype retrieval error: {variant_id}"
-    return recs[0]
+    try:
+        chrom, pos = variant_id.split(":")
+        pos = int(pos)
+        recs = list(vcf.fetch(chrom, pos - 1, pos, reopen=True))
+        if len(recs) != 1:
+            return None  # Return None for invalid variants instead of throwing assertion error
+        return recs[0]
+    except (ValueError, KeyError, IndexError, TypeError):
+        # Catch various exceptions that can occur during VCF fetching:
+        # - ValueError: start out of range, invalid chromosome, etc.
+        # - KeyError: chromosome not found in VCF
+        # - IndexError: parsing issues
+        # - TypeError: invalid variant_id format
+        return None
 
 
 def geno_matrix(ids, vcf):
@@ -219,6 +228,9 @@ def dyneqtl():
     tissue = request.args.get("tissueSiteDetailId")
     expr = iqn[tissue].loc[gene, :]
     rec = variant_record(variant, vcf[dataset[tissue]])
+    if rec is None:
+        # Return error response for invalid variant
+        return jsonify({"error": f"Variant not found: {variant}"}), 404
     assert len(rec.alts) == 1, f"Multiple alt alleles: {variant}"
     gt = rec.samples
     geno = [genotype(gt[ind]["GT"]) for ind in expr.index]
@@ -315,8 +327,21 @@ def med_gene_exp():
     else:
         tissues = request.args.get("tissueSiteDetailId").split(",")
         d = med_expr.loc[ids, tissues]
-    gene_tree = row_tree(d)
-    tissue_tree = row_tree(d.T)
+    
+    # Handle clustering for genes and tissues
+    # Skip clustering if only one gene or one tissue to avoid scipy linkage error
+    if len(d) == 1:
+        # Single gene - with this message, DendroHeatmap.js will skip gene dendrogram rendering
+        gene_tree = "Not enough data"
+    else:
+        gene_tree = row_tree(d)
+    
+    if len(d.columns) == 1:
+        # Single tissue - with this message, DendroHeatmap.js will skip tissue dendrogram rendering
+        tissue_tree = "Not enough data"
+    else:
+        tissue_tree = row_tree(d.T)
+    
     d = d.reset_index().melt(
         id_vars="geneId", var_name="tissueSiteDetailId", value_name="median"
     )
@@ -374,6 +399,8 @@ def variant():
     for variant in ids:
         # Ignoring b37VariantId, datasetId, maf01, shorthand, snpId
         rec = variant_record(variant, ref_vcf)
+        if rec is None:
+            continue  # Skip invalid variants
         assert len(rec.alts) == 1, f"Multiple alt alleles: {variant}"
         info = {
             "alt": rec.alts[0],
