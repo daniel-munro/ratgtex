@@ -1,0 +1,120 @@
+---
+permalink: /predict/
+layout: base
+title: Predicted expression
+---
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css" crossorigin="anonymous">
+
+<h1>Genetically predicted gene expression</h1>
+
+<p>cis-eQTLs can be used to predict gene expression levels from genotypes. These values estimate log-expression relative to the scenario of all reference alleles, rather than absolute expression levels, but can be used to:</p>
+
+<ul>
+    <li>Stratify individuals by a gene's genetically predicted expression to test hypotheses about the gene's role in observed traits.</li>
+    <li>Test whether observed gene expression differences in groups with divergent traits are only a downstream effect of exposures or whether they have a more direct genetic component. See <a href="https://www.nature.com/articles/s41593-023-01452-y">Zhou et al. 2023</a></li>
+</ul>
+
+<p>We provide predicted expression for all rats genotyped by our NIDA center (Round 10.5, N=20,484). These are predictions for average expression in the brain, using cis-eQTLs for whole brain hemisphere tissue, and they include only genes with one or more significant eQTLs.</p>
+
+<p>
+  <a class="btn btn-primary" href="/data/predict/pred_expr-round10_5-Brain.tsv.gz" download>
+    Download predicted expression (91 MB)
+  </a>
+</p>
+
+<p>The table below gives accuracy of the predictions in terms of correlation between predicted and observed expression levels. This is assessed using the same whole brain hemisphere dataset that was used for the cis-eQTL models, so it is the best-case accuracy. The r<sup>2</sup> values represent the cis-genetic proportion of expression variance.</p>
+
+<p>
+  <a href="/data/predict/expr_pred_accuracy-Brain.tsv">Download TSV</a>
+  <span class="ms-2 text-muted" id="row-summary"></span>
+  <span id="loading" class="ms-3 text-muted">Loading…</span>
+  <span id="error" class="ms-3 text-danger" style="display:none"></span>
+  <noscript>
+    <span class="text-danger">This page requires JavaScript to display the table.</span>
+  </noscript>
+  
+</p>
+
+<div id="table-container" style="display:none; max-width:800px;">
+    <table id="predict-table" class="display" width="100%"></table>
+    <p class="mt-2 text-muted">Search the table using the box above. Click column headers to sort.</p>
+</div>
+
+<script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js" crossorigin="anonymous"></script>
+<script>
+  (async function() {
+    const url = '/data/predict/expr_pred_accuracy-Brain.tsv';
+    const loadingEl = document.getElementById('loading');
+    const errorEl = document.getElementById('error');
+    const tableContainer = document.getElementById('table-container');
+    const rowSummary = document.getElementById('row-summary');
+
+    function setError(msg) {
+      if (loadingEl) loadingEl.style.display = 'none';
+      if (errorEl) {
+        errorEl.textContent = msg || 'Failed to load data.';
+        errorEl.style.display = '';
+      }
+    }
+
+    try {
+      const resp = await fetch(url, { cache: 'no-store' });
+      if (!resp.ok) {
+        throw new Error('HTTP ' + resp.status + ' while fetching ' + url);
+      }
+      const text = await resp.text();
+      // Parse TSV
+      const lines = text.trim().split(/\r?\n/);
+      if (!lines.length) {
+        throw new Error('Empty file');
+      }
+      // Remove header if present
+      const header = lines[0].split('\t');
+      let startIdx = 0;
+      if (header.length >= 3 && /gene/i.test(header[0]) && /pearson/i.test(header[1])) {
+        startIdx = 1;
+      }
+      const data = [];
+      for (let i = startIdx; i < lines.length; i++) {
+        const line = lines[i];
+        if (!line || !line.trim()) continue;
+        const parts = line.split('\t');
+        if (parts.length < 3) continue;
+        const gene = parts[0];
+        const pearson = parseFloat(parts[1]);
+        const r2 = parseFloat(parts[2]);
+        // Preserve NaN as blank strings for display/sorting stability
+        data.push([gene, isFinite(pearson) ? pearson : null, isFinite(r2) ? r2 : null]);
+      }
+
+      if (loadingEl) loadingEl.style.display = 'none';
+      if (tableContainer) tableContainer.style.display = '';
+
+      if (rowSummary) {
+        rowSummary.textContent = data.length ? `Loaded ${data.length.toLocaleString()} genes` : '';
+      }
+
+      // Initialize DataTable
+      $('#predict-table').DataTable({
+        data,
+        columns: [
+          { title: 'Gene', className: 'dt-nowrap' },
+          { title: 'Pearson r', className: 'dt-right' },
+          { title: 'r<sup>2</sup>', className: 'dt-right' }
+        ],
+        order: [[1, 'desc']],
+        pageLength: 10,
+        deferRender: true,
+        autoWidth: false,
+        responsive: true,
+        columnDefs: [
+          { targets: [1, 2], type: 'num' }
+        ]
+      });
+    } catch (err) {
+      console.error(err);
+      setError('Unable to load prediction accuracy table.');
+    }
+  })();
+</script>
