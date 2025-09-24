@@ -281,6 +281,53 @@ paths:
                         tss:
                           type: integer
                           example: 103687425
+  /geneExpression:
+    get:
+      tags:
+      - expression
+      description: Fetch per-sample expression (TPM) for a gene across all tissues
+      parameters:
+      - name: geneId
+        in: query
+        description: Gene ID
+        required: true
+        schema:
+          type: string
+          example: Cd300lf
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  geneExpression:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        data:
+                          type: array
+                          items:
+                            type: number
+                          example: [3.21, 4.56, 1.23, 2.34]
+                        datasetId:
+                          type: string
+                          example: ratgtex_v3
+                        geneId:
+                          type: string
+                          example: Cd300lf
+                        geneSymbol:
+                          type: string
+                          example: Cd300lf
+                        tissueSiteDetailId:
+                          type: string
+                          example: IL
+                        unit:
+                          type: string
+                          enum: [TPM]
+                          example: TPM
   /ld:
     get:
       tags:

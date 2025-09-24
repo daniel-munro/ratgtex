@@ -289,8 +289,9 @@ def gene_exp():
     for tissue in tissues:
         info = {
             "data": list(tpm[tissue].loc[gene, :]),
-            "datasetId": "ratgtex_v1",
+            "datasetId": "ratgtex_v3",
             "geneId": gene,
+            "geneSymbol": gene,
             "tissueSiteDetailId": tissue,
             "unit": "TPM",
         }
