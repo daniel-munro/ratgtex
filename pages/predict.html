@@ -15,7 +15,7 @@ title: Predicted expression
     <li>Test whether observed gene expression differences in groups with divergent traits are only a downstream effect of exposures or whether they have a more direct genetic component. See <a href="https://www.nature.com/articles/s41593-023-01452-y">Zhou et al. 2023</a></li>
 </ul>
 
-<p>We provide predicted expression for all rats genotyped by our NIDA center (Round 10.5, N=20,484). These are predictions for average expression in the brain, using cis-eQTLs for whole brain hemisphere tissue, and they include only genes with one or more significant eQTLs.</p>
+<p>We provide predicted expression for <strong>12,225 genes</strong> for all rats genotyped by our NIDA center (Round 10.5, N=20,484). These are predictions for average expression in the brain, using cis-eQTLs for whole brain hemisphere tissue, and they include only genes that have one or more significant eQTLs and positive correlation between predicted and observed expression in the training data.</p>
 
 <p>
   <a class="btn btn-primary" href="/data/predict/pred_expr-round10_5-Brain.tsv.gz" download>
@@ -23,7 +23,7 @@ title: Predicted expression
   </a>
 </p>
 
-<p>The table below gives accuracy of the predictions in terms of correlation between predicted and observed expression levels. This is assessed using the same whole brain hemisphere dataset that was used for the cis-eQTL models, so it is the best-case accuracy. The r<sup>2</sup> values represent the cis-genetic proportion of expression variance.</p>
+<p>The table below gives accuracy of the predictions in terms of correlation between predicted and observed expression levels. This is assessed using the same whole brain hemisphere dataset that was used for the cis-eQTL models, so it is the best-case accuracy. The r<sup>2</sup> values represent the cis-genetic proportion of expression variance. Genes with blank r/r<sup>2</sup> values did not have sufficient cis-regulatory variation to accurately predict expression levels.</p>
 
 <p>
   <a href="/data/predict/expr_pred_accuracy-Brain.tsv">Download TSV</a>
@@ -95,6 +95,27 @@ title: Predicted expression
         rowSummary.textContent = data.length ? `Loaded ${data.length.toLocaleString()} genes` : '';
       }
 
+      // Custom search function for exact matching on Gene field
+      $.fn.dataTable.ext.search.push(
+        function(settings, data, dataIndex) {
+          // Only apply to our table
+          if (settings.nTable.id !== 'predict-table') {
+            return true;
+          }
+          
+          const searchTerm = $('.dataTables_filter input').val();
+          
+          // If search is empty, show all rows
+          if (!searchTerm || searchTerm.trim() === '') {
+            return true;
+          }
+          
+          // Check for case-insensitive exact match on Gene field (column 0)
+          const gene = data[0];
+          return gene.toLowerCase() === searchTerm.toLowerCase();
+        }
+      );
+
       // Initialize DataTable
       $('#predict-table').DataTable({
         data,
@@ -110,7 +131,10 @@ title: Predicted expression
         responsive: true,
         columnDefs: [
           { targets: [1, 2], type: 'num' }
-        ]
+        ],
+        language: {
+          search: 'Search (exact match):'
+        }
       });
     } catch (err) {
       console.error(err);
