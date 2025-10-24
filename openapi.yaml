@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: RatGTEx REST API
-  version: '3.0.0'
+  version: "3.0.0"
   description: This API provides data for the visualizations in the RatGTEx data portal. This version (v3) provides data for RatGTEx data release v3, which uses the rn7 (mRatBN7.2) genome assembly.
   contact:
     name: Daniel Munro
@@ -10,47 +10,47 @@ info:
     url: https://danmun.ro
     x-id: https://danmun.ro
 servers:
-- url: https://ratgtex.org/api/v3
-  description: RatGTEx data portal
+  - url: https://ratgtex.org/api/v3
+    description: RatGTEx data portal
 tags:
-- name: reference
-  description: Information on tissues, genes, and variants
-- name: expression
-  description: Gene expression data
-- name: eQTL
-  description: Data on gene-variant associations
-- name: sQTL
-  description: Data on splice-variant associations
+  - name: reference
+    description: Information on tissues, genes, and variants
+  - name: expression
+    description: Gene expression data
+  - name: eQTL
+    description: Data on gene-variant associations
+  - name: sQTL
+    description: Data on splice-variant associations
 paths:
   /dyneqtl:
     get:
       tags:
-      - eQTL
+        - eQTL
       description: Fetch information for one gene-variant pair in one tissue
       parameters:
-      - name: geneId
-        in: query
-        description: Gene ID
-        required: true
-        schema:
-          type: string
-          example: Cd300lf
-      - name: tissueSiteDetailId
-        in: query
-        description: Tissue ID
-        required: true
-        schema:
-          type: string
-          example: IL
-      - name: variantId
-        in: query
-        description: Variant ID
-        required: true
-        schema:
-          type: string
-          example: chr10:104362850
+        - name: geneId
+          in: query
+          description: Gene ID
+          required: true
+          schema:
+            type: string
+            example: Cd300lf
+        - name: tissueSiteDetailId
+          in: query
+          description: Tissue ID
+          required: true
+          schema:
+            type: string
+            example: IL
+        - name: variantId
+          in: query
+          description: Variant ID
+          required: true
+          schema:
+            type: string
+            example: chr10:104362850
       responses:
-        '200':
+        "200":
           description: Success
           content:
             application/json:
@@ -64,7 +64,13 @@ paths:
                     type: array
                     items:
                       type: number
-                    example: [-1.11134883833383, -0.314562734207873, 0.556543703618366, 0.522265760640944]
+                    example:
+                      [
+                        -1.11134883833383,
+                        -0.314562734207873,
+                        0.556543703618366,
+                        0.522265760640944,
+                      ]
                   geneId:
                     type: string
                     example: Cd300lf
@@ -103,18 +109,18 @@ paths:
   /eqtl:
     get:
       tags:
-      - eQTL
+        - eQTL
       description: Fetch conditionally independent cis-eQTLs in any tissue for a gene
       parameters:
-      - name: geneId
-        in: query
-        description: Gene ID
-        required: true
-        schema:
-          type: string
-          example: Cd300lf
+        - name: geneId
+          in: query
+          description: Gene ID
+          required: true
+          schema:
+            type: string
+            example: Cd300lf
       responses:
-        '200':
+        "200":
           description: Success
           content:
             application/json:
@@ -150,18 +156,18 @@ paths:
   /exon:
     get:
       tags:
-      - reference
+        - reference
       description: Fetch a gene's exons
       parameters:
-      - name: geneId
-        in: query
-        description: Gene ID
-        required: true
-        schema:
-          type: string
-          example: Cd300lf
+        - name: geneId
+          in: query
+          description: Gene ID
+          required: true
+          schema:
+            type: string
+            example: Cd300lf
       responses:
-        '200':
+        "200":
           description: Success
           content:
             application/json:
@@ -196,30 +202,30 @@ paths:
                           example: 103687126
                         strand:
                           type: string
-                          enum: ['-', '+']
-                          example: '-'
+                          enum: ["-", "+"]
+                          example: "-"
                         transcriptId:
                           type: string
                           example: Cd300lf
   /gene:
     get:
       tags:
-      - reference
+        - reference
       description: Fetch metadata for one or more genes
       parameters:
-      - name: geneId
-        in: query
-        description: One or more gene IDs
-        required: true
-        schema:
-          type: array
-          items:
-            type: string
-          example: [Cd300lf, Eno1]
-        style: form
-        explode: false
+        - name: geneId
+          in: query
+          description: One or more gene IDs
+          required: true
+          schema:
+            type: array
+            items:
+              type: string
+            example: [Cd300lf, Eno1]
+          style: form
+          explode: false
       responses:
-        '200':
+        "200":
           description: Success
           content:
             application/json:
@@ -277,25 +283,25 @@ paths:
                           example: 103670027
                         strand:
                           type: string
-                          example: '-'
+                          example: "-"
                         tss:
                           type: integer
                           example: 103687425
   /geneExpression:
     get:
       tags:
-      - expression
+        - expression
       description: Fetch per-sample expression (TPM) for a gene across all tissues
       parameters:
-      - name: geneId
-        in: query
-        description: Gene ID
-        required: true
-        schema:
-          type: string
-          example: Cd300lf
+        - name: geneId
+          in: query
+          description: Gene ID
+          required: true
+          schema:
+            type: string
+            example: Cd300lf
       responses:
-        '200':
+        "200":
           description: Success
           content:
             application/json:
@@ -331,18 +337,18 @@ paths:
   /ld:
     get:
       tags:
-      - reference
+        - reference
       description: Fetch LD scores between all cis-window variants for a gene
       parameters:
-      - name: geneId
-        in: query
-        description: Gene ID
-        required: true
-        schema:
-          type: string
-          example: Cd300lf
+        - name: geneId
+          in: query
+          description: Gene ID
+          required: true
+          schema:
+            type: string
+            example: Cd300lf
       responses:
-        '200':
+        "200":
           description: Success
           content:
             application/json:
@@ -358,33 +364,33 @@ paths:
   /medianGeneExpression:
     get:
       tags:
-      - expression
+        - expression
       description: Fetch median expression (TPM) for one or more genes in one or more tissues
       parameters:
-      - name: geneId
-        in: query
-        description: One or more gene IDs.
-        required: true
-        schema:
-          type: array
-          items:
-            type: string
-          example: [Polr3k, Rtel1, Eno1]
-        style: form
-        explode: false
-      - name: tissueSiteDetailId
-        in: query
-        description: One or more tissue IDs. If omitted, all tissues are included.
-        required: false
-        schema:
-          type: array
-          items:
-            type: string
-          example: [IL, LHb, NAcc]
-        style: form
-        explode: false
+        - name: geneId
+          in: query
+          description: One or more gene IDs.
+          required: true
+          schema:
+            type: array
+            items:
+              type: string
+            example: [Polr3k, Rtel1, Eno1]
+          style: form
+          explode: false
+        - name: tissueSiteDetailId
+          in: query
+          description: One or more tissue IDs. If omitted, all tissues are included.
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+            example: [IL, LHb, NAcc]
+          style: form
+          explode: false
       responses:
-        '200':
+        "200":
           description: Success
           content:
             application/json:
@@ -396,10 +402,10 @@ paths:
                     properties:
                       gene:
                         type: string
-                        example: '((Polr3k:209.196,Rtel1:209.196):759.14,Eno1:968.336);'
+                        example: "((Polr3k:209.196,Rtel1:209.196):759.14,Eno1:968.336);"
                       tissue:
                         type: string
-                        example: '((IL:34.6518,LHb:34.6518):191.47,NAcc:226.121);'
+                        example: "((IL:34.6518,LHb:34.6518):191.47,NAcc:226.121);"
                   medianGeneExpression:
                     type: array
                     items:
@@ -417,18 +423,18 @@ paths:
   /singleTissueEqtl:
     get:
       tags:
-      - eQTL
+        - eQTL
       description: Fetch all significant cis-variants in all tissues for a gene
       parameters:
-      - name: geneId
-        in: query
-        description: Gene ID
-        required: true
-        schema:
-          type: string
-          example: Card19
+        - name: geneId
+          in: query
+          description: Gene ID
+          required: true
+          schema:
+            type: string
+            example: Card19
       responses:
-        '200':
+        "200":
           description: Success
           content:
             application/json:
@@ -464,18 +470,18 @@ paths:
   /sqtl:
     get:
       tags:
-      - sQTL
+        - sQTL
       description: Fetch conditionally independent cis-sQTLs in any tissue for a gene
       parameters:
-      - name: geneId
-        in: query
-        description: Gene ID
-        required: true
-        schema:
-          type: string
-          example: Cd300lf
+        - name: geneId
+          in: query
+          description: Gene ID
+          required: true
+          schema:
+            type: string
+            example: Cd300lf
       responses:
-        '200':
+        "200":
           description: Success
           content:
             application/json:
@@ -511,10 +517,10 @@ paths:
   /tissueInfo:
     get:
       tags:
-      - reference
+        - reference
       description: Fetch metadata for all tissues
       responses:
-        '200':
+        "200":
           description: Success
           content:
             application/json:
@@ -531,7 +537,7 @@ paths:
                           example: 377eb8
                         colorRgb:
                           type: string
-                          example: '55,126,184'
+                          example: "55,126,184"
                         dataset:
                           type: string
                           example: ratgtex_v3_round10_5
@@ -568,25 +574,25 @@ paths:
   /topExpressedGene:
     get:
       tags:
-      - expression
+        - expression
       description: Fetch 50 genes with highest median expression in a tissue
       parameters:
-      - name: filterMtGene
-        in: query
-        description: Whether mitochondrial genes should be omitted from the top gene list
-        required: false
-        schema:
-          type: boolean
-          example: true
-      - name: tissueSiteDetailId
-        in: query
-        description: Tissue ID
-        required: true
-        schema:
-          type: string
-          example: IL
+        - name: filterMtGene
+          in: query
+          description: Whether mitochondrial genes should be omitted from the top gene list
+          required: false
+          schema:
+            type: boolean
+            example: true
+        - name: tissueSiteDetailId
+          in: query
+          description: Tissue ID
+          required: true
+          schema:
+            type: string
+            example: IL
       responses:
-        '200':
+        "200":
           description: Success
           content:
             application/json:
@@ -617,22 +623,22 @@ paths:
   /variant:
     get:
       tags:
-      - reference
+        - reference
       description: Fetch information for one or more variants
       parameters:
-      - name: variantId
-        in: query
-        description: Variant ID
-        required: true
-        schema:
-          type: array
-          items:
-            type: string
-          example: [chr1:1675342, chr5:154001168]
-        style: form
-        explode: false
+        - name: variantId
+          in: query
+          description: Variant ID
+          required: true
+          schema:
+            type: array
+            items:
+              type: string
+            example: [chr1:1675342, chr5:154001168]
+          style: form
+          explode: false
       responses:
-        '200':
+        "200":
           description: Success
           content:
             application/json:

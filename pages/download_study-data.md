@@ -92,7 +92,7 @@ This study used the following files from RatGTEx (all are from v2 using `mRatBN7
 This study produced cis-eQTLs for hippocampus tissue from an F2 cross of selectively-bred rats using the `Rnor_6.0` genome.
 
 - [`f2.eqtls_indep.txt`](/data/studies/HPC_F2/f2.eqtls_indep.txt) - conditionally independent cis-eQTLs
-- [`f2.top_assoc.txt`](/data/studies/HPC_F2/f2.top_assoc.txt) - top association per gene, even if not significant  
+- [`f2.top_assoc.txt`](/data/studies/HPC_F2/f2.top_assoc.txt) - top association per gene, even if not significant
 - [`f2.cis_qtl_signif.txt.gz`](/data/studies/HPC_F2/f2.cis_qtl_signif.txt.gz) - all significantly associated cis-window SNPs
 - [`colocs.tsv`](/data/studies/HPC_F2/colocs.tsv) - stats for all colocalization tests
 - [`colocs_sig.tsv`](/data/studies/HPC_F2/colocs_sig.tsv) - stats for significant colocalization tests

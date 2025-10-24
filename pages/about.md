@@ -19,15 +19,15 @@ Nevertheless, we also host the original results from individual studies on the [
 The [ratgtex-pipeline](https://github.com/daniel-munro/ratgtex-pipeline) repository contains all RNA-Seq and eQTL/sQTL mapping pipeline code. The steps are also on [protocols.io](http://dx.doi.org/10.17504/protocols.io.rm7vzyk92lx1/v1). The [ratgtex-server-data](https://github.com/daniel-munro/ratgtex-server-data) repository contains code that processes those results into additional data files for download and for the API.
 
 - Genome assembly and gene annotations used for each data release:
-    * v1:
-        - Assembly: [Rnor_6.0 Ensembl](http://ftp.ensembl.org/pub/release-99/fasta/rattus_norvegicus/dna/Rattus_norvegicus.Rnor_6.0.dna.toplevel.fa.gz) (GCA_000001895.4)
-        - Annotations: [Ensembl Rat Release 99](http://ftp.ensembl.org/pub/release-99/gtf/rattus_norvegicus/Rattus_norvegicus.Rnor_6.0.99.gtf.gz)
-    * v2:
-        - Assembly: [mRatBN7.2 Ensembl](http://ftp.ensembl.org/pub/release-108/fasta/rattus_norvegicus/dna/Rattus_norvegicus.mRatBN7.2.dna.toplevel.fa.gz) (GCA_015227675.2)
-        - Annotations: [Ensembl Rat Release 108](http://ftp.ensembl.org/pub/release-108/gtf/rattus_norvegicus/Rattus_norvegicus.mRatBN7.2.108.gtf.gz)
-    * v3:
-        - Assembly: [mRatBN7.2 RefSeq](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/015/227/675/GCF_015227675.2_mRatBN7.2/GCF_015227675.2_mRatBN7.2_genomic.fna.gz) (GCA_015227675.2)
-        - Annotations: [mRatBN7.2 RefSeq](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/015/227/675/GCF_015227675.2_mRatBN7.2/GCF_015227675.2_mRatBN7.2_genomic.gtf.gz)
+  - v1:
+    - Assembly: [Rnor_6.0 Ensembl](http://ftp.ensembl.org/pub/release-99/fasta/rattus_norvegicus/dna/Rattus_norvegicus.Rnor_6.0.dna.toplevel.fa.gz) (GCA_000001895.4)
+    - Annotations: [Ensembl Rat Release 99](http://ftp.ensembl.org/pub/release-99/gtf/rattus_norvegicus/Rattus_norvegicus.Rnor_6.0.99.gtf.gz)
+  - v2:
+    - Assembly: [mRatBN7.2 Ensembl](http://ftp.ensembl.org/pub/release-108/fasta/rattus_norvegicus/dna/Rattus_norvegicus.mRatBN7.2.dna.toplevel.fa.gz) (GCA_015227675.2)
+    - Annotations: [Ensembl Rat Release 108](http://ftp.ensembl.org/pub/release-108/gtf/rattus_norvegicus/Rattus_norvegicus.mRatBN7.2.108.gtf.gz)
+  - v3:
+    - Assembly: [mRatBN7.2 RefSeq](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/015/227/675/GCF_015227675.2_mRatBN7.2/GCF_015227675.2_mRatBN7.2_genomic.fna.gz) (GCA_015227675.2)
+    - Annotations: [mRatBN7.2 RefSeq](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/015/227/675/GCF_015227675.2_mRatBN7.2/GCF_015227675.2_mRatBN7.2_genomic.gtf.gz)
 - RNA-Seq read counts, transformed as log<sub>2</sub>(count+1), were used to compute cis-eQTL effect sizes (allelic fold change).
 - Inverse-quantile normalized expression values were used for eQTL mapping.
 - eQTL mapping: [tensorQTL](https://github.com/broadinstitute/tensorqtl). cis-eQTL mapping tested SNPs in cis-windows +/- 1 Mb from each gene's transcription start site.
@@ -50,11 +50,11 @@ Expression tables are provided in BED format, with four columns describing the g
 A compressed tab-separated table.
 
 - **gene_id** Gene symbol
-- **variant_id** SNP ID (e.g. `chr1:669562`)  
+- **variant_id** SNP ID (e.g. `chr1:669562`)
 - **tss_distance** SNP position - TSS position, oriented on the gene's strand
 - **af** Alternative allele frequency
 - **ma_samples** Number of samples with minor allele
-- **ma_count** Total number of minor alleles (i.e. no. het. + 2 * no. hom. alt.)
+- **ma_count** Total number of minor alleles (i.e. no. het. + 2 \* no. hom. alt.)
 - **pval_nominal** Nominal p-value
 - **slope** Coefficient for the SNP genotype in the linear model
 - **slope_se** Standard error of the slope
@@ -135,7 +135,7 @@ A compressed tab-separated table.
 - **tss_distance** SNP position - TSS position, oriented on the gene's strand
 - **af** Alternative allele frequency
 - **ma_samples** Number of samples with minor allele
-- **ma_count** Total number of minor alleles (i.e. no. het. + 2 * no. hom. alt.)
+- **ma_count** Total number of minor alleles (i.e. no. het. + 2 \* no. hom. alt.)
 - **pval_nominal** Nominal p-value
 - **slope** Coefficient for the SNP genotype in the linear model
 - **slope_se** Standard error of the slope

@@ -6,93 +6,139 @@ eqtl_dashboard_placeholder: "Ifnlr1,chr5:147793923"
 eqtl_dashboard_examples: "Ifnlr1,chr5:147793923\\nAgmo,chr6:54102478\\n"
 ---
 
-<link rel="stylesheet" type="text/css" href="/assets/css/violin.css">
-<link rel="stylesheet" type="text/css" href="/assets/css/eqtlDashboard.css">
-<link rel="stylesheet" type="text/css" href="/assets/css/tissueGroup.css">
-    
+<link rel="stylesheet" type="text/css" href="/assets/css/violin.css" />
+<link rel="stylesheet" type="text/css" href="/assets/css/eqtlDashboard.css" />
+<link rel="stylesheet" type="text/css" href="/assets/css/tissueGroup.css" />
+
 <h3>eQTL Dashboard</h3>
-<hr>
+<hr />
 <div class="col-sm-12">
-    <p>
-        Visualize associations for any gene-variant pairs in all or a selection of tissues.
-    <ul>
-        <li>All results, including non-significant ones, are visualized in a grid of violin plots grouped
-            in rows by the gene-variant pairs and in columns by tissues.</li>
-        <li>Each violin plot shows three quantile-normalized expression distributions of the genotypes: homozygous reference,
-            heterozygous, and homozygous alternative alleles.</li>
-        <li>When an eQTL is significant (i.e. p-value below the tissue-gene-specific p-value
-            threshold based on a 5% FDR), its p-value is highlighted in red.</li>
-        <li>Note that the set of genotyped SNPs and the sample size can differ among datasets, so the absence of significant
-            associations in some tissues is not necessarily biologically meaningful.</li>
-        <li>Also note that the group medians, shown in pink, do not necessarily reflect the effects measured by the eQTL
-            linear regression tests, and that any influence of covariates on the test results would not be visible in these
-            violin plots.</li>
-    </ul>
-    </p>
+  <p>
+    Visualize associations for any gene-variant pairs in all or a selection of
+    tissues.
+  </p>
+  <ul>
+    <li>
+      All results, including non-significant ones, are visualized in a grid of
+      violin plots grouped in rows by the gene-variant pairs and in columns by
+      tissues.
+    </li>
+    <li>
+      Each violin plot shows three quantile-normalized expression distributions
+      of the genotypes: homozygous reference, heterozygous, and homozygous
+      alternative alleles.
+    </li>
+    <li>
+      When an eQTL is significant (i.e. p-value below the tissue-gene-specific
+      p-value threshold based on a 5% FDR), its p-value is highlighted in red.
+    </li>
+    <li>
+      Note that the set of genotyped SNPs and the sample size can differ among
+      datasets, so the absence of significant associations in some tissues is
+      not necessarily biologically meaningful.
+    </li>
+    <li>
+      Also note that the group medians, shown in pink, do not necessarily
+      reflect the effects measured by the eQTL linear regression tests, and that
+      any influence of covariates on the test results would not be visible in
+      these violin plots.
+    </li>
+  </ul>
 </div>
-<hr>
+<hr />
 <!-- input form -->
 <p>
-    <button class="btn btn-secondary btn-sm" type="button" data-bs-toggle="collapse"
-        data-bs-target="#collapseForm" aria-expanded="false" aria-controls="collapseForm">
-        <i class="fa fa-bars"></i>
-    </button>
+  <button
+    class="btn btn-secondary btn-sm"
+    type="button"
+    data-bs-toggle="collapse"
+    data-bs-target="#collapseForm"
+    aria-expanded="false"
+    aria-controls="collapseForm"
+  >
+    <i class="fa fa-bars"></i>
+  </button>
 </p>
 
 <div class="row collapse show" id="collapseForm">
+  <div class="col-sm-12">
+    <form id="eqtlDashboardForm" style="background: #f2f7fd; padding: 5px">
+      <div class="form-group row">
+        <!-- form-group for optimum spacing between the label and its associated form input element -->
 
-    <div class="col-sm-12">
-        <form id="eqtlDashboardForm" style="background:#f2f7fd; padding: 5px;">
-            <div class="form-group row">
-                <!-- form-group for optimum spacing between the label and its associated form input element -->
-
-                <div class="col-sm-12 col-md-4">
-                    <label for="geneVariantPairs" class="align-top">Enter Gene-Variant Pairs</label>
-                    <ul style="font-size:12px; list-style-type:square; padding-left: 15px;">
-                        <li>Limited to 30 entries.</li>
-                        <li><a href="#" id="example">Example search</a></li>
-                    </ul>
-                    <textarea id="geneVariantPairs" rows="20" class="form-control"
-                        placeholder="For example: {{ page.eqtl_dashboard_placeholder }}"
-                        style="font-size:9px;" spellcheck="false"></textarea>
-                    <br />
-                    <div id="eqtlDashboardSubmit" class="btn btn-primary btn-sm" style="margin-bottom:1em;">
-                        Search</div>
-
-                </div>
-                <div class="col-xs-12 col-md-8">
-                    <label>Select Tissue(s)</label>
-                    <div id="tissueBoxes" class="form-group row">
-                        <!-- tissue menu check boxes -->
-                    </div>
-                </div>
-            </div>
-
-        </form>
-
-    </div>
+        <div class="col-sm-12 col-md-4">
+          <label for="geneVariantPairs" class="align-top">
+            Enter Gene-Variant Pairs
+          </label>
+          <ul
+            style="font-size: 12px; list-style-type: square; padding-left: 15px"
+          >
+            <li>Limited to 30 entries.</li>
+            <li><a href="#" id="example">Example search</a></li>
+          </ul>
+          <textarea
+            id="geneVariantPairs"
+            rows="20"
+            class="form-control"
+            placeholder="For example: {{ page.eqtl_dashboard_placeholder }}"
+            style="font-size: 9px"
+            spellcheck="false"
+          ></textarea>
+          <br />
+          <div
+            id="eqtlDashboardSubmit"
+            class="btn btn-primary btn-sm"
+            style="margin-bottom: 1em"
+          >
+            Search
+          </div>
+        </div>
+        <div class="col-xs-12 col-md-8">
+          <label>Select Tissue(s)</label>
+          <div id="tissueBoxes" class="form-group row">
+            <!-- tissue menu check boxes -->
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
 </div>
 
 <!-- eQTL violin plots -->
 <div class="row">
-    <div class="col-sm-12" id="messageBox" style="color:firebrick; font-size: 10px;"></div>
-    <div id="eqtlDashboardDiv" class="col-sm-12">
-        <div id="eqtlDashboardRoot" class="row flex-row" style="padding-left: 15px;overflow:auto;"></div>
-    </div>
+  <div
+    class="col-sm-12"
+    id="messageBox"
+    style="color: firebrick; font-size: 10px"
+  ></div>
+  <div id="eqtlDashboardDiv" class="col-sm-12">
+    <div
+      id="eqtlDashboardRoot"
+      class="row flex-row"
+      style="padding-left: 15px; overflow: auto"
+    ></div>
+  </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/file-saver@1.3.3/FileSaver.min.js"></script>
 <script src="/assets/js/eqtl-dashboard.bundle.min.js"></script>
 <script>
-    $(document).ready(function () {
-        // build the tissue menu
-        EqtlDashboard.build("eqtlDashboardRoot", "tissueBoxes", "geneVariantPairs", "eqtlDashboardSubmit", "collapseForm", "messageBox");
+  $(document).ready(function () {
+    // build the tissue menu
+    EqtlDashboard.build(
+      "eqtlDashboardRoot",
+      "tissueBoxes",
+      "geneVariantPairs",
+      "eqtlDashboardSubmit",
+      "collapseForm",
+      "messageBox"
+    );
 
-        // define buttons
+    // define buttons
 
-        $('#example').click(function () {
-            $('#geneVariantPairs').val('{{ page.eqtl_dashboard_examples }}');
-            return false;
-        });
+    $("#example").click(function () {
+      $("#geneVariantPairs").val("{{ page.eqtl_dashboard_examples }}");
+      return false;
     });
+  });
 </script>

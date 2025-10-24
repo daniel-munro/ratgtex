@@ -6,131 +6,156 @@ full_width: true
 gene_eqtl_visualizer_examples: "Ddx49, Oasl2"
 ---
 
-<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/css/select2.min.css">
-<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
-<link rel="stylesheet" type="text/css" href="/assets/css/bubbleMap.css">
-<link rel="stylesheet" type="text/css" href="/assets/css/halfMap.css">
-<link rel="stylesheet" type="text/css" href="/assets/css/violin.css">
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/css/select2.min.css"
+/>
+<link
+  rel="stylesheet"
+  href="https://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css"
+/>
+<link rel="stylesheet" type="text/css" href="/assets/css/bubbleMap.css" />
+<link rel="stylesheet" type="text/css" href="/assets/css/halfMap.css" />
+<link rel="stylesheet" type="text/css" href="/assets/css/violin.css" />
 
 <h3>Gene eQTL Visualizer</h3>
 
-<hr>
+<hr />
 
 <div class="row">
-    <div class="col-xs-12 col-sm-3">
-        <form id="geneEqtlForm" style="padding: 5px;">
-            <div class="form-group">
-                <!-- form-group for optimum spacing between the label and its associated form input element -->
-                <input id="gene" type="text" class="form-control" placeholder="Enter a gene symbol"
-                    style="font-size:12px;" spellcheck="false"></input>
-                <small>e.g. {{ page.gene_eqtl_visualizer_examples }}</small>
-            </div>
-        </form>
+  <div class="col-xs-12 col-sm-3">
+    <form id="geneEqtlForm" style="padding: 5px">
+      <div class="form-group">
+        <!-- form-group for optimum spacing between the label and its associated form input element -->
+        <input
+          id="gene"
+          type="text"
+          class="form-control"
+          placeholder="Enter a gene symbol"
+          style="font-size: 12px"
+          spellcheck="false"
+        />
+        <small>e.g. {{ page.gene_eqtl_visualizer_examples }}</small>
+      </div>
+    </form>
+  </div>
+  <div id="bmap-info-box" class="col-xs-12 col-sm-9">
+    <div>
+      <i id="spinner" class="fas fa-sync fa-spin" style="display: none"></i>
     </div>
-    <div id="bmap-info-box" class="col-xs-12 col-sm-9">
-        <div><i id="spinner" class="fas fa-sync fa-spin" style="display:none; "></i></div>
-        <div id="bmap-gene-info">Browse local variants associated with expression of a gene. <br />
-        </div>
-        <div id="bmap-filter-info"></div>
+    <div id="bmap-gene-info">
+      Browse local variants associated with expression of a gene. <br />
     </div>
+    <div id="bmap-filter-info"></div>
+  </div>
 </div>
-<div id="bmap-dashboard" class="row" style="border-bottom: 2px solid #e2e2e2; border-top: 1px solid #e2e2e2;">
-</div>
+<div
+  id="bmap-dashboard"
+  class="row"
+  style="border-bottom: 2px solid #e2e2e2; border-top: 1px solid #e2e2e2"
+></div>
 <div id="bmap-root">
-    <div id="messageBox" style="color: #CB181D;"></div> <!-- for displaying message of input errors-->
-    <div id="bmap"></div>
-    <div id="ldMap"></div>
+  <div id="messageBox" style="color: #cb181d"></div>
+  <!-- for displaying message of input errors-->
+  <div id="bmap"></div>
+  <div id="ldMap"></div>
 </div>
 
 <!-- bbMap tissue modal -->
-<div id="bmap-modal" class="modal fade" aria-hidden='true' role='dialog'>
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <span class="modal-title" id="myModalLabel">Gene eQTL Visualizer Tissue Filter</span>
-                <i class="close fa fa-window-close" data-dismiss="modal" aria-label="Close"></i>
-            </div>
-            <div class="modal-body"></div>
-            <div class="modal-footer"></div>
-        </div>
+<div id="bmap-modal" class="modal fade" aria-hidden="true" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span class="modal-title" id="myModalLabel">
+          Gene eQTL Visualizer Tissue Filter
+        </span>
+        <i
+          class="close fa fa-window-close"
+          data-dismiss="modal"
+          aria-label="Close"
+        ></i>
+      </div>
+      <div class="modal-body"></div>
+      <div class="modal-footer"></div>
     </div>
+  </div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/js/select2.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/file-saver@1.3.3/FileSaver.min.js"></script>
 <script src="/assets/js/gev.bundle.min.js"></script>
 <script>
-    $(document).ready(function () {
+  $(document).ready(function () {
+    let svgConfig = {
+      id: "bmap",
+      width: window.innerWidth * 0.9,
+      height: 650,
+      marginTop: 40,
+      marginRight: 20,
+      marginBottom: 20,
+      marginLeft: 100,
+      legendHeight: 100, // assuming the color legends appear at the top of the focus panel
 
-        let svgConfig = {
-            id: 'bmap',
-            width: window.innerWidth * 0.9,
-            height: 650,
-            marginTop: 40,
-            marginRight: 20,
-            marginBottom: 20,
-            marginLeft: 100,
-            legendHeight: 100, // assuming the color legends appear at the top of the focus panel
+      miniPanelHeight: 100,
 
-            miniPanelHeight: 100,
+      focusPanelLabels: {
+        column: {
+          show: true,
+          height: 100,
+          angle: 90,
+          adjust: 20,
+          location: "bottom",
+          textAlign: "left",
+        },
+        row: {
+          show: true,
+          width: 100,
+          angle: 0,
+          adjust: 30,
+          location: "left",
+          textAlign: "right",
+        },
+      },
 
-            focusPanelLabels: {
-                column: {
-                    show: true,
-                    height: 100,
-                    angle: 90,
-                    adjust: 20,
-                    location: 'bottom',
-                    textAlign: 'left'
-                },
-                row: {
-                    show: true,
-                    width: 100,
-                    angle: 0,
-                    adjust: 30,
-                    location: 'left',
-                    textAlign: 'right'
-                }
-            },
+      ldId: "ldMap",
+      ldCutoff: 0.0,
+      ldColorScheme: "Greys",
+      ldLegendSpace: 50,
 
-            ldId: "ldMap",
-            ldCutoff: 0.0,
-            ldColorScheme: "Greys",
-            ldLegendSpace: 50,
+      colorScheme: "RdBu",
+      colorScaleDomain: [-1.2, 1.2],
 
-            colorScheme: "RdBu",
-            colorScaleDomain: [-1.2, 1.2],
+      useLog: false,
+      logBase: undefined,
 
-            useLog: false,
-            logBase: undefined,
+      // div IDs
+      divSpinner: "spinner",
+      divDashboard: "bmap-dashboard",
+      divInfo: "bmap-filter-info",
+      divGeneInfo: "bmap-gene-info",
+      divModal: "bmap-modal",
+    };
 
-            // div IDs
-            divSpinner: "spinner",
-            divDashboard: "bmap-dashboard",
-            divInfo: "bmap-filter-info",
-            divGeneInfo: "bmap-gene-info",
-            divModal: 'bmap-modal'
-        };
-
-        $('#gene').keypress(function (e) {
-            if (e.keyCode == 13) {
-                // bind the enter key
-                e.preventDefault(); // Note: prevent the default behavior of the enter key, which is refreshing the page
-                const geneId = $('#gene').val();
-                reset(svgConfig.id);
-                reset(svgConfig.ldId);
-                $('#spinner').show();
-                window.location.hash = '#' + geneId;
-                GeneEqtlVisualizer.render(svgConfig, geneId);
-            }
-        });
-
-        var geneId = window.location.hash.slice(1);
-        if (geneId.length > 0) {
-            GeneEqtlVisualizer.render(svgConfig, geneId);
-        }
+    $("#gene").keypress(function (e) {
+      if (e.keyCode == 13) {
+        // bind the enter key
+        e.preventDefault(); // Note: prevent the default behavior of the enter key, which is refreshing the page
+        const geneId = $("#gene").val();
+        reset(svgConfig.id);
+        reset(svgConfig.ldId);
+        $("#spinner").show();
+        window.location.hash = "#" + geneId;
+        GeneEqtlVisualizer.render(svgConfig, geneId);
+      }
     });
-    function reset(id) {
-        $(`#${id}`).empty();
+
+    var geneId = window.location.hash.slice(1);
+    if (geneId.length > 0) {
+      GeneEqtlVisualizer.render(svgConfig, geneId);
     }
+  });
+  function reset(id) {
+    $(`#${id}`).empty();
+  }
 </script>

@@ -75,7 +75,7 @@ More info on the [ratgenes.org eQTL page](https://ratgenes.org/research-projects
 ##### <a id="pilot-twas" href="https://ratgenes.org/2020-pilot-grants-awarded/">Pilot: Creating the dataset for TWAS in HS rats</a>
 
 - Investigator: Francesca Telese, UCSD
-- Prior experience/treatment: Naive  
+- Prior experience/treatment: Naive
 - Sex ratio: 176 Female, 168 Male
 
 ##### <a id="R01DK106386" href="https://reporter.nih.gov/project-details/8941897">R01DK106386</a>: Systems genetics of adiposity traits in outbred rats

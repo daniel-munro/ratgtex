@@ -1,65 +1,114 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="/">
-            <img src="/assets/images/RatGTExPortal.png" width="200px" alt="RatGTEx Portal">
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-            data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
-            aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <a class="nav-link" href="/">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/download/">Download</a>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="visualizeDropdown" role="button"
-                        data-bs-toggle="dropdown" aria-expanded="false">Visualize</a>
-                    <ul class="dropdown-menu" aria-labelledby="visualizeDropdown">
-                        <li>
-                            <h6 class="dropdown-header">Expression</h6>
-                        </li>
-                        <li><a class="dropdown-item" href="/top-expressed/">Top expressed genes</a></li>
-                        <li><a class="dropdown-item" href="/query-gene-expression/">Query gene expression</a></li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <li>
-                            <h6 class="dropdown-header">eQTLs</h6>
-                        </li>
-                        <li><a class="dropdown-item" href="/eqtl-dashboard/">eQTL violin plots</a></li>
-                        <li><a class="dropdown-item" href="/gene-eqtl-visualizer/">Gene eQTL Visualizer</a></li>
-                    </ul>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="https://twas.ratgtex.org">TWAS</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/predict/">Predict</a>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="aboutDropdown" role="button"
-                        data-bs-toggle="dropdown" aria-expanded="false">About</a>
-                    <ul class="dropdown-menu" aria-labelledby="aboutDropdown">
-                        <li><a class="dropdown-item" href="/about/">Pipeline &amp; Data</a></li>
-                        <li><a class="dropdown-item" href="/about/samples/">Samples</a></li>
-                        <li><a class="dropdown-item" href="/about/api/">API</a></li>
-                    </ul>
-                </li>
-            </ul>
-            <form class="d-flex col-md-4 mb-0" id="gene-search">
-                <div class="input-group">
-                    <input class="form-control basicAutoComplete" id="search-input" type="text" autocomplete="off"
-                    placeholder="Gene symbol search">
-                    <button class="btn btn-outline-secondary" type="submit">
-                        <i class="fa fa-search"></i>
-                    </button>
-                </div>
-            </form>
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/">
+      <img
+        src="/assets/images/RatGTExPortal.png"
+        width="200px"
+        alt="RatGTEx Portal"
+      />
+    </a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link" href="/">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/download/">Download</a>
+        </li>
+        <li class="nav-item dropdown">
+          <a
+            class="nav-link dropdown-toggle"
+            href="#"
+            id="visualizeDropdown"
+            role="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            Visualize
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="visualizeDropdown">
+            <li>
+              <h6 class="dropdown-header">Expression</h6>
+            </li>
+            <li>
+              <a class="dropdown-item" href="/top-expressed/">
+                Top expressed genes
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="/query-gene-expression/">
+                Query gene expression
+              </a>
+            </li>
+            <li>
+              <hr class="dropdown-divider" />
+            </li>
+            <li>
+              <h6 class="dropdown-header">eQTLs</h6>
+            </li>
+            <li>
+              <a class="dropdown-item" href="/eqtl-dashboard/">
+                eQTL violin plots
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="/gene-eqtl-visualizer/">
+                Gene eQTL Visualizer
+              </a>
+            </li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://twas.ratgtex.org">TWAS</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/predict/">Predict</a>
+        </li>
+        <li class="nav-item dropdown">
+          <a
+            class="nav-link dropdown-toggle"
+            href="#"
+            id="aboutDropdown"
+            role="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            About
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="aboutDropdown">
+            <li>
+              <a class="dropdown-item" href="/about/">Pipeline &amp; Data</a>
+            </li>
+            <li><a class="dropdown-item" href="/about/samples/">Samples</a></li>
+            <li><a class="dropdown-item" href="/about/api/">API</a></li>
+          </ul>
+        </li>
+      </ul>
+      <form class="d-flex col-md-4 mb-0" id="gene-search">
+        <div class="input-group">
+          <input
+            class="form-control basicAutoComplete"
+            id="search-input"
+            type="text"
+            autocomplete="off"
+            placeholder="Gene symbol search"
+          />
+          <button class="btn btn-outline-secondary" type="submit">
+            <i class="fa fa-search"></i>
+          </button>
         </div>
+      </form>
     </div>
+  </div>
 </nav>
