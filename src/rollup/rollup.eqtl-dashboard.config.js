@@ -1,7 +1,5 @@
 import nodeResolve from "rollup-plugin-node-resolve";
-import uglify from "rollup-plugin-uglify";
-import pkg from "uglify-es";
-const { minify } = pkg;
+import terser from "@rollup/plugin-terser";
 
 const name = "EqtlDashboard";
 export default {
@@ -11,7 +9,5 @@ export default {
     format: "iife",
     name: name,
   },
-  // sourcemap: 'inline',
-  // name: name,
-  plugins: [nodeResolve({ jsnext: true, main: true }), uglify({}, minify)],
+  plugins: [nodeResolve({ browser: true, main: true }), terser()],
 };

@@ -406,7 +406,7 @@ function _customizeIsoformTransposedMap(tissues, dmap, isoTrackViewer, junctionS
     // define the isoform heatmap cells' mouse events
     // note: to reference the element inside the function (e.g. d3.select(this)) here we must use a normal anonymous function.
     mapSvg.selectAll(".exp-map-cell")
-        .on("mouseover", function(d){
+        .on("mouseover", function(event, d){
             const selected = select(this); // 'this' refers to the d3 DOM object
             dmap.objects.heatmap.cellMouseover(d, mapSvg, selected);
             const tissue = tissueDict[d.x] === undefined?d.x:tissueDict[d.x].tissueSiteDetail; // get tissue name or ID
@@ -425,7 +425,7 @@ function _customizeIsoformTransposedMap(tissues, dmap, isoTrackViewer, junctionS
 
     // isoform labels
     mapSvg.selectAll(".exp-map-ylabel")
-        .on("mouseover", function(d){
+    .on("mouseover", function(event, d){
             select(this).classed("highlighted", true);
 
             // highlight the isoform track
@@ -460,7 +460,7 @@ function _customizeExonMap(tissues, geneModel, dmap){
     // define the exon heatmap cells' mouse events
     // note: to reference the element inside the function (e.g. d3.select(this)) here we must use a normal anonymous function.
     mapSvg.selectAll(".exp-map-cell")
-        .on("mouseover", function(d){
+        .on("mouseover", function(event, d){
             const selected = select(this); // 'this' refers to the d3 DOM object
             dmap.objects.heatmap.cellMouseover(d, mapSvg, selected);
             const tissue = tissueDict[d.y] === undefined?d.x:tissueDict[d.y].tissueSiteDetail; // get tissue name or ID

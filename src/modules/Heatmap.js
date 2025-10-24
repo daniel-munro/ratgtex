@@ -178,11 +178,11 @@ export default class Heatmap {
             .attr("width", this.xScale.bandwidth())
             .attr("height", this.yScale.bandwidth())
             .style("fill", "#eeeeee")
-            .on("mouseover", function(d){
+            .on("mouseover", function(event, d){
                 const selected = select(this); // Note: "this" here refers to the dom element not the object
                 self.cellMouseover(d, dom, selected);
             })
-            .on("mouseout", function(d){
+            .on("mouseout", function(){
                 const selected = select(this); // Note: "this" here refers to the dom element not the object
                 self.cellMouseout()
             })

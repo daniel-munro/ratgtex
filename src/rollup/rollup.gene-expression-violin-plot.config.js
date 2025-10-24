@@ -1,13 +1,6 @@
 import nodeResolve from "rollup-plugin-node-resolve";
-import uglify from "rollup-plugin-uglify";
-import pkg from "uglify-es";
-const { minify } = pkg;
+import terser from "@rollup/plugin-terser";
 
-/* to set the NODE_ENV
-in a terminal window (bash)
-export NODE_ENV="development"
-echo $NODE_ENV
- */
 const name = "GeneExpressionViolinPlot";
 export default {
   input: "src/" + name + ".js",
@@ -17,8 +10,5 @@ export default {
     name: name,
     sourcemap: "inline",
   },
-  plugins: [
-    nodeResolve({ jsnext: true, main: true }),
-    uglify({}, minify), // uglify for production: NODE_ENV=production rollup -c
-  ],
+  plugins: [nodeResolve({ browser: true, main: true }), terser()],
 };

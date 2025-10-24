@@ -3,6 +3,7 @@
 data
 deploy.sh
 api/__pycache__
+assets/js/*.min.js
 _site
 .sass-cache
 .jekyll-metadata
