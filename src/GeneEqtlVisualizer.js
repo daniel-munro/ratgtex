@@ -6,7 +6,7 @@
 import { json } from "d3-fetch";
 import { brushX } from "d3-brush";
 import { select, selectAll } from "d3-selection";
-import { extent, max, min } from "d3-array";
+import { max, min } from "d3-array";
 import { nest } from "d3-collection";
 import { scaleThreshold } from "d3-scale";
 
@@ -18,7 +18,6 @@ import {
   parseExonsToList,
   parseTissueSampleCounts,
   parseTissueDict,
-  parseDynEqtl,
 } from "./modules/gtexDataParser";
 import BubbleMap from "./modules/BubbleMap";
 import { render as eqtlViolinPlotRender } from "./EqtlViolinPlot";
@@ -321,7 +320,7 @@ function renderBubbleMap(
   renderTssDistanceTrack(gene, bmap, bmapSvg);
 
   //-- Add the click event for the bubbles: pop a dialog window and render the eQTL violin plot
-  addBubbleClickEvent(bmap, bmapSvg, par);
+  addBubbleClickEvent(bmap, bmapSvg, par, gene);
 
   //-- add the focus view brush and defint the brush event
   bmap.brushEvent = (event) => {
@@ -670,7 +669,7 @@ function renderTssDistanceTrack(gene, bmap, bmapSvg) {
     })
     .attr("stroke", (d) => (bmap.variantsInExons[d] ? "#239db8" : "#cacaca"))
     .attr("stroke-width", (d) => (bmap.variantsInExons[d] ? "2px" : "1px"))
-  .on("mouseover", function (event, d) {
+    .on("mouseover", function (event, d) {
       // let dist = Math.abs(parseFloat(d.split('_')[1]) - tss);
       let dist = Math.abs(parseFloat(d.split(":")[1]) - tss);
       // let ttContent = `${d}<br/>${bmap.rsLookUp[d]}<br/>TSS Distance: ${dist} bp</br>`;
@@ -919,14 +918,14 @@ function panelBuilder(panels, id) {
 }
 
 // todo report p-value
-function addBubbleClickEvent(bmap, bmapSvg, par) {
+function addBubbleClickEvent(bmap, bmapSvg, par, gene) {
   let dialogDivId = par.id + "violin-dialog";
   createDialog(
     par.divDashboard,
     par.id + "violin-dialog",
     "eQTL Violin Plot Dialog"
   );
-  bmapSvg.selectAll(".bubble-map-cell").on("click", (d) => {
+  bmapSvg.selectAll(".bubble-map-cell").on("click", (event, d) => {
     $(`#${dialogDivId}`).dialog("open");
     let plot = $("<div/>")
       .attr("class", "bMap-dialog")
@@ -976,7 +975,7 @@ function addBubbleClickEvent(bmap, bmapSvg, par) {
     };
     eqtlViolinPlotRender(
       vConfig,
-      d.geneId,
+      gene.geneId, // ensure defined gene identifier
       d.variantId,
       d.tissueSiteDetailId,
       d.displayY,
