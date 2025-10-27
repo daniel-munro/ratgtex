@@ -18,7 +18,7 @@ import {
   parseExonsToList,
   parseTissueSampleCounts,
   parseTissueDict,
-} from "./modules/gtexDataParser";
+} from "./modules/DataParser";
 import BubbleMap from "./modules/BubbleMap";
 import { render as eqtlViolinPlotRender } from "./EqtlViolinPlot";
 

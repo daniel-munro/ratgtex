@@ -10,12 +10,12 @@ import {
   getGtexUrls,
   parseTissueSites,
   parseDynEqtl,
-} from "./modules/gtexDataParser";
+} from "./modules/DataParser";
 
 import {
   createTissueGroupMenu,
   parseTissueGroupMenu,
-} from "./modules/gtexMenuBuilder";
+} from "./modules/MenuBuilder";
 
 /**
  * Build the eQTL Dashboard

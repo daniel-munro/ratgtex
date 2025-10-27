@@ -6,7 +6,7 @@
 "use strict";
 import { json } from "d3-fetch";
 import { createSvg } from "./modules/utils";
-import { getGtexUrls, parseDynEqtl } from "./modules/gtexDataParser";
+import { getGtexUrls, parseDynEqtl } from "./modules/DataParser";
 import GroupedViolin from "./modules/GroupedViolin";
 
 export function render(

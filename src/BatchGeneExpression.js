@@ -14,14 +14,14 @@ import {
   parseMedianExpression,
   parseGeneExpressionForViolin,
   parseTissueSites,
-} from "./modules/gtexDataParser";
+} from "./modules/DataParser";
 
 import {
   createTissueGroupMenu,
   parseTissueGroupMenu,
-} from "./modules/gtexMenuBuilder";
+} from "./modules/MenuBuilder";
 
-import { createTissueMenu } from "./modules/gtexMenuBuilder";
+import { createTissueMenu } from "./modules/MenuBuilder";
 import { colorChart } from "./modules/colors";
 import DendroHeatmapConfig from "./modules/DendroHeatmapConfig";
 import DendroHeatmap from "./modules/DendroHeatmap";
