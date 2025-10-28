@@ -5,9 +5,9 @@
 
 "use strict";
 import { nest } from "d3-collection";
-import { extent, max, min } from "d3-array";
-import { select, selectAll } from "d3-selection";
-import { scaleBand, scaleLinear, scaleSqrt } from "d3-scale";
+import { max } from "d3-array";
+import { select } from "d3-selection";
+import { scaleBand, scaleSqrt } from "d3-scale";
 import { brushX } from "d3-brush";
 
 import Tooltip from "./Tooltip";

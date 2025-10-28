@@ -30,20 +30,6 @@ def variant_record(variant_id, vcf):
         return None
 
 
-def geno_matrix(ids, vcf):
-    """Get genotype matrix for a list of SNPs
-    Assumes SNPs are in close proximity on a chromosome, e.g. in a cis-window.
-    """
-    chrom = ids[0].split(":")[0]
-    pos = [int(x.split(":")[1]) for x in ids]
-    genos = {}
-    for rec in vcf.fetch(chrom, min(pos) - 1, max(pos) + 1):
-        if rec.id in ids:
-            genos[rec.id] = [genotype(rec.samples[s]["GT"]) for s in vcf.header.samples]
-    mat = np.array([genos[id] if id in genos else [None] * len(vcf.header.samples) for id in ids])
-    return mat
-
-
 def get_newick(node, newick, parentdist, leaf_names):
     """Save dendrogram in Newick format
     from https://stackoverflow.com/questions/28222179/save-dendrogram-to-newick-format/31878514#31878514
@@ -297,26 +283,6 @@ def gene_exp():
         }
         infos.append(info)
     return jsonify({"geneExpression": infos})
-
-
-@api.route("/api/v3/ld", methods=["GET"])
-def ld():
-    gene = request.args.get("geneId")
-    d = single_tissue(gene)
-    if d is None:
-        return jsonify({"ld": []})
-    ids = d["variantId"].unique()
-    geno = geno_matrix(ids, ref_vcf)
-    # ldmat = np.corrcoef(geno) ** 2
-    geno = pd.DataFrame(geno.T, dtype=float)  # Pandas corr allows missing values
-    ldmat = geno.corr().to_numpy() ** 2
-    ldmat = ldmat.round(3)
-    lds = []
-    for i in range(len(ids) - 1):
-        for j in range(i + 1, len(ids)):
-            ld = ldmat[i, j] if not np.isnan(ldmat[i, j]) else None
-            lds.append([ids[i], ids[j], ld])
-    return jsonify({"ld": lds})
 
 
 @api.route("/api/v3/medianGeneExpression", methods=["GET"])

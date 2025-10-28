@@ -4,57 +4,18 @@
  */
 "use strict";
 export function getGtexUrls() {
-  // const host = 'https://gtexportal.org/rest/v1/';
-  // const host = 'http://localhost:8080/data/';
-  // const host = 'http://localhost:5000/';
   const host = "/api/v3/";
   return {
-    // gene-eqtl visualizer specific
-    // singleTissueEqtl: host + 'association/singleTissueEqtl?format=json&datasetId=gtex_v8&gencodeId=',
     singleTissueEqtl: host + "singleTissueEqtl?geneId=",
-    // ld: host + 'dataset/ld?format=json&datasetId=gtex_v8&gencodeId=',
-    ld: host + "ld?geneId=",
-
-    // eqtl Dashboard specific
-    // dyneqtl: host + 'association/dyneqtl',
     dyneqtl: host + "dyneqtl?",
-    // snp: host + 'reference/variant?format=json&snpId=',
-    // variantId: host + 'dataset/variant?format=json&variantId=',
     variantId: host + "variant?variantId=",
-
-    // transcript, exon, junction expression specific
-    // exonExp: host + 'expression/medianExonExpression?datasetId=gtex_v8&hcluster=true&gencodeId=',
-    // transcriptExp: host + 'expression/medianTranscriptExpression?datasetId=gtex_v8&hcluster=true&gencodeId=',
-    // junctionExp: host + 'expression/medianJunctionExpression?datasetId=gtex_v8&hcluster=true&gencodeId=',
-    // transcript: host + 'reference/transcript?datasetId=gtex_v8&gencodeId=',
-    // exon: host + 'reference/exon?datasetId=gtex_v8&gencodeId=',
     exon: host + "exon?geneId=",
-    // geneModel: host + 'dataset/collapsedGeneModelExon?datasetId=gtex_v8&gencodeId=',
-    // geneModelUnfiltered: host + 'dataset/fullCollapsedGeneModelExon?datasetId=gtex_v8&gencodeId=',
-
-    // gene expression violin plot specific
-    // geneExp: host + 'expression/geneExpression?datasetId=gtex_v8&gencodeId=',
     geneExp: host + "geneExpression?geneId=",
-
-    // gene expression heat map specific
-    // medGeneExp: host + 'expression/medianGeneExpression?datasetId=gtex_v8&hcluster=true&pageSize=10000',
     medGeneExp: host + "medianGeneExpression?",
-
-    // gene expression boxplot specific
-    // geneExpBoxplot: host + 'expression/geneExpression?datasetId=gtex_v8&boxplotDetail=full&gencodeId=',
-
-    // top expressed gene expression specific
-    // topInTissueFiltered: host + 'expression/topExpressedGene?datasetId=gtex_v8&filterMtGene=true&sortBy=median&sortDirection=desc&pageSize=50&tissueSiteDetailId=',
-    // topInTissue: host + 'expression/topExpressedGene?datasetId=gtex_v8&sortBy=median&sortDirection=desc&pageSize=50&tissueSiteDetailId=',
     topInTissueFiltered:
       host + "topExpressedGene?filterMtGene=true&tissueSiteDetailId=",
     topInTissue: host + "topExpressedGene?tissueSiteDetailId=",
-
-    // geneId: host + 'reference/gene?format=json&gencodeVersion=v26&genomeBuild=GRCh38%2Fhg38&geneId=',
     geneId: host + "gene?geneId=",
-
-    // tissue menu specific
-    // tissue:  host + 'dataset/tissueInfo?format=json&datasetId=gtex_v8',
     tissue: host + "tissueInfo",
   };
 }
@@ -122,7 +83,7 @@ export function parseSingleTissueEqtls(data, tissueSiteTable = undefined) {
 
   return data[attr].map((d) => {
     d.x = d.variantId;
-    d.displayX = generateShortVariantId(d.variantId);
+    d.displayX = d.variantId;
     d.y = d.tissueSiteDetailId;
     if (tissueSiteTable)
       d.displayY = tissueSiteTable[d.tissueSiteDetailId].tissueSiteDetail;
@@ -360,60 +321,6 @@ export function parseGeneExpressionForViolin(
   return data[attr];
 }
 
-/**
- * parse the LD (linkage disequilibrium data)
- * @param data {JSON} from GTEx ld web service
- * @returns {Array}
- */
-export function parseLD(data) {
-  const attr = "ld";
-  if (!data.hasOwnProperty(attr))
-    throw "Parsing Error: required json attribute is missing: " + attr;
-  let parsed = [];
-  let unique = {};
-  data[attr].forEach((d) => {
-    // let labels = d[0].split(",").sort(); // sort the variant IDs
-    // Assume variants are sorted to save time -DM
-    // let labels = d[0].split(","); // sort the variant IDs
-    // Actually, save more time by passing IDs as separate list items -DM
-    // unique[labels[0]] = true;
-    // unique[labels[1]] = true;
-    unique[d[0]] = true;
-    unique[d[1]] = true;
-    parsed.push({
-      // x: labels[0],
-      x: d[0],
-      // displayX: generateShortVariantId(labels[0]),
-      // displayX: labels[0],
-      displayX: d[0],
-      // y: labels[1],
-      y: d[1],
-      // displayY: generateShortVariantId(labels[1]),
-      // displayY: labels[1],
-      displayY: d[1],
-      // value: parseFloat(d[2]),
-      // It's already a float -DM
-      value: d[2],
-      // displayValue: parseFloat(d[1]).toPrecision(3) // toPrecision() returns a string
-      // Use given precision to save time -DM
-      displayValue: d[2], // toPrecision() returns a string
-    });
-  });
-  Object.keys(unique).forEach((d) => {
-    parsed.push({
-      x: d,
-      // displayX: generateShortVariantId(d),
-      displayX: d,
-      y: d,
-      // displayY: generateShortVariantId(d),
-      displayY: d,
-      value: 1,
-      displayValue: "1",
-    });
-  });
-  return parsed;
-}
-
 /* parse the expression data of a gene for boxplot
  * @param data {JSON} from GTEx gene expression web service
  * @param tissues {Object} mapping of tissue ids to labels (tissue name)
@@ -444,13 +351,4 @@ export function parseGeneExpressionForBoxplot(
   });
 
   return data[attr];
-}
-
-/**
- * generate variant ID shorthand
- * @param id
- * @returns {*}
- */
-function generateShortVariantId(id) {
-  return id;
 }

@@ -4,7 +4,6 @@
  */
 import { json } from "d3-fetch";
 import { select } from "d3-selection";
-// import {range} from "d3-array";
 import GroupedViolin from "./modules/GroupedViolin";
 import {
   getGtexUrls,
@@ -264,7 +263,7 @@ function _submit(
   submitId,
   formId,
   messageBoxId,
-  urls = _getGTExUrls(),
+  urls,
   max = 30
 ) {
   return function () {

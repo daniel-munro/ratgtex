@@ -334,33 +334,6 @@ paths:
                           type: string
                           enum: [TPM]
                           example: TPM
-  /ld:
-    get:
-      tags:
-        - reference
-      description: Fetch LD scores between all cis-window variants for a gene
-      parameters:
-        - name: geneId
-          in: query
-          description: Gene ID
-          required: true
-          schema:
-            type: string
-            example: Cd300lf
-      responses:
-        "200":
-          description: Success
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  ld:
-                    type: array
-                    items:
-                      type: array
-                      items: {}
-                      example: [chr10:102827930, chr10:102868675, 0.6863]
   /medianGeneExpression:
     get:
       tags:
