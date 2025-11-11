@@ -67,7 +67,7 @@ def validate_genes(ids, genes):
 
 
 def format_per_tissue_gene_info(info: list, tissues: list):
-    """Collect per-tissue expression, eQTL, and sQTL indicators into a list"""
+    """Collect per-tissue expression and eQTL indicators into a list"""
     for gene in info:
         gene["statusInTissue"] = []
         for tissue in tissues:
@@ -76,23 +76,17 @@ def format_per_tissue_gene_info(info: list, tissues: list):
                 "expressed": gene["expr_" + tissue],
                 "testedEqtl": gene["testedEqtl_" + tissue],
                 "eqtl": gene["eqtl_" + tissue],
-                "altSplice": gene["altSplice_" + tissue],
-                "testedSqtl": gene["testedSqtl_" + tissue],
-                "sqtl": gene["sqtl_" + tissue],
             }
             gene["statusInTissue"].append(item)
             del gene["expr_" + tissue]
             del gene["testedEqtl_" + tissue]
             del gene["eqtl_" + tissue]
-            del gene["altSplice_" + tissue]
-            del gene["testedSqtl_" + tissue]
-            del gene["sqtl_" + tissue]
 
 
 def cis_pval(tissue, gene, variant):
     """Return nominal p-value for a given cis-window variant"""
-    with zipfile.ZipFile(f"../data/cis_pvals/{tissue}.v3.zip", "r") as archive:
-        fname = f"{tissue}.v3/{gene}.txt"
+    with zipfile.ZipFile(f"../data/cis_pvals/{tissue}.v4.zip", "r") as archive:
+        fname = f"{tissue}.v4/{gene}.txt"
         if fname in archive.namelist():
             df = pd.read_csv(archive.open(fname), sep="\t", index_col="variant_id")
             if variant in df.index:
@@ -102,8 +96,8 @@ def cis_pval(tissue, gene, variant):
 
 def single_tissue(gene):
     """Return table of significant cis-eSNPs for a gene"""
-    with zipfile.ZipFile(f"../data/singleTissueEqtl.v3.zip", "r") as archive:
-        fname = f"singleTissueEqtl.v3/{gene}.txt"
+    with zipfile.ZipFile(f"../data/singleTissueEqtl.v4.zip", "r") as archive:
+        fname = f"singleTissueEqtl.v4/{gene}.txt"
         if fname in archive.namelist():
             d = pd.read_csv(archive.open(fname), sep="\t", dtype={"chromosome": str})
             d["geneId"] = gene
@@ -112,7 +106,7 @@ def single_tissue(gene):
 
 
 def load_expr(fname):
-    df = pd.read_csv(fname, sep="\t", dtype={"#chr": str}, index_col="gene_id")
+    df = pd.read_csv(fname, sep="\t", dtype={"#chr": str}, index_col="phenotype_id")
     df.drop(columns=["#chr", "start", "end"], inplace=True)
     return df
 
@@ -164,50 +158,49 @@ def load_sqtls(fname):
     return sqtls
 
 
-df = pd.read_csv("../data/tissueInfo.v3.txt", sep="\t")
+df = pd.read_csv("../data/tissueInfo.v4.txt", sep="\t")
 tissueInfo = df.to_dict(orient="records")
 
-topExpr = pd.read_csv("../data/topExpressedGene.v3.txt", sep="\t")
+topExpr = pd.read_csv("../data/topExpressedGene.v4.txt", sep="\t")
 
-df = pd.read_csv("../data/gene.v3.txt", sep="\t", index_col="geneId", dtype={"chromosome": str})
+df = pd.read_csv("../data/gene.v4.txt", sep="\t", index_col="geneId", dtype={"chromosome": str})
 genes = df.fillna("")
 
 tissues = [tissue["tissueSiteDetailId"] for tissue in tissueInfo]
 dataset = {tissue["tissueSiteDetailId"]: tissue["dataset"] for tissue in tissueInfo}
 
 med_expr = pd.read_csv(
-    "../data/medianGeneExpression.v3.txt.gz", sep="\t", index_col="geneId"
+    "../data/medianGeneExpression.v4.txt.gz", sep="\t", index_col="geneId"
 )
 
 tpm = {}
 for tissue in tissues:
-    fname = f"../data/expr/expr.tpm.{tissue}.v3_rn7.bed.gz"
+    fname = f"../data/phenos/phenos.{tissue}.expression.unnorm.v4_rn8.bed.gz"
     tpm[tissue] = load_expr(fname)
 
 iqn = {}
 for tissue in tissues:
-    fname = f"../data/expr/expr.iqn.{tissue}.v3_rn7.bed.gz"
+    fname = f"../data/phenos/phenos.{tissue}.expression.unnorm.v4_rn8.bed.gz"
     iqn[tissue] = load_expr(fname)
 
 vcf = {}
 for dset in set(dataset.values()):
-    vcf[dset] = pysam.VariantFile(f"../data/geno/{dset}.rn7.vcf.gz")
-ref_vcf = vcf["ratgtex_v3_round10_5"]
+    vcf[dset] = pysam.VariantFile(f"../data/geno/{dset}.rn8.vcf.gz")
+ref_vcf = vcf["ratgtex_v4_round11_1"]
 
-exons = pd.read_csv("../data/exon.v3.txt", sep="\t", dtype={"chromosome": str})
+exons = pd.read_csv("../data/exon.v4.txt", sep="\t", dtype={"chromosome": str})
 
 top_assoc = pd.read_csv(
-    "../data/eqtl/top_assoc.v3_rn7.txt", sep="\t", index_col=["tissue", "gene_id"]
+    "../data/eqtl/top_assoc.v4_rn8.txt", sep="\t", index_col=["tissue", "gene_id"]
 )
 top_assoc = top_assoc[["pval_nominal_threshold"]]
-eqtls = load_eqtls("../data/eqtl/eqtls_indep.v3_rn7.txt")
-sqtls = load_sqtls("../data/splice/sqtls_indep.v3_rn7.txt")
+eqtls = load_eqtls("../data/eqtl/eqtls_indep.v4_rn8.txt")
 
 api = Flask(__name__)
 CORS(api)
 
 
-@api.route("/api/v3/dyneqtl", methods=["GET"])
+@api.route("/api/v4/dyneqtl", methods=["GET"])
 def dyneqtl():
     variant = request.args.get("variantId")
     gene = request.args.get("geneId")
@@ -242,7 +235,7 @@ def dyneqtl():
     return jsonify(info)
 
 
-@api.route("/api/v3/eqtl", methods=["GET"])
+@api.route("/api/v4/eqtl", methods=["GET"])
 def eqtl():
     gene = request.args.get("geneId")
     d = eqtls.loc[eqtls["geneId"] == gene, :]
@@ -250,7 +243,7 @@ def eqtl():
     return jsonify({"eqtl": info})
 
 
-@api.route("/api/v3/exon", methods=["GET"])
+@api.route("/api/v4/exon", methods=["GET"])
 def exon():
     gene = request.args.get("geneId")
     d = exons.loc[exons["geneId"] == gene, :]
@@ -258,7 +251,7 @@ def exon():
     return jsonify({"exon": d})
 
 
-@api.route("/api/v3/gene", methods=["GET"])
+@api.route("/api/v4/gene", methods=["GET"])
 def gene():
     ids = request.args.get("geneId").split(",")
     ids = validate_genes(ids, genes)
@@ -268,14 +261,14 @@ def gene():
     return jsonify({"gene": info})
 
 
-@api.route("/api/v3/geneExpression", methods=["GET"])
+@api.route("/api/v4/geneExpression", methods=["GET"])
 def gene_exp():
     gene = request.args.get("geneId")
     infos = []
     for tissue in tissues:
         info = {
             "data": list(tpm[tissue].loc[gene, :]),
-            "datasetId": "ratgtex_v3",
+            "datasetId": "ratgtex_v4",
             "geneId": gene,
             "geneSymbol": gene,
             "tissueSiteDetailId": tissue,
@@ -285,7 +278,7 @@ def gene_exp():
     return jsonify({"geneExpression": infos})
 
 
-@api.route("/api/v3/medianGeneExpression", methods=["GET"])
+@api.route("/api/v4/medianGeneExpression", methods=["GET"])
 def med_gene_exp():
     ids = request.args.get("geneId").split(",")
     ids = [x for x in ids if x in med_expr.index]
@@ -320,7 +313,7 @@ def med_gene_exp():
     return jsonify(info)
 
 
-@api.route("/api/v3/singleTissueEqtl", methods=["GET"])
+@api.route("/api/v4/singleTissueEqtl", methods=["GET"])
 def single_tissue_eqtl():
     gene = request.args.get("geneId")
     d = single_tissue(gene)
@@ -333,7 +326,7 @@ def single_tissue_eqtl():
     return jsonify({"singleTissueEqtl": info})
 
 
-@api.route("/api/v3/sqtl", methods=["GET"])
+@api.route("/api/v4/sqtl", methods=["GET"])
 def sqtl():
     gene = request.args.get("geneId")
     d = sqtls.loc[sqtls["geneId"] == gene, :]
@@ -341,12 +334,12 @@ def sqtl():
     return jsonify({"sqtl": info})
 
 
-@api.route("/api/v3/tissueInfo", methods=["GET"])
+@api.route("/api/v4/tissueInfo", methods=["GET"])
 def tissue_info():
     return jsonify({"tissueInfo": tissueInfo})
 
 
-@api.route("/api/v3/topExpressedGene", methods=["GET"])
+@api.route("/api/v4/topExpressedGene", methods=["GET"])
 def top_expressed_gene():
     tissue = request.args.get("tissueSiteDetailId")
     filterMt = request.args.get("filterMtGene", type=json.loads, default=False)
@@ -359,7 +352,7 @@ def top_expressed_gene():
     return jsonify({"topExpressedGene": x})
 
 
-@api.route("/api/v3/variant", methods=["GET"])
+@api.route("/api/v4/variant", methods=["GET"])
 def variant():
     ids = request.args.get("variantId").split(",")
     infos = []

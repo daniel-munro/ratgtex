@@ -1,8 +1,8 @@
 openapi: 3.0.0
 info:
   title: RatGTEx REST API
-  version: "3.0.0"
-  description: This API provides data for the visualizations in the RatGTEx data portal. This version (v3) provides data for RatGTEx data release v3, which uses the rn7 (mRatBN7.2) genome assembly.
+  version: "4.0.0"
+  description: This API provides data for the visualizations in the RatGTEx data portal. This version (v4) provides data for RatGTEx data release v4, which uses the GRCr8 genome assembly.
   contact:
     name: Daniel Munro
     x-role: responsible developer
@@ -10,7 +10,7 @@ info:
     url: https://danmun.ro
     x-id: https://danmun.ro
 servers:
-  - url: https://ratgtex.org/api/v3
+  - url: https://ratgtex.org/api/v4
     description: RatGTEx data portal
 tags:
   - name: reference

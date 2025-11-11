@@ -4,7 +4,7 @@
  */
 "use strict";
 export function getGtexUrls() {
-  const host = "/api/v3/";
+  const host = "/api/v4/";
   return {
     singleTissueEqtl: host + "singleTissueEqtl?geneId=",
     dyneqtl: host + "dyneqtl?",

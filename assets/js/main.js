@@ -6,7 +6,7 @@ $(document).ready(function () {
 
   $.ajax({
     dataType: "json",
-    url: `/data/autocomplete.v3.json`,
+    url: `/data/autocomplete.v4.json`,
   }).done(function (data) {
     $("#search-input").autocomplete({
       // source: data,
