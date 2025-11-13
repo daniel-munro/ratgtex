@@ -2,7 +2,7 @@
 permalink: /download/
 title: Download
 layout: base
-version: v3
+version: v4
 ---
 
 {% assign version = page.version %} {% assign genome =
@@ -11,8 +11,8 @@ site.data.versions[version].tissues %}
 
 <p>
   Download pages: <a href="/download/v1/">v1</a> •
-  <a href="/download/v2/">v2</a> • v3 •
-  <a href="/download/v3-unmerged/">v3 unmerged</a> •
+  <a href="/download/v2/">v2</a> • <a href="/download/v3/">v3</a> •
+  <a href="/download/v3-unmerged/">v3 unmerged</a> • v4 •
   <a href="/download/study-data/">Study data</a>
 </p>
 
@@ -26,12 +26,12 @@ site.data.versions[version].tissues %}
   version.
 </p>
 
-<p><a href="/data/gene.{{ version }}.txt">Gene info</a></p>
+<p><a href="/data/{{ version }}/gene.{{ version }}.tsv">Gene info</a></p>
 
 <h2>Gene expression</h2>
 
 <p>
-  <a href="/data/medianGeneExpression.{{ version }}.txt.gz">
+  <a href="/data/{{ version }}/expr/medianGeneExpression.{{ version }}.tsv.gz">
     Median TPM per gene per tissue
   </a>
   <em style="color: gray">Used for heatmap visualizations</em>
@@ -42,7 +42,7 @@ site.data.versions[version].tissues %}
 <p>
   {% for tissue in tissues %}
   <a
-    href="/data/expr/expr.log2.{{ tissue.id }}.{{ version }}_{{ genome }}.bed.gz"
+    href="/data/{{ version }}/expr/expr.log2.{{ tissue.id }}.{{ version }}_{{ genome }}.bed.gz"
     title="{{ tissue.name }}"
   >
     {{ tissue.id }}
@@ -55,76 +55,216 @@ site.data.versions[version].tissues %}
 <p>
   {% for tissue in tissues %}
   <a
-    href="/data/expr/expr.tpm.{{ tissue.id }}.{{ version }}_{{ genome }}.bed.gz"
+    href="/data/{{ version }}/expr/expr.tpm.{{ tissue.id }}.{{ version }}_{{ genome }}.bed.gz"
     title="{{ tissue.name }}"
   >
     {{ tissue.id }}
   </a>
   {% unless forloop.last %} • {% endunless %} {% endfor %}
-</p>
-
-<strong>Inverse-quantile normalized</strong>
-<p>
-  {% for tissue in tissues %}
-  <a
-    href="/data/expr/expr.iqn.{{ tissue.id }}.{{ version }}_{{ genome }}.bed.gz"
-    title="{{ tissue.name }}"
-  >
-    {{ tissue.id }}
-  </a>
-  {% unless forloop.last %} • {% endunless %} {% endfor %}
-</p>
-
-<strong>Filtered inverse-quantile normalized</strong>
-<em style="color: gray">Used for eQTL mapping</em>
-<p>
-  {% for tissue in tissues %}
-  <a
-    href="/data/expr/expr.iqn.filtered.{{ tissue.id }}.{{ version }}_{{ genome }}.bed.gz"
-    title="{{ tissue.name }}"
-  >
-    {{ tissue.id }}
-  </a>
-  {% unless forloop.last %} • {% endunless %} {% endfor %}
-</p>
-
-<p>
-  <strong><a href="/predict/">Predicted expression on all GWAS rats</a></strong>
 </p>
 
 <br />
 
-<h2>Genotypes</h2>
+<h2>All RNA phenotypes</h2>
 
 <p>
-  In this version, rats in the Adipose and Liver cohort are in the `round10_4`
-  genotypes, and all others are in the `round10_5` genotypes. The included
-  variants may differ between the two genotype files.
+  The TPM files above are the same as the unnormalized expression files below.
 </p>
 
-<ul>
-  <li>
-    <a href="/data/geno/ratgtex_v3_round10_4.{{ genome }}.vcf.gz">
-      ratgtex_v3_round10_4.{{ genome }}.vcf.gz
+<strong>Unnormalized</strong>
+<em style="color: gray">TPM, ratios, etc.</em>
+<table class="download-matrix">
+  <tbody>
+    {% assign modalities = site.data.modalities %} {% for modality in modalities
+    %}
+    <tr>
+      <td>{{ modality.name }}</td>
+      {% for tissue in tissues %}
+      <td>
+        <a
+          href="/data/{{ version }}/phenos/phenos.{{ tissue.id }}.{{ modality.id }}.unnorm.{{ version }}_{{ genome }}.bed.gz"
+          title="{{ tissue.name }}"
+        >
+          {{ tissue.id }}
+        </a>
+      </td>
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<br />
+
+<strong>Normalized</strong>
+<em style="color: gray">Quantile-normalized and inverse-normal-transformed</em>
+<table class="download-matrix">
+  <tbody>
+    {% assign modalities = site.data.modalities %} {% for modality in modalities
+    %}
+    <tr>
+      <td>{{ modality.name }}</td>
+      {% for tissue in tissues %}
+      <td>
+        <a
+          href="/data/{{ version }}/phenos/phenos.{{ tissue.id }}.{{ modality.id }}.norm.{{ version }}_{{ genome }}.bed.gz"
+          title="{{ tissue.name }}"
+        >
+          {{ tissue.id }}
+        </a>
+      </td>
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<br />
+
+<h2>eQTLs</h2>
+
+<p>
+  <strong>
+    <a
+      href="/data/{{ version }}/eqtl/eqtls_indep.{{ version }}_{{ genome }}.tsv"
+    >
+      Conditionally independent cis-eQTLs
     </a>
-  </li>
-  <li>
-    <a href="/data/geno/ratgtex_v3_round10_5.{{ genome }}.vcf.gz">
-      ratgtex_v3_round10_5.{{ genome }}.vcf.gz
+  </strong>
+  <br />
+  A table of cis-eQTLs from all tissues.
+</p>
+
+<strong>All significant cis-eQTL variant-gene pairs</strong>
+
+<p>
+  {% for tissue in tissues %}
+  <a
+    href="/data/{{ version }}/eqtl/cis_qtl_signif.{{ tissue.id }}.{{ version }}_{{ genome }}.txt.gz"
+    title="{{ tissue.name }}"
+  >
+    {{ tissue.id }}
+  </a>
+  {% unless forloop.last %} • {% endunless %} {% endfor %}
+</p>
+
+<p>
+  <strong>
+    <a href="/data/{{ version }}/eqtl/top_assoc.{{ version }}_{{ genome }}.tsv">
+      Top association per gene
     </a>
-  </li>
-</ul>
+  </strong>
+  <br />
+  A table of the strongest variant-gene association per gene per tissue, even if
+  not significant. A q-value threshold of 0.05 was used to determine significant
+  eQTLs.
+</p>
+
+<strong>trans-eQTLs</strong>
+<br />
+All SNP-gene associations genome-wide with TSS distance &gt; 5 Mb and with an
+arbitrary cutoff of p &lt; 1e-5. No significance testing was performed.
+<p>
+  {% for tissue in tissues %}
+  <a
+    href="/data/{{ version }}/eqtl/trans_qtl_pairs.{{ tissue.id }}.{{ version }}_{{ genome }}.txt.gz"
+    title="{{ tissue.name }}"
+  >
+    {{ tissue.id }}
+  </a>
+  {% unless forloop.last %} • {% endunless %} {% endfor %}
+</p>
+
+<br />
+
+<h2>All xQTLs</h2>
+
+<p>
+  <strong>Conditionally independent cis-xQTLs for all tissues</strong>
+  <br />
+  <a
+    href="/data/{{ version }}/xqtl/xqtls_indep.cross_modality.{{ version }}_{{ genome }}.tsv"
+  >
+    cross-modality mapped</a
+  >
+  <em style="color: gray">
+    (conditionally independent across modalities per gene per tissue)
+  </em>
+  <br />
+  Each modality mapped separately: {% for modality in site.data.modalities %}
+  <a
+    href="/data/{{ version }}/xqtl/xqtls_indep.{{ modality.id }}.{{ version }}_{{ genome }}.tsv"
+    title="{{ modality.name }}"
+  >
+    {{ modality.id }}
+  </a>
+  {% unless forloop.last %} • {% endunless %} {% endfor %}
+</p>
+
+<strong>All significant cis-xQTL variant-phenotype pairs</strong>
+<table class="download-matrix">
+  <tbody>
+    {% for modality in site.data.modalities %}
+    <tr>
+      <td>{{ modality.name }}</td>
+      {% for tissue in tissues %}
+      <td>
+        <a
+          href="/data/{{ version }}/xqtl/cis_qtl_signif.{{ tissue.id }}.{{ modality.id }}.{{ version }}_{{ genome }}.txt.gz"
+          title="{{ tissue.name }}"
+        >
+          {{ tissue.id }}
+        </a>
+      </td>
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<br />
+
+<p>
+  <strong>Top association per gene for all tissues</strong>
+  <br />
+  A table of the strongest variant-gene association per gene per tissue, even if
+  not significant. A q-value threshold of 0.05 was used to determine significant
+  xQTLs.
+  <br />
+  <a
+    href="/data/{{ version }}/xqtl/top_assoc.cross_modality.{{ version }}_{{ genome }}.tsv"
+  >
+    Cross-modality mapped
+  </a>
+  <br />
+  Each modality mapped separately: {% for modality in site.data.modalities %}
+  <a
+    href="/data/{{ version }}/xqtl/top_assoc.{{ modality.id }}.{{ version }}_{{ genome }}.tsv"
+    title="{{ modality.name }}"
+  >
+    {{ modality.id }}
+  </a>
+  {% unless forloop.last %} • {% endunless %} {% endfor %}
+</p>
 
 <br />
 
 <h2>Other info</h2>
 
 <p>
-  <a href="/data/ref/RatGTEx_rats.{{ version }}.tsv">Rat info (all tissues)</a>
+  <a href="/data/{{ version }}/geno/ratgtex_v4_round11_1.{{ genome }}.vcf.gz">
+    Genotypes
+  </a>
 </p>
 
 <p>
-  <a href="/data/ref/RatGTEx_samples.{{ version }}.tsv">
+  <a href="/data/{{ version }}/ref/RatGTEx_rats.{{ version }}.tsv"
+    >Rat info (all tissues)</a
+  >
+</p>
+
+<p>
+  <a href="/data/{{ version }}/ref/RatGTEx_samples.{{ version }}.tsv">
     Sample info (all tissues)
   </a>
 </p>
@@ -137,7 +277,7 @@ site.data.versions[version].tissues %}
 <p>
   {% for tissue in tissues %}
   <a
-    href="/data/rat_ids/rat_ids.{{ tissue.id }}.{{ version }}.txt"
+    href="/data/{{ version }}/rat_ids/rat_ids.{{ tissue.id }}.{{ version }}.txt"
     title="{{ tissue.name }}"
   >
     {{ tissue.id }}
@@ -157,7 +297,7 @@ sample sets.
 <p>
   {% for tissue in tissues %}
   <a
-    href="/data/fastq_map/fastq_map.{{ tissue.id }}.{{ version }}.txt"
+    href="/data/{{ version }}/fastq_map/fastq_map.{{ tissue.id }}.{{ version }}.txt"
     title="{{ tissue.name }}"
   >
     {{ tissue.id }}
@@ -166,152 +306,26 @@ sample sets.
 </p>
 
 <strong>Covariates</strong>
-<em style="color: gray">used for eQTL mapping</em>
-<p>
-  {% for tissue in tissues %}
-  <a
-    href="/data/covar/covar.{{ tissue.id }}.{{ version }}.txt"
-    title="{{ tissue.name }}"
-  >
-    {{ tissue.id }}
-  </a>
-  {% unless forloop.last %} • {% endunless %} {% endfor %}
-</p>
-
-<br />
-
-<h2>eQTLs</h2>
-
-<p>
-  <strong>
-    <a href="/data/eqtl/eqtls_indep.{{ version }}_{{ genome }}.txt"
-      >Conditionally independent cis-eQTLs</a
-    >
-  </strong>
-  <br />
-  A table of cis-eQTLs from all tissues.
-</p>
-
-<strong>All significant cis-eQTL variant-gene pairs</strong>
-
-<p>
-  {% for tissue in tissues %}
-  <a
-    href="/data/eqtl/cis_qtl_signif.{{ tissue.id }}.{{ version }}_{{ genome }}.txt.gz"
-    title="{{ tissue.name }}"
-  >
-    {{ tissue.id }}
-  </a>
-  {% unless forloop.last %} • {% endunless %} {% endfor %}
-</p>
-
-<p>
-  <strong>
-    <a href="/data/eqtl/top_assoc.{{ version }}_{{ genome }}.txt">
-      Top association per gene
-    </a>
-  </strong>
-  <br />
-  A table of the strongest variant-gene association per gene per tissue, even if
-  not significant. A q-value threshold of 0.05 was used to determine significant
-  eQTLs.
-</p>
-
-<strong>trans-eQTLs</strong>
-<br />
-All SNP-gene associations genome-wide with TSS distance &gt; 5 Mb and with an
-arbitrary cutoff of p &lt; 1e-5. No significance testing was performed.
-<p>
-  {% for tissue in tissues %}
-  <a
-    href="/data/eqtl/trans_qtl_pairs.{{ tissue.id }}.{{ version }}_{{ genome }}.txt.gz"
-    title="{{ tissue.name }}"
-  >
-    {{ tissue.id }}
-  </a>
-  {% unless forloop.last %} • {% endunless %} {% endfor %}
-</p>
-
-<br />
-
-<h2>sQTLs</h2>
-
-<strong>Splice phenotypes</strong>
-<em style="color: gray">
-  Relative usage of splice junctions within junction clusters
-</em>
-<p>
-  {% for tissue in tissues %}
-  <a
-    href="/data/splice/leafcutter.{{ tissue.id }}.{{ version }}_{{ genome }}.bed.gz"
-    title="{{ tissue.name }}"
-  >
-    {{ tissue.id }}
-  </a>
-  {% unless forloop.last %} • {% endunless %} {% endfor %}
-</p>
-
-<strong>Covariates</strong>
-<em style="color: gray">used for sQTL mapping</em>
-<p>
-  {% for tissue in tissues %}
-  <a
-    href="/data/splice/covar_splice.{{ tissue.id }}.{{ version }}.txt"
-    title="{{ tissue.name }}"
-  >
-    {{ tissue.id }}
-  </a>
-  {% unless forloop.last %} • {% endunless %} {% endfor %}
-</p>
-
-<p>
-  <strong>
-    <a href="/data/splice/sqtls_indep.{{ version }}_{{ genome }}.txt">
-      Conditionally independent cis-sQTLs
-    </a>
-  </strong>
-  <br />
-  A table of cis-sQTLs from all tissues.
-</p>
-
-<strong>All significant cis-sQTL variant-phenotype pairs</strong>
-<p>
-  {% for tissue in tissues %}
-  <a
-    href="/data/splice/splice.cis_qtl_signif.{{ tissue.id }}.{{ version }}_{{ genome }}.txt.gz"
-    title="{{ tissue.name }}"
-  >
-    {{ tissue.id }}
-  </a>
-  {% unless forloop.last %} • {% endunless %} {% endfor %}
-</p>
-
-<p>
-  <strong>
-    <a href="/data/splice/top_assoc_splice.{{ version }}_{{ genome }}.txt">
-      Top association per gene
-    </a>
-  </strong>
-  <br />
-  A table of the strongest variant-gene association per gene per tissue, even if
-  not significant. A q-value threshold of 0.05 was used to determine significant
-  sQTLs.
-</p>
-
-<strong>trans-sQTLs</strong>
-<br />
-All SNP-phenotype associations genome-wide with TSS distance &gt; 5 Mb and with
-an arbitrary cutoff of p &lt; 1e-5. No significance testing was performed.
-<p>
-  {% for tissue in tissues %}
-  <a
-    href="/data/splice/splice.trans_qtl_pairs.{{ tissue.id }}.{{ version }}_{{ genome }}.txt.gz"
-    title="{{ tissue.name }}"
-  >
-    {{ tissue.id }}
-  </a>
-  {% unless forloop.last %} • {% endunless %} {% endfor %}
-</p>
+<em style="color: gray">used for xQTL mapping</em>
+<table class="download-matrix">
+  <tbody>
+    {% for modality in site.data.modalities %}
+    <tr>
+      <td>{{ modality.name }}</td>
+      {% for tissue in tissues %}
+      <td>
+        <a
+          href="/data/{{ version }}/covar/covar.{{ tissue.id }}.{{ modality.id }}.{{ version }}.tsv"
+          title="{{ tissue.name }}"
+        >
+          {{ tissue.id }}
+        </a>
+      </td>
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
 
 <br />
 

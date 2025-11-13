@@ -85,7 +85,7 @@ def format_per_tissue_gene_info(info: list, tissues: list):
 
 def cis_pval(tissue, gene, variant):
     """Return nominal p-value for a given cis-window variant"""
-    with zipfile.ZipFile(f"../data/cis_pvals/{tissue}.v4.zip", "r") as archive:
+    with zipfile.ZipFile(f"../data/v4/cis_pvals/{tissue}.v4.zip", "r") as archive:
         fname = f"{tissue}.v4/{gene}.txt"
         if fname in archive.namelist():
             df = pd.read_csv(archive.open(fname), sep="\t", index_col="variant_id")
@@ -96,7 +96,7 @@ def cis_pval(tissue, gene, variant):
 
 def single_tissue(gene):
     """Return table of significant cis-eSNPs for a gene"""
-    with zipfile.ZipFile(f"../data/singleTissueEqtl.v4.zip", "r") as archive:
+    with zipfile.ZipFile(f"../data/v4/eqtl/singleTissueEqtl.v4.zip", "r") as archive:
         fname = f"singleTissueEqtl.v4/{gene}.txt"
         if fname in archive.namelist():
             d = pd.read_csv(archive.open(fname), sep="\t", dtype={"chromosome": str})
@@ -158,43 +158,43 @@ def load_sqtls(fname):
     return sqtls
 
 
-df = pd.read_csv("../data/tissueInfo.v4.txt", sep="\t")
+df = pd.read_csv("../data/v4/tissue_info.v4.tsv", sep="\t")
 tissueInfo = df.to_dict(orient="records")
 
-topExpr = pd.read_csv("../data/topExpressedGene.v4.txt", sep="\t")
+topExpr = pd.read_csv("../data/v4/expr/topExpressedGene.v4.tsv", sep="\t")
 
-df = pd.read_csv("../data/gene.v4.txt", sep="\t", index_col="geneId", dtype={"chromosome": str})
+df = pd.read_csv("../data/v4/gene.v4.tsv", sep="\t", index_col="geneId", dtype={"chromosome": str})
 genes = df.fillna("")
 
 tissues = [tissue["tissueSiteDetailId"] for tissue in tissueInfo]
 dataset = {tissue["tissueSiteDetailId"]: tissue["dataset"] for tissue in tissueInfo}
 
 med_expr = pd.read_csv(
-    "../data/medianGeneExpression.v4.txt.gz", sep="\t", index_col="geneId"
+    "../data/v4/expr/medianGeneExpression.v4.tsv.gz", sep="\t", index_col="geneId"
 )
 
 tpm = {}
 for tissue in tissues:
-    fname = f"../data/phenos/phenos.{tissue}.expression.unnorm.v4_rn8.bed.gz"
+    fname = f"../data/v4/phenos/phenos.{tissue}.expression.unnorm.v4_rn8.bed.gz"
     tpm[tissue] = load_expr(fname)
 
 iqn = {}
 for tissue in tissues:
-    fname = f"../data/phenos/phenos.{tissue}.expression.unnorm.v4_rn8.bed.gz"
+    fname = f"../data/v4/phenos/phenos.{tissue}.expression.unnorm.v4_rn8.bed.gz"
     iqn[tissue] = load_expr(fname)
 
 vcf = {}
 for dset in set(dataset.values()):
-    vcf[dset] = pysam.VariantFile(f"../data/geno/{dset}.rn8.vcf.gz")
+    vcf[dset] = pysam.VariantFile(f"../data/v4/geno/{dset}.rn8.vcf.gz")
 ref_vcf = vcf["ratgtex_v4_round11_1"]
 
-exons = pd.read_csv("../data/exon.v4.txt", sep="\t", dtype={"chromosome": str})
+exons = pd.read_csv("../data/v4/exon.v4.tsv", sep="\t", dtype={"chromosome": str})
 
 top_assoc = pd.read_csv(
-    "../data/eqtl/top_assoc.v4_rn8.txt", sep="\t", index_col=["tissue", "gene_id"]
+    "../data/v4/eqtl/top_assoc.v4_rn8.tsv", sep="\t", index_col=["tissue", "gene_id"]
 )
 top_assoc = top_assoc[["pval_nominal_threshold"]]
-eqtls = load_eqtls("../data/eqtl/eqtls_indep.v4_rn8.txt")
+eqtls = load_eqtls("../data/v4/eqtl/eqtls_indep.v4_rn8.tsv")
 
 api = Flask(__name__)
 CORS(api)

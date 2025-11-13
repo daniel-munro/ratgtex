@@ -1,11 +1,15 @@
 nav {
-	margin-bottom: 10px;
+  margin-bottom: 10px;
 }
 
 .navbar-light .navbar-nav .nav-link {
-    color: rgba(0, 0, 0, 0.75) !important;
+  color: rgba(0, 0, 0, 0.75) !important;
 }
 
 .navbar-light .navbar-nav .nav-link:hover {
-    color: rgba(0, 0, 0, 0.9) !important;
+  color: rgba(0, 0, 0, 0.9) !important;
+}
+
+.download-matrix td {
+  padding-left: 5px;
 }

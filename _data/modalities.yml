@@ -1,0 +1,12 @@
+- id: expression
+  name: Expression
+- id: isoforms
+  name: Isoform ratio
+- id: splicing
+  name: Intron excision ratio
+- id: alt_TSS
+  name: Alternative TSS usage
+- id: alt_polyA
+  name: Alternative polyA usage
+- id: stability
+  name: RNA stability

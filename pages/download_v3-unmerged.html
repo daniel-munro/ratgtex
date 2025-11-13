@@ -12,11 +12,12 @@ site.data.versions[page.version_unmerged].tissues %}
 
 <p>
   Download pages: <a href="/download/v1/">v1</a> •
-  <a href="/download/v2/">v2</a> • <a href="/download/">v3</a> • v3 unmerged •
+  <a href="/download/v2/">v2</a> • <a href="/download/v3/">v3</a> • v3 unmerged
+  • <a href="/download/">v4</a> •
   <a href="/download/study-data/">Study data</a>
 </p>
 
-<h1>Download unmerged data</h1>
+<h1>Download v3 unmerged data</h1>
 
 <p>
   Some tissues have RNA-seq datasets from multiple studies that were merged for
@@ -31,7 +32,7 @@ site.data.versions[page.version_unmerged].tissues %}
 <p>
   {% for tissue in tissues %}
   <a
-    href="/data/expr/expr.log2.{{ tissue.id }}.{{ version }}_{{ genome }}.bed.gz"
+    href="/data/{{ version }}/expr/expr.log2.{{ tissue.id }}.{{ version }}_{{ genome }}.bed.gz"
     title="{{ tissue.name }}"
   >
     {{ tissue.id }}
@@ -44,7 +45,7 @@ site.data.versions[page.version_unmerged].tissues %}
 <p>
   {% for tissue in tissues %}
   <a
-    href="/data/expr/expr.tpm.{{ tissue.id }}.{{ version }}_{{ genome }}.bed.gz"
+    href="/data/{{ version }}/expr/expr.tpm.{{ tissue.id }}.{{ version }}_{{ genome }}.bed.gz"
     title="{{ tissue.name }}"
   >
     {{ tissue.id }}
@@ -56,7 +57,7 @@ site.data.versions[page.version_unmerged].tissues %}
 <p>
   {% for tissue in tissues %}
   <a
-    href="/data/expr/expr.iqn.{{ tissue.id }}.{{ version }}_{{ genome }}.bed.gz"
+    href="/data/{{ version }}/expr/expr.iqn.{{ tissue.id }}.{{ version }}_{{ genome }}.bed.gz"
     title="{{ tissue.name }}"
   >
     {{ tissue.id }}
@@ -69,7 +70,7 @@ site.data.versions[page.version_unmerged].tissues %}
 <p>
   {% for tissue in tissues %}
   <a
-    href="/data/expr/expr.iqn.filtered.{{ tissue.id }}.{{ version }}_{{ genome }}.bed.gz"
+    href="/data/{{ version }}/expr/expr.iqn.filtered.{{ tissue.id }}.{{ version }}_{{ genome }}.bed.gz"
     title="{{ tissue.name }}"
   >
     {{ tissue.id }}
@@ -89,7 +90,7 @@ site.data.versions[page.version_unmerged].tissues %}
 <p>
   {% for tissue in tissues %}
   <a
-    href="/data/rat_ids/rat_ids.{{ tissue.id }}.{{ version }}.txt"
+    href="/data/{{ version }}/rat_ids/rat_ids.{{ tissue.id }}.{{ version }}.txt"
     title="{{ tissue.name }}"
   >
     {{ tissue.id }}
@@ -109,7 +110,7 @@ sample sets.
 <p>
   {% for tissue in tissues %}
   <a
-    href="/data/fastq_map/fastq_map.{{ tissue.id }}.{{ version }}.txt"
+    href="/data/{{ version }}/fastq_map/fastq_map.{{ tissue.id }}.{{ version }}.txt"
     title="{{ tissue.name }}"
   >
     {{ tissue.id }}
@@ -122,7 +123,7 @@ sample sets.
 <p>
   {% for tissue in tissues %}
   <a
-    href="/data/covar/covar.{{ tissue.id }}.{{ version }}.txt"
+    href="/data/{{ version }}/covar/covar.{{ tissue.id }}.{{ version }}.txt"
     title="{{ tissue.name }}"
   >
     {{ tissue.id }}
@@ -136,7 +137,9 @@ sample sets.
 
 <p>
   <strong>
-    <a href="/data/eqtl/eqtls_indep.{{ version }}_{{ genome }}.txt">
+    <a
+      href="/data/{{ version }}/eqtl/eqtls_indep.{{ version }}_{{ genome }}.txt"
+    >
       Conditionally independent cis-eQTLs
     </a>
   </strong>
@@ -149,7 +152,7 @@ sample sets.
 <p>
   {% for tissue in tissues %}
   <a
-    href="/data/eqtl/cis_qtl_signif.{{ tissue.id }}.{{ version }}_{{ genome }}.txt.gz"
+    href="/data/{{ version }}/eqtl/cis_qtl_signif.{{ tissue.id }}.{{ version }}_{{ genome }}.txt.gz"
     title="{{ tissue.name }}"
   >
     {{ tissue.id }}
@@ -164,7 +167,7 @@ arbitrary cutoff of p &lt; 1e-5. No significance testing was performed.
 <p>
   {% for tissue in tissues %}
   <a
-    href="/data/eqtl/trans_qtl_pairs.{{ tissue.id }}.{{ version }}_{{ genome }}.txt.gz"
+    href="/data/{{ version }}/eqtl/trans_qtl_pairs.{{ tissue.id }}.{{ version }}_{{ genome }}.txt.gz"
     title="{{ tissue.name }}"
   >
     {{ tissue.id }}
@@ -183,7 +186,7 @@ arbitrary cutoff of p &lt; 1e-5. No significance testing was performed.
 <p>
   {% for tissue in tissues %}
   <a
-    href="/data/splice/leafcutter.{{ tissue.id }}.{{ version }}_{{ genome }}.bed.gz"
+    href="/data/{{ version }}/splice/leafcutter.{{ tissue.id }}.{{ version }}_{{ genome }}.bed.gz"
     title="{{ tissue.name }}"
   >
     {{ tissue.id }}
@@ -196,7 +199,7 @@ arbitrary cutoff of p &lt; 1e-5. No significance testing was performed.
 <p>
   {% for tissue in tissues %}
   <a
-    href="/data/splice/covar_splice.{{ tissue.id }}.{{ version }}.txt"
+    href="/data/{{ version }}/splice/covar_splice.{{ tissue.id }}.{{ version }}.txt"
     title="{{ tissue.name }}"
   >
     {{ tissue.id }}
@@ -208,7 +211,7 @@ arbitrary cutoff of p &lt; 1e-5. No significance testing was performed.
 <p>
   {% for tissue in tissues %}
   <a
-    href="/data/splice/splice.cis_qtl_signif.{{ tissue.id }}.{{ version }}_{{ genome }}.txt.gz"
+    href="/data/{{ version }}/splice/splice.cis_qtl_signif.{{ tissue.id }}.{{ version }}_{{ genome }}.txt.gz"
     title="{{ tissue.name }}"
   >
     {{ tissue.id }}
@@ -223,7 +226,7 @@ an arbitrary cutoff of p &lt; 1e-5. No significance testing was performed.
 <p>
   {% for tissue in tissues %}
   <a
-    href="/data/splice/splice.trans_qtl_pairs.{{ tissue.id }}.{{ version }}_{{ genome }}.txt.gz"
+    href="/data/{{ version }}/splice/splice.trans_qtl_pairs.{{ tissue.id }}.{{ version }}_{{ genome }}.txt.gz"
     title="{{ tissue.name }}"
   >
     {{ tissue.id }}
