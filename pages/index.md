@@ -7,38 +7,36 @@ layout: base
     <img src="/assets/images/RatGTExPortal.png" class="img-fluid" width="500px" alt="RatGTEx Portal">
 </h1>
 
-This portal provides gene expression, eQTL, and sQTL data for multiple rat tissues. It is managed by the [NIDA Center of Excellence for Genetics, Genomics, and Epigenetics of Substance Use Disorders in Outbred Rats (P30DA060810)](https://ratgenes.org).
+This portal provides a multimodal collection of RNA phenotypes (gene expression, alternative splicing, etc.), xQTLs for those phenotypes, and TWAS results for multiple rat tissues. It is managed by the [NIDA Center of Excellence for Genetics, Genomics, and Epigenetics of Substance Use Disorders in Outbred Rats (P30DA060810)](https://ratgenes.org).
 
-### Data Release v3
+### <span class="badge text-bg-success">Data Release v4</span>
 
-The data and visualizations on this site are for the RatGTEx v3 release. The main changes from v2 are:
+The data and visualizations on this site are for the RatGTEx v4 release. The main changes from v3 are:
 
-- Four tissue datasets from two new projects have been added, including two new brain regions, posterior ventral tegmental area (pVTA) and rostral medial tegmental nucleus (RMTg).
-- Samples of the same tissue from different projects are now analyzed as a single dataset, increasing the sample size and statistical power for eQTL mapping.
-- The rn7 (`mRatBN7.2`) genome assembly is still used, but RefSeq gene annotations are now used instead of Ensembl.
-- Genotype data for all tissues have been updated.
+- Three tissue datasets from one new project have been added: a new brain region, agranular insular cortex (IC), and additional samples for existing brain regions, nucleus accumbens core (NAcc) and posterior ventral tegmental area (pVTA). Adipose and liver tissues have been removed temporarily due to genotype availability.
+- [Pantry](https://pantry.pejlab.org) is now used to extract RNA phenotypes and perform xQTL mapping, providing data for six RNA modalities, compared to only gene expression levels and alternative splicing in the previous versions.
+- The genome assembly has been updated from `mRatBN7.2` to `GRCr8`.
 
-The previous versions using rn6 and rn7 are now referred to as v1 and v2, respectively, and are still available from the [Download](/download/) page.
+Data from previous versions are still available from the [Download](/download/) page.
 
 ### Tissues
 
 <table class="table table-sm w-auto">
-    <caption>Sample sizes reflect the final post-QC datasets.</caption>
+    <caption>* = Datasets from multiple studies were combined and analyzed as one larger dataset, with sample sizes of each constituent dataset indicated to the right. Sample sizes reflect the final post-QC datasets.</caption>
     <thead>
         <tr><th>Tissue</th><th>Abbreviation</th><th>Samples</th><th>Originating studies</th></tr>
     </thead>
     <tbody>
-        <tr><td>Adipose</td><td>Adipose</td><td>411</td><td><a href="#R01DK106386">R01DK106386</a></td></tr>
+        <tr><td>Agranular insular cortex</td><td>IC</td><td>148</td><td><a href="#P50DA037844-y6-10-proj1">P50DA037844 Y6-10 Project 1</a></td></tr>
         <tr><td>Basolateral amygdala</td><td>BLA</td><td>191</td><td><a href="#U01DA046077">U01DA046077</a></td></tr>
-        <tr><td>Brain hemisphere</td><td>Brain</td><td>341</td><td><a href="#pilot-twas">Pilot: Creating the dataset for TWAS in HS rats</a></td></tr>
+        <tr><td>Brain hemisphere</td><td>Brain</td><td>342</td><td><a href="#pilot-twas">Pilot: Creating the dataset for TWAS in HS rats</a></td></tr>
         <tr><td>Eye</td><td>Eye</td><td>53</td><td><a href="#R01EY021200">R01EY021200</a></td></tr>
         <tr><td>Infralimbic cortex</td><td>IL</td><td>83</td><td><a href="#P50DA037844-y1-5">P50DA037844 Y1-5</a></td></tr>
         <tr><td>Lateral habenula</td><td>LHb</td><td>82</td><td><a href="#P50DA037844-y1-5">P50DA037844 Y1-5</a></td></tr>
-        <tr><td>Liver</td><td>Liver</td><td>411</td><td><a href="#R01DK106386">R01DK106386</a></td></tr>
-        <tr><td>Nucleus accumbens core</td><td>NAcc</td><td>430</td><td><a href="#P50DA037844-y1-5">P50DA037844 Y1-5</a>, <a href="#U01DA046077">U01DA046077</a>, <a href="#P50DA037844-y5-10">P50DA037844 Y5-10</a></td></tr>
+        <tr><td>Nucleus accumbens core</td><td>NAcc</td><td>527*</td><td><a href="#P50DA037844-y1-5">P50DA037844 Y1-5</a> (77), <a href="#P50DA037844-y6-10-proj1">P50DA037844 Y6-10 Project 1</a> (143), <a href="#P50DA037844-y6-10-proj2">P50DA037844 Y6-10 Project 2</a> (159), <a href="#U01DA046077">U01DA046077</a> (193)</td></tr>
         <tr><td>Orbitofrontal cortex</td><td>OFC</td><td>82</td><td><a href="#P50DA037844-y1-5">P50DA037844 Y1-5</a></td></tr>
-        <tr><td>Prelimbic cortex</td><td>PL</td><td>407</td><td><a href="#P50DA037844-y1-5">P50DA037844 Y1-5</a>, <a href="#U01DA046077">U01DA046077</a>, <a href="#P50DA037844-y5-10">P50DA037844 Y5-10</a></td></tr>
-        <tr><td>Posterior ventral tegmental area</td><td>pVTA</td><td>153</td><td><a href="#P50DA037844-y5-10">P50DA037844 Y5-10</a></td></tr>
+        <tr><td>Prelimbic cortex</td><td>PL</td><td>406*</td><td><a href="#P50DA037844-y1-5">P50DA037844 Y1-5</a> (82), <a href="#P50DA037844-y6-10-proj2">P50DA037844 Y6-10 Project 2</a> (130), <a href="#U01DA046077">U01DA046077</a> (194)</td></tr>
+        <tr><td>Posterior ventral tegmental area</td><td>pVTA</td><td>293*</td><td><a href="#P50DA037844-y6-10-proj1">P50DA037844 Y6-10 Project 1</a> (141), <a href="#P50DA037844-y6-10-proj2">P50DA037844 Y6-10 Project 2</a> (152)</td></tr>
         <tr><td>Rostromedial tegmental nucleus</td><td>RMTg</td><td>93</td><td><a href="#U01DA044468">U01DA044468</a></td></tr>
     </tbody>
 </table>
@@ -65,18 +63,28 @@ More info on the [ratgenes.org eQTL page](https://ratgenes.org/research-projects
 - Prior experience/treatment: Naive
 - Sex ratio: 43 Female, 45 Male
 - Age: Mean 86.3 days, SD 3.1
+- Tissues: IL, LHb, NAcc, OFC, PL
 
-##### <a id="P50DA037844-y5-10" href="https://ratgenes.org/research-projects/rp2/">P50DA037844 Y5-10, Project 2</a>: Socially-acquired nicotine self-administration
+##### <a id="P50DA037844-y6-10-proj1" href="https://ratgenes.org/research-projects/rp1new/">P50DA037844 Y6-10, Project 1</a>: Neurogenetic Substrates of Cocaine Addiction
+
+- Investigator: Paul Meyer, University at Buffalo
+- Prior experience/treatment: Exposure to cocaine
+- Sex ratio: 74 Female, 75 Male
+- Tissues: IC, NAcc, pVTA
+
+##### <a id="P50DA037844-y6-10-proj2" href="https://ratgenes.org/research-projects/rp2/">P50DA037844 Y6-10, Project 2</a>: Socially-acquired nicotine self-administration
 
 - Investigator: Hao Chen, UTHSC
 - Prior experience/treatment: Naive
 - Sex ratio: 84 Female, 81 Male
+- Tissues: NAcc, PL, pVTA
 
 ##### <a id="pilot-twas" href="https://ratgenes.org/2020-pilot-grants-awarded/">Pilot: Creating the dataset for TWAS in HS rats</a>
 
 - Investigator: Francesca Telese, UCSD
 - Prior experience/treatment: Naive
 - Sex ratio: 176 Female, 168 Male
+- Tissues: Brain
 
 ##### <a id="R01DK106386" href="https://reporter.nih.gov/project-details/8941897">R01DK106386</a>: Systems genetics of adiposity traits in outbred rats
 
@@ -85,6 +93,7 @@ More info on the [ratgenes.org eQTL page](https://ratgenes.org/research-projects
 - Prior experience/treatment: Naive, normal diet
 - Sex ratio: All male
 - Age: 17 weeks
+- Tissues: Adipose, Liver (data releases v1-v3 only)
 
 ##### <a id="R01EY021200" href="https://reporter.nih.gov/project-details/10361394">R01EY021200</a>: Genetic Modulators of Glaucoma
 
@@ -92,18 +101,21 @@ More info on the [ratgenes.org eQTL page](https://ratgenes.org/research-projects
 - Investigator: Monica Jablonsky, UTHSC
 - Prior experience/treatment: Behavioral testing including brief nicotine exposure
 - Sex ratio: 29 Female, 24 Male
+- Tissues: Eye
 
 ##### <a id="U01DA044468" href="https://ratgenes.org/research-projects-u01da044468/">U01DA044468</a>: Genomic analysis of avoidance learning in addiction
 
 - Investigator: Tom Jhou, University of Maryland
 - Prior experience/treatment: Extreme high and low phenotypes in cocaine-avoidance and punishment resistance
 - Sex ratio: 48 Female, 45 Male
+- Tissues: RMTg
 
 ##### <a id="U01DA046077" href="https://ratgenes.org/research-projects-u01da046077/">U01DA046077</a>: Identification of Genetic Features of Delay Discounting Using a Heterogeneous Stock Rat Model
 
 - Investigators: Suzanne Mitchell and Robert Hitzemann, OHSU
 - Prior experience/treatment: Behavior testing - delay discounting
 - Sex ratio: 100 Female, 100 Male
+- Tissues: BLA, NAcc, PL
 
 ### Visualizations
 

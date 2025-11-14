@@ -6,12 +6,6 @@ layout: base
 
 <link
   rel="stylesheet"
-  href="https://use.fontawesome.com/releases/v5.3.1/css/all.css"
-  integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU"
-  crossorigin="anonymous"
-/>
-<link
-  rel="stylesheet"
   href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css"
   crossorigin="anonymous"
 />
@@ -49,8 +43,7 @@ layout: base
   <p>
     <em>
       If the gene is expressed in very few samples in a tissue, it may not be
-      plotted below, even if it is labeled as "Expressed" in that tissue at the
-      top of this page.
+      plotted below.
     </em>
   </p>
   <div id="gene-expr-vplot" style="max-width: 800px"></div>
@@ -65,30 +58,30 @@ layout: base
 
   <hr class="my-4" />
 
-  <h5>Significant cis-eQTLs in any tissue</h5>
+  <h5>cis-eQTLs</h5>
   <p>
     <em>
-      Conditionally independent. Top eSNP shown per eQTL, randomly chosen among
-      the top eSNPs in case of ties.
+      Conditionally independent per tissue. Top eSNP shown per eQTL, randomly
+      chosen among the top eSNPs in case of ties.
     </em>
   </p>
   <table id="eqtl-table"></table>
 
   <hr class="my-4" />
 
-  <h5>All significantly associated cis-window SNPs for the above genes</h5>
+  <h5>All significant cis-window eSNPs</h5>
   <table id="eqtl-all-table"></table>
 
-  <!-- <hr class="my-4" />
+  <hr class="my-4" />
 
-  <h5>Significant cis-sQTLs in any tissue</h5>
+  <h5>cis-xQTLs</h5>
   <p>
     <em>
-      Conditionally independent. Top sSNP shown per sQTL, randomly chosen among
-      the top sSNPs in case of ties.
+      Conditionally independent across modalities per tissue. Top SNP shown per
+      xQTL, randomly chosen among the top SNPs in case of ties.
     </em>
   </p>
-  <table id="sqtl-table"></table> -->
+  <table id="xqtl-table"></table>
 
   <br />
 </div>
@@ -101,6 +94,33 @@ layout: base
 <script src="/assets/js/gene-expression-violin-plot.bundle.min.js"></script>
 
 <script>
+  const sigDigitColumns = new Set(["pValueBeta", "log2aFC", "pValue", "nes"]);
+  const scientificNotationColumns = new Set(["pValueBeta", "pValue"]);
+
+  function formatSignificantDigits(value, useScientific) {
+    if (value === null || value === undefined || value === "") {
+      return value;
+    }
+    var num = Number(value);
+    if (!Number.isFinite(num)) {
+      return value;
+    }
+    if (useScientific) {
+      return num.toExponential(2);
+    }
+    return num.toPrecision(3);
+  }
+
+  function formatCellValue(column, value) {
+    if (sigDigitColumns.has(column)) {
+      return formatSignificantDigits(
+        value,
+        scientificNotationColumns.has(column)
+      );
+    }
+    return value;
+  }
+
   function loadGene(info) {
     $("#gene-title").html(`Gene: <i>${info.geneId}</i>`);
     var desc = `${info.description}<br>${info.chromosome}:${info.start}-${info.end} (${info.strand})`;
@@ -152,13 +172,14 @@ layout: base
           "variantId",
           "ref",
           "alt",
-          "pval_beta",
-          "log2_aFC",
+          "pValueBeta",
+          "log2aFC",
         ];
         $(data["eqtl"]).each(function (i, rowData) {
           var row = $("<tr></tr>");
           $(cols).each(function (j, col) {
-            row.append($(`<td>${rowData[col]}</td>`));
+            var displayValue = formatCellValue(col, rowData[col]);
+            row.append($(`<td>${displayValue}</td>`));
           });
           $("#eqtl-table").append(row);
         });
@@ -174,13 +195,14 @@ layout: base
       url: `/api/v4/singleTissueEqtl?geneId=${info.geneId}`,
       success: function (data) {
         $("#eqtl-all-table").append(
-          "<thead><tr><th>Tissue</th><th>Variant ID</th><th>P-Value</th><th>NES</th></tr></thead><tbody>"
+          "<thead><tr><th>Tissue</th><th>Variant ID</th><th>Nominal P-Value</th><th>Norm. Effect Size</th></tr></thead><tbody>"
         );
         var cols = ["tissueSiteDetailId", "variantId", "pValue", "nes"];
         $(data["singleTissueEqtl"]).each(function (i, rowData) {
           var row = $("<tr></tr>");
           $(cols).each(function (j, col) {
-            row.append($(`<td>${rowData[col]}</td>`));
+            var displayValue = formatCellValue(col, rowData[col]);
+            row.append($(`<td>${displayValue}</td>`));
           });
           $("#eqtl-all-table").append(row);
         });
@@ -191,34 +213,36 @@ layout: base
       },
     });
 
-    //   $.ajax({
-    //     dataType: "json",
-    //     url: `/api/v4/sqtl?geneId=${info.geneId}`,
-    //     success: function (data) {
-    //       $("#sqtl-table").append(
-    //         "<thead><tr><th>Tissue</th><th>Splice Junction ID</th><th>Representative Variant ID</th><th>Ref</th><th>Alt</th><th>Adjusted P-Value</th></tr></thead><tbody>"
-    //       );
-    //       var cols = [
-    //         "tissueSiteDetailId",
-    //         "phenotypeId",
-    //         "variantId",
-    //         "ref",
-    //         "alt",
-    //         "pval_beta",
-    //       ];
-    //       $(data["sqtl"]).each(function (i, rowData) {
-    //         var row = $("<tr></tr>");
-    //         $(cols).each(function (j, col) {
-    //           row.append($(`<td>${rowData[col]}</td>`));
-    //         });
-    //         $("#sqtl-table").append(row);
-    //       });
-    //       $("#sqtl-table").append("</tbody>");
-    //       $("#sqtl-table").DataTable({
-    //         order: [[5, "asc"]], // sort by p-value
-    //       });
-    //     },
-    //   });
+    $.ajax({
+      dataType: "json",
+      url: `/api/v4/xqtl?geneId=${info.geneId}`,
+      success: function (data) {
+        $("#xqtl-table").append(
+          "<thead><tr><th>Tissue</th><th>Modality</th><th>Phenotype ID</th><th>Representative Variant ID</th><th>Ref</th><th>Alt</th><th>Adjusted P-Value</th></tr></thead><tbody>"
+        );
+        var cols = [
+          "tissueSiteDetailId",
+          "modality",
+          "phenotypeId",
+          "variantId",
+          "ref",
+          "alt",
+          "pValueBeta",
+        ];
+        $(data["xqtl"]).each(function (i, rowData) {
+          var row = $("<tr></tr>");
+          $(cols).each(function (j, col) {
+            var displayValue = formatCellValue(col, rowData[col]);
+            row.append($(`<td>${displayValue}</td>`));
+          });
+          $("#xqtl-table").append(row);
+        });
+        $("#xqtl-table").append("</tbody>");
+        $("#xqtl-table").DataTable({
+          order: [[5, "asc"]], // sort by p-value
+        });
+      },
+    });
   }
 
   $(document).ready(function () {

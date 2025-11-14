@@ -129,16 +129,19 @@ def load_eqtls(fname):
             "tissue": "tissueSiteDetailId",
             "gene_id": "geneId",
             "variant_id": "variantId",
+            "pval_beta": "pValueBeta",
+            "log2_aFC": "log2aFC",
         }
     )
     return eqtls
 
 
-def load_sqtls(fname):
-    sqtls = pd.read_csv(fname, sep="\t")
-    sqtls = sqtls[
+def load_xqtls(fname):
+    xqtls = pd.read_csv(fname, sep="\t")
+    xqtls = xqtls[
         [
             "tissue",
+            "modality",
             "phenotype_id",
             "gene_id",
             "variant_id",
@@ -147,15 +150,16 @@ def load_sqtls(fname):
             "pval_beta",
         ]
     ]
-    sqtls = sqtls.rename(
+    xqtls = xqtls.rename(
         columns={
             "tissue": "tissueSiteDetailId",
             "phenotype_id": "phenotypeId",
             "gene_id": "geneId",
             "variant_id": "variantId",
+            "pval_beta": "pValueBeta",
         }
     )
-    return sqtls
+    return xqtls
 
 
 df = pd.read_csv("../data/v4/tissue_info.v4.tsv", sep="\t")
@@ -195,6 +199,7 @@ top_assoc = pd.read_csv(
 )
 top_assoc = top_assoc[["pval_nominal_threshold"]]
 eqtls = load_eqtls("../data/v4/eqtl/eqtls_indep.v4_rn8.tsv")
+xqtls = load_xqtls("../data/v4/xqtl/xqtls_indep.cross_modality.v4_rn8.tsv")
 
 api = Flask(__name__)
 CORS(api)
@@ -326,14 +331,6 @@ def single_tissue_eqtl():
     return jsonify({"singleTissueEqtl": info})
 
 
-@api.route("/api/v4/sqtl", methods=["GET"])
-def sqtl():
-    gene = request.args.get("geneId")
-    d = sqtls.loc[sqtls["geneId"] == gene, :]
-    info = d.to_dict(orient="records")
-    return jsonify({"sqtl": info})
-
-
 @api.route("/api/v4/tissueInfo", methods=["GET"])
 def tissue_info():
     return jsonify({"tissueInfo": tissueInfo})
@@ -371,6 +368,14 @@ def variant():
         }
         infos.append(info)
     return jsonify({"variant": infos})
+
+
+@api.route("/api/v4/xqtl", methods=["GET"])
+def xqtl():
+    gene = request.args.get("geneId")
+    d = xqtls.loc[xqtls["geneId"] == gene, :]
+    info = d.to_dict(orient="records")
+    return jsonify({"xqtl": info})
 
 
 if __name__ == "__main__":
