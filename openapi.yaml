@@ -17,15 +17,14 @@ tags:
     description: Information on tissues, genes, and variants
   - name: expression
     description: Gene expression data
-  - name: eQTL
-    description: Data on gene-variant associations
-  - name: sQTL
-    description: Data on splice-variant associations
+  - name: xQTL
+    description: Data on RNA phenotype-variant associations
 paths:
   /dyneqtl:
     get:
       tags:
-        - eQTL
+        - xQTL
+      summary: Dynamic eQTL for one gene-variant pair
       description: Fetch information for one gene-variant pair in one tissue
       parameters:
         - name: geneId
@@ -48,7 +47,7 @@ paths:
           required: true
           schema:
             type: string
-            example: chr10:104362850
+            example: chr10:100826333
       responses:
         "200":
           description: Success
@@ -59,18 +58,12 @@ paths:
                 properties:
                   alt:
                     type: string
-                    example: A
+                    example: T
                   data:
                     type: array
                     items:
                       type: number
-                    example:
-                      [
-                        -1.11134883833383,
-                        -0.314562734207873,
-                        0.556543703618366,
-                        0.522265760640944,
-                      ]
+                    example: [2.2338, 3.78302, 3.71887, 3.05015, 2.46061]
                   geneId:
                     type: string
                     example: Cd300lf
@@ -78,38 +71,39 @@ paths:
                     type: array
                     items:
                       type: integer
-                    example: [1, 0, 2, 1]
+                    example: [1, 1, null, 1, 0]
                   hetCount:
                     type: integer
-                    example: 34
+                    example: 35
                   homoAltCount:
                     type: integer
-                    example: 17
+                    example: 16
                   homoRefCount:
                     type: integer
-                    example: 30
+                    example: 27
                   maf:
                     type: number
-                    example: 0.41975308641975306
+                    example: 0.42948717948717946
                   pValue:
                     type: number
-                    example: 0.0000203971
+                    example: 8.43005e-08
                   pValueThreshold:
                     type: number
-                    example: 0.00220875
+                    example: 0.00172939
                   ref:
                     type: string
-                    example: G
+                    example: C
                   tissueSiteDetailId:
                     type: string
                     example: IL
                   variantId:
                     type: string
-                    example: chr10:104362850
+                    example: chr10:100826333
   /eqtl:
     get:
       tags:
-        - eQTL
+        - xQTL
+      summary: Conditionally independent cis-eQTLs by gene
       description: Fetch conditionally independent cis-eQTLs in any tissue for a gene
       parameters:
         - name: geneId
@@ -138,12 +132,12 @@ paths:
                         geneId:
                           type: string
                           example: Cd300lf
-                        log2_aFC:
+                        log2aFC:
                           type: number
-                          example: 0.401466
-                        pval_beta:
+                          example: 0.65925
+                        pValueBeta:
                           type: number
-                          example: 0.000715545
+                          example: 8.05017e-06
                         ref:
                           type: string
                           example: C
@@ -152,11 +146,12 @@ paths:
                           example: IL
                         variantId:
                           type: string
-                          example: chr10:104378687
+                          example: chr10:100826333
   /exon:
     get:
       tags:
         - reference
+      summary: Exon annotations for a gene
       description: Fetch a gene's exons
       parameters:
         - name: geneId
@@ -184,7 +179,7 @@ paths:
                           example: chr1
                         end:
                           type: integer
-                          example: 103687425
+                          example: 100875111
                         exonId:
                           type: string
                           example: Cd300lf_1
@@ -199,7 +194,7 @@ paths:
                           example: Cd300lf
                         start:
                           type: integer
-                          example: 103687126
+                          example: 100874927
                         strand:
                           type: string
                           enum: ["-", "+"]
@@ -211,6 +206,7 @@ paths:
     get:
       tags:
         - reference
+      summary: Metadata for one or more genes
       description: Fetch metadata for one or more genes
       parameters:
         - name: geneId
@@ -239,39 +235,13 @@ paths:
                       properties:
                         chromosome:
                           type: string
-                          example: chr1
+                          example: chr10
                         description:
                           type: string
                           example: Cd300 molecule-like family member F
                         end:
                           type: integer
-                          example: 103687425
-                        statusInTissue:
-                          type: array
-                          items:
-                            type: object
-                            properties:
-                              tissueSiteDetailId:
-                                type: string
-                                example: IL
-                              expressed:
-                                type: boolean
-                                example: true
-                              testedEqtl:
-                                type: boolean
-                                example: true
-                              eqtl:
-                                type: boolean
-                                example: true
-                              altSplice:
-                                type: boolean
-                                example: true
-                              testedSqtl:
-                                type: boolean
-                                example: true
-                              sqtl:
-                                type: boolean
-                                example: true
+                          example: 100875111
                         geneId:
                           type: string
                           example: Cd300lf
@@ -280,17 +250,35 @@ paths:
                           example: true
                         start:
                           type: string
-                          example: 103670027
+                          example: 100858924
+                        statusInTissue:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              eqtl:
+                                type: boolean
+                                example: true
+                              expressed:
+                                type: boolean
+                                example: true
+                              testedEqtl:
+                                type: boolean
+                                example: true
+                              tissueSiteDetailId:
+                                type: string
+                                example: IL
                         strand:
                           type: string
                           example: "-"
                         tss:
                           type: integer
-                          example: 103687425
+                          example: 100875111
   /geneExpression:
     get:
       tags:
         - expression
+      summary: Per-sample expression for a gene across tissues
       description: Fetch per-sample expression (TPM) for a gene across all tissues
       parameters:
         - name: geneId
@@ -317,10 +305,10 @@ paths:
                           type: array
                           items:
                             type: number
-                          example: [3.21, 4.56, 1.23, 2.34]
+                          example: [3.33544, 2.679, 4.03568, 2.18627]
                         datasetId:
                           type: string
-                          example: ratgtex_v3
+                          example: ratgtex_v4
                         geneId:
                           type: string
                           example: Cd300lf
@@ -338,6 +326,7 @@ paths:
     get:
       tags:
         - expression
+      summary: Median expression for genes in selected tissues
       description: Fetch median expression (TPM) for one or more genes in one or more tissues
       parameters:
         - name: geneId
@@ -375,10 +364,10 @@ paths:
                     properties:
                       gene:
                         type: string
-                        example: "((Polr3k:209.196,Rtel1:209.196):759.14,Eno1:968.336);"
+                        example: "((Rtel1:233.244,Polr3k:233.244):1054.57,Eno1:1287.81);"
                       tissue:
                         type: string
-                        example: "((IL:34.6518,LHb:34.6518):191.47,NAcc:226.121);"
+                        example: "((IL:12.7061,LHb:12.7061):291.773,NAcc:304.479);"
                   medianGeneExpression:
                     type: array
                     items:
@@ -389,62 +378,16 @@ paths:
                           example: Rtel1
                         median:
                           type: number
-                          example: 134.87
+                          example: 22.957
                         tissueSiteDetailId:
                           type: string
                           example: IL
   /singleTissueEqtl:
     get:
       tags:
-        - eQTL
+        - xQTL
+      summary: Significant single-tissue cis-variants for a gene
       description: Fetch all significant cis-variants in all tissues for a gene
-      parameters:
-        - name: geneId
-          in: query
-          description: Gene ID
-          required: true
-          schema:
-            type: string
-            example: Card19
-      responses:
-        "200":
-          description: Success
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  singleTissueEqtl:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        chromosome:
-                          type: string
-                          example: chr1
-                        geneId:
-                          type: string
-                          example: Card19
-                        nes:
-                          type: number
-                          example: 1.19669
-                        pValue:
-                          type: number
-                          example: 0.00121899
-                        pos:
-                          type: integer
-                          example: 15221388
-                        tissueSiteDetailId:
-                          type: string
-                          example: NAcc
-                        variantId:
-                          type: string
-                          example: chr17:15221388
-  /sqtl:
-    get:
-      tags:
-        - sQTL
-      description: Fetch conditionally independent cis-sQTLs in any tissue for a gene
       parameters:
         - name: geneId
           in: query
@@ -461,36 +404,37 @@ paths:
               schema:
                 type: object
                 properties:
-                  eqtl:
+                  singleTissueEqtl:
                     type: array
                     items:
                       type: object
                       properties:
-                        alt:
+                        chromosome:
                           type: string
-                          example: T
+                          example: chr10
                         geneId:
                           type: string
                           example: Cd300lf
-                        phenotypeId:
-                          type: string
-                          example: chr10:103673824:103677398:clu_5465_-:Cd300lf
-                        pval_beta:
+                        nes:
                           type: number
-                          example: 0.000715545
-                        ref:
-                          type: string
-                          example: C
+                          example: 0.592446
+                        pValue:
+                          type: number
+                          example: 2.111e-10
+                        pos:
+                          type: integer
+                          example: 99876736
                         tissueSiteDetailId:
                           type: string
-                          example: IL
+                          example: BLA
                         variantId:
                           type: string
-                          example: chr10:104378687
+                          example: chr10:99876736
   /tissueInfo:
     get:
       tags:
         - reference
+      summary: Metadata for all tissues
       description: Fetch metadata for all tissues
       responses:
         "200":
@@ -513,25 +457,25 @@ paths:
                           example: "55,126,184"
                         dataset:
                           type: string
-                          example: ratgtex_v3_round10_5
+                          example: ratgtex_v4_round11_1
                         datasetId:
                           type: string
-                          example: ratgtex_v3
+                          example: ratgtex_v4
                         eGeneCount:
                           type: integer
-                          example: 3949
+                          example: 5475
                         expressedGeneCount:
                           type: integer
-                          example: 16563
+                          example: 24107
                         hasEgenes:
                           type: boolean
                           example: true
                         rnaSeqAndGenotypeSampleCount:
                           type: integer
-                          example: 81
+                          example: 83
                         rnaSeqSampleCount:
                           type: integer
-                          example: 81
+                          example: 83
                         tissueSite:
                           type: string
                           example: Brain
@@ -548,6 +492,7 @@ paths:
     get:
       tags:
         - expression
+      summary: Top 50 genes by median expression in a tissue
       description: Fetch 50 genes with highest median expression in a tissue
       parameters:
         - name: filterMtGene
@@ -577,15 +522,18 @@ paths:
                     items:
                       type: object
                       properties:
+                        chromosome:
+                          type: string
+                          example: chr11
                         datasetId:
                           type: string
-                          example: ratgtex_v3
+                          example: ratgtex_v4
                         geneId:
                           type: string
-                          example: AY172581.9
+                          example: LOC120093067
                         median:
                           type: number
-                          example: 6068.27
+                          example: 7700.68
                         tissueSiteDetailId:
                           type: string
                           example: IL
@@ -597,6 +545,7 @@ paths:
     get:
       tags:
         - reference
+      summary: Metadata for one or more variants
       description: Fetch information for one or more variants
       parameters:
         - name: variantId
@@ -607,7 +556,7 @@ paths:
             type: array
             items:
               type: string
-            example: [chr1:1675342, chr5:154001168]
+            example: [chr10:100826333, chr10:100955984]
           style: form
           explode: false
       responses:
@@ -625,16 +574,67 @@ paths:
                       properties:
                         alt:
                           type: string
-                          example: A
+                          example: T
                         chromosome:
                           type: string
-                          example: chr1
+                          example: chr10
                         pos:
                           type: integer
-                          example: 1675342
+                          example: 100826333
+                        ref:
+                          type: string
+                          example: C
+                        variantId:
+                          type: string
+                          example: chr10:100826333
+  /xqtl:
+    get:
+      tags:
+        - xQTL
+      summary: Conditionally independent cis-xQTLs by gene
+      description: Fetch conditionally independent cis-xQTLs in any tissue for a gene
+      parameters:
+        - name: geneId
+          in: query
+          description: Gene ID
+          required: true
+          schema:
+            type: string
+            example: Cd300lf
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  xqtl:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        alt:
+                          type: string
+                          example: A
+                        geneId:
+                          type: string
+                          example: Cd300lf
+                        modality:
+                          type: string
+                          example: splicing
+                        pValueBeta:
+                          type: number
+                          example: 3.72035e-15
+                        phenotypeId:
+                          type: string
+                          example: Cd300lf__chr10_100862967_100866541_clu_7827_-
                         ref:
                           type: string
                           example: G
+                        tissueSiteDetailId:
+                          type: string
+                          example: pVTA
                         variantId:
                           type: string
-                          example: chr1:1675342
+                          example: chr10:101009133

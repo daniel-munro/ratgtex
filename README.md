@@ -26,6 +26,15 @@ rollup -c src/rollup/rollup.expression-map.config.js
 
 This will recompile and generate a new bundled visualization script in the directory `assets/js/`.
 
+### API docs
+
+Render the API doc HTML page from openapi.yaml (and add frontmatter specifying page URL):
+
+```shell
+npx @redocly/cli build-docs openapi.yaml -o pages/about_api.html
+sed -i '' '1s|^|---\npermalink: /about/api/\n---\n|' pages/about_api.html
+```
+
 ### Dependencies
 
 RatGTEx Visualizations is distributed, in part, under and subject to the provisions of licenses for:
