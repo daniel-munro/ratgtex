@@ -2,6 +2,7 @@
 permalink: /predict/
 layout: base
 title: Predicted expression
+version: v4
 ---
 
 <link
@@ -10,18 +11,24 @@ title: Predicted expression
   crossorigin="anonymous"
 />
 
-<h1>Genetically predicted gene expression</h1>
+<h1>Genetically predicted RNA phenotypes</h1>
 
 <p>
-  cis-eQTLs can be used to predict gene expression levels from genotypes. These
-  values estimate log-expression relative to the scenario of all reference
-  alleles, rather than absolute expression levels, but can be used to:
+  cis-genetic associations can be used to predict quantitative RNA phenotypes
+  such as gene expression levels and isoform ratios. These values estimate
+  z-scores of the phenotypes, rather than absolute levels, but can be used to:
 </p>
 
 <ul>
   <li>
-    Stratify individuals by a gene's genetically predicted expression to test
-    hypotheses about the gene's role in observed traits.
+    Stratify individuals by a gene's genetically predicted expression or other
+    RNA phenotype to test hypotheses about the gene's role in observed traits.
+    See
+    <a
+      href="https://www.biorxiv.org/content/10.1101/2025.10.14.682432.abstract"
+    >
+      Campo et al. 2025 (preprint)
+    </a>
   </li>
   <li>
     Test whether observed gene expression differences in groups with divergent
@@ -34,38 +41,43 @@ title: Predicted expression
 </ul>
 
 <p>
-  We provide predicted expression for <strong>12,225 genes</strong> for all rats
-  genotyped by our NIDA center (Round 10.5, N=20,484). These are predictions for
-  average expression in the brain, using cis-eQTLs for whole brain hemisphere
-  tissue, and they include only genes that have one or more significant eQTLs
-  and positive correlation between predicted and observed expression in the
-  training data.
+  We provide predictions for <strong>124,502</strong> unique RNA phenotypes for
+  <strong>19,885 genes</strong> for all rats genotyped by our NIDA center (Round
+  11.2, N=24,722). These include only phenotypes that are heritable (P&le;0.01)
+  in the indicated tissue.
+</p>
+
+<h3>Download predictions</h3>
+
+<table class="download-matrix">
+  <tbody>
+    {% assign modalities = site.data.modalities %} {% for modality in modalities
+    %}
+    <tr>
+      <td>{{ modality.name }}</td>
+      {% for tissue in site.data.versions[page.version].tissues %}
+      <td>
+        <a
+          href="/data/predict/pred-round11_2-{{ tissue.id }}-{{ modality.id }}.tsv.gz"
+          title="{{ tissue.name }}"
+          download
+        >
+          {{ tissue.id }}
+        </a>
+      </td>
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<p>
+  The table below shows per-phenotype heritability estimates (h<sup>2</sup>) and
+  cross-validated model accuracy for heritable RNA phenotypes in each tissue.
 </p>
 
 <p>
-  <a
-    class="btn btn-primary"
-    href="/data/predict/pred_expr-round10_5-Brain.tsv.gz"
-    download
-  >
-    Download predicted expression (91 MB)
-  </a>
-</p>
-
-<p>
-  The table below gives accuracy of the predictions in terms of correlation
-  between predicted and observed expression levels. This is assessed using the
-  same whole brain hemisphere dataset that was used for the cis-eQTL models, so
-  it is the best-case accuracy. The r<sup>2</sup> values represent the
-  cis-genetic proportion of expression variance. Genes with blank r/r<sup
-    >2</sup
-  >
-  values did not have sufficient cis-regulatory variation to accurately predict
-  expression levels.
-</p>
-
-<p>
-  <a href="/data/predict/expr_pred_accuracy-Brain.tsv">Download TSV</a>
+  <a href="/data/predict/phenotype_stats.tsv.gz">Download TSV (gzip)</a>
   <span class="ms-2 text-muted" id="row-summary"></span>
   <span id="loading" class="ms-3 text-muted">Loading…</span>
   <span id="error" class="ms-3 text-danger" style="display: none"></span>
@@ -76,7 +88,7 @@ title: Predicted expression
   </noscript>
 </p>
 
-<div id="table-container" style="display: none; max-width: 800px">
+<div id="table-container" style="display: none; overflow-x: auto">
   <table id="predict-table" class="display" width="100%"></table>
   <p class="mt-2 text-muted">
     Search the table using the box above. Click column headers to sort.
@@ -84,16 +96,21 @@ title: Predicted expression
 </div>
 
 <script
+  src="https://cdn.jsdelivr.net/npm/pako@2.1.0/dist/pako.min.js"
+  crossorigin="anonymous"
+></script>
+<script
   src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"
   crossorigin="anonymous"
 ></script>
 <script>
   (async function () {
-    const url = "/data/predict/expr_pred_accuracy-Brain.tsv";
+    const url = "/data/predict/phenotype_stats.tsv.gz";
     const loadingEl = document.getElementById("loading");
     const errorEl = document.getElementById("error");
     const tableContainer = document.getElementById("table-container");
     const rowSummary = document.getElementById("row-summary");
+    const GENE_COL_INDEX = 2;
 
     function setError(msg) {
       if (loadingEl) loadingEl.style.display = "none";
@@ -103,42 +120,78 @@ title: Predicted expression
       }
     }
 
-    try {
-      const resp = await fetch(url, { cache: "no-store" });
+    function parseNumber(value) {
+      const num = parseFloat(value);
+      return Number.isFinite(num) ? num : null;
+    }
+
+    async function loadTextFile(tUrl) {
+      const resp = await fetch(tUrl, { cache: "no-store" });
       if (!resp.ok) {
-        throw new Error("HTTP " + resp.status + " while fetching " + url);
+        throw new Error("HTTP " + resp.status + " while fetching " + tUrl);
       }
-      const text = await resp.text();
-      // Parse TSV
+      const buffer = await resp.arrayBuffer();
+      const bytes = new Uint8Array(buffer);
+      const isGzip =
+        bytes.length >= 2 && bytes[0] === 0x1f && bytes[1] === 0x8b;
+      const decoder = new TextDecoder("utf-8");
+      if (isGzip) {
+        if (typeof pako === "undefined" || !pako.ungzip) {
+          throw new Error("Unable to decompress gzip data.");
+        }
+        return decoder.decode(pako.ungzip(bytes));
+      }
+      return decoder.decode(bytes);
+    }
+
+    try {
+      const text = await loadTextFile(url);
       const lines = text.trim().split(/\r?\n/);
       if (!lines.length) {
         throw new Error("Empty file");
       }
-      // Remove header if present
+
       const header = lines[0].split("\t");
-      let startIdx = 0;
-      if (
-        header.length >= 3 &&
-        /gene/i.test(header[0]) &&
-        /pearson/i.test(header[1])
-      ) {
-        startIdx = 1;
+      const colIndex = header.reduce((acc, name, idx) => {
+        acc[name.trim()] = idx;
+        return acc;
+      }, {});
+
+      const requiredColumns = [
+        "tissue",
+        "modality",
+        "gene_id",
+        "phenotype_id",
+        "hsq",
+        "hsq_se",
+        "hsq_pval",
+        "model_type",
+        "model_cv_r2",
+        "model_cv_pval",
+      ];
+      const missingColumn = requiredColumns.find((key) => !(key in colIndex));
+      if (missingColumn) {
+        throw new Error("Missing expected column: " + missingColumn);
       }
+
       const data = [];
-      for (let i = startIdx; i < lines.length; i++) {
+      for (let i = 1; i < lines.length; i++) {
         const line = lines[i];
         if (!line || !line.trim()) continue;
         const parts = line.split("\t");
-        if (parts.length < 3) continue;
-        const gene = parts[0];
-        const pearson = parseFloat(parts[1]);
-        const r2 = parseFloat(parts[2]);
-        // Preserve NaN as blank strings for display/sorting stability
-        data.push([
-          gene,
-          isFinite(pearson) ? pearson : null,
-          isFinite(r2) ? r2 : null,
-        ]);
+        const row = [
+          parts[colIndex["tissue"]] || "",
+          parts[colIndex["modality"]] || "",
+          parts[colIndex["gene_id"]] || "",
+          parts[colIndex["phenotype_id"]] || "",
+          parseNumber(parts[colIndex["hsq"]]),
+          parseNumber(parts[colIndex["hsq_se"]]),
+          parseNumber(parts[colIndex["hsq_pval"]]),
+          parts[colIndex["model_type"]] || "",
+          parseNumber(parts[colIndex["model_cv_r2"]]),
+          parseNumber(parts[colIndex["model_cv_pval"]]),
+        ];
+        data.push(row);
       }
 
       if (loadingEl) loadingEl.style.display = "none";
@@ -146,45 +199,41 @@ title: Predicted expression
 
       if (rowSummary) {
         rowSummary.textContent = data.length
-          ? `Loaded ${data.length.toLocaleString()} genes`
+          ? `Loaded ${data.length.toLocaleString()} phenotypes`
           : "";
       }
 
-      // Custom search function for exact matching on Gene field
-      $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
-        // Only apply to our table
-        if (settings.nTable.id !== "predict-table") {
-          return true;
-        }
-
-        const searchTerm = $(".dataTables_filter input").val();
-
-        // If search is empty, show all rows
-        if (!searchTerm || searchTerm.trim() === "") {
-          return true;
-        }
-
-        // Check for case-insensitive exact match on Gene field (column 0)
-        const gene = data[0];
-        return gene.toLowerCase() === searchTerm.toLowerCase();
+      $.fn.dataTable.ext.search.push(function (settings, dataRow) {
+        if (settings.nTable.id !== "predict-table") return true;
+        const input = $(".dataTables_filter input").val();
+        if (!input || input.trim() === "") return true;
+        const normalizedSearch = input.toLowerCase();
+        const gene = (dataRow[GENE_COL_INDEX] || "").toLowerCase();
+        return gene === normalizedSearch;
       });
 
-      // Initialize DataTable
       $("#predict-table").DataTable({
         data,
         columns: [
+          { title: "Tissue", className: "dt-nowrap" },
+          { title: "Modality", className: "dt-nowrap" },
           { title: "Gene", className: "dt-nowrap" },
-          { title: "Pearson r", className: "dt-right" },
-          { title: "r<sup>2</sup>", className: "dt-right" },
+          { title: "Phenotype", className: "dt-nowrap" },
+          { title: "h<sup>2</sup>", className: "dt-right" },
+          { title: "h<sup>2</sup> SE", className: "dt-right" },
+          { title: "h<sup>2</sup> p-value", className: "dt-right" },
+          { title: "Model type", className: "dt-nowrap" },
+          { title: "CV r<sup>2</sup>", className: "dt-right" },
+          { title: "CV p-value", className: "dt-right" },
         ],
-        order: [[1, "desc"]],
+        order: [[8, "desc"]],
         pageLength: 10,
         deferRender: true,
         autoWidth: false,
         responsive: true,
-        columnDefs: [{ targets: [1, 2], type: "num" }],
+        columnDefs: [{ targets: [4, 5, 6, 8, 9], type: "num" }],
         language: {
-          search: "Search (exact match):",
+          search: "Search gene (exact match):",
         },
       });
     } catch (err) {
