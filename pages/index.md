@@ -13,7 +13,7 @@ This portal provides a multimodal collection of RNA phenotypes (gene expression,
 
 The data and visualizations on this site are for the RatGTEx v4 release. The main changes from v3 are:
 
-- Three tissue datasets from one new project have been added: a new brain region, agranular insular cortex (IC), and additional samples for existing brain regions, nucleus accumbens core (NAcc) and posterior ventral tegmental area (pVTA). Adipose and liver tissues have been removed temporarily due to genotype availability.
+- Three tissue datasets from one new project have been added: a new brain region, agranular insular cortex (IC), and additional samples for existing brain regions, nucleus accumbens core (NAcc) and posterior ventral tegmental area (pVTA).
 - [Pantry](https://pantry.pejlab.org) is now used to extract RNA phenotypes and perform xQTL mapping, providing data for six RNA modalities, compared to only gene expression levels and alternative splicing in the previous versions.
 - The genome assembly has been updated from `mRatBN7.2` to `GRCr8`.
 
@@ -27,17 +27,19 @@ Data from previous versions are still available from the [Download](/download/) 
         <tr><th>Tissue</th><th>Abbreviation</th><th>Samples</th><th>Originating studies</th></tr>
     </thead>
     <tbody>
+        <tr><td>Adipose</td><td>Adipose</td><td>411</td><td><a href="#R01DK106386">R01DK106386</a></td></tr>
         <tr><td>Agranular insular cortex</td><td>IC</td><td>148</td><td><a href="#P50DA037844-y6-10-proj1">P50DA037844 Y6-10 Project 1</a></td></tr>
-        <tr><td>Basolateral amygdala</td><td>BLA</td><td>191</td><td><a href="#U01DA046077">U01DA046077</a></td></tr>
+        <tr><td>Basolateral amygdala</td><td>BLA</td><td>189</td><td><a href="#U01DA046077">U01DA046077</a></td></tr>
         <tr><td>Brain hemisphere</td><td>Brain</td><td>342</td><td><a href="#pilot-twas">Pilot: Creating the dataset for TWAS in HS rats</a></td></tr>
         <tr><td>Eye</td><td>Eye</td><td>53</td><td><a href="#R01EY021200">R01EY021200</a></td></tr>
         <tr><td>Infralimbic cortex</td><td>IL</td><td>83</td><td><a href="#P50DA037844-y1-5">P50DA037844 Y1-5</a></td></tr>
         <tr><td>Lateral habenula</td><td>LHb</td><td>82</td><td><a href="#P50DA037844-y1-5">P50DA037844 Y1-5</a></td></tr>
-        <tr><td>Nucleus accumbens core</td><td>NAcc</td><td>527*</td><td><a href="#P50DA037844-y1-5">P50DA037844 Y1-5</a> (77), <a href="#P50DA037844-y6-10-proj1">P50DA037844 Y6-10 Project 1</a> (143), <a href="#P50DA037844-y6-10-proj2">P50DA037844 Y6-10 Project 2</a> (159), <a href="#U01DA046077">U01DA046077</a> (193)</td></tr>
+        <tr><td>Liver</td><td>Liver</td><td>411</td><td><a href="#R01DK106386">R01DK106386</a></td></tr>
+        <tr><td>Nucleus accumbens core</td><td>NAcc</td><td>570*</td><td><a href="#P50DA037844-y1-5">P50DA037844 Y1-5</a> (77), <a href="#P50DA037844-y6-10-proj1">P50DA037844 Y6-10 Project 1</a> (143), <a href="#P50DA037844-y6-10-proj2">P50DA037844 Y6-10 Project 2</a> (159), <a href="#U01DA046077">U01DA046077</a> (191)</td></tr>
         <tr><td>Orbitofrontal cortex</td><td>OFC</td><td>82</td><td><a href="#P50DA037844-y1-5">P50DA037844 Y1-5</a></td></tr>
-        <tr><td>Prelimbic cortex</td><td>PL</td><td>406*</td><td><a href="#P50DA037844-y1-5">P50DA037844 Y1-5</a> (82), <a href="#P50DA037844-y6-10-proj2">P50DA037844 Y6-10 Project 2</a> (130), <a href="#U01DA046077">U01DA046077</a> (194)</td></tr>
+        <tr><td>Prelimbic cortex</td><td>PL</td><td>404*</td><td><a href="#P50DA037844-y1-5">P50DA037844 Y1-5</a> (82), <a href="#P50DA037844-y6-10-proj2">P50DA037844 Y6-10 Project 2</a> (130), <a href="#U01DA046077">U01DA046077</a> (192)</td></tr>
         <tr><td>Posterior ventral tegmental area</td><td>pVTA</td><td>293*</td><td><a href="#P50DA037844-y6-10-proj1">P50DA037844 Y6-10 Project 1</a> (141), <a href="#P50DA037844-y6-10-proj2">P50DA037844 Y6-10 Project 2</a> (152)</td></tr>
-        <tr><td>Rostromedial tegmental nucleus</td><td>RMTg</td><td>93</td><td><a href="#U01DA044468">U01DA044468</a></td></tr>
+        <tr><td>Rostromedial tegmental nucleus</td><td>RMTg</td><td>92</td><td><a href="#U01DA044468">U01DA044468</a></td></tr>
     </tbody>
 </table>
 
@@ -93,7 +95,7 @@ More info on the [ratgenes.org eQTL page](https://ratgenes.org/research-projects
 - Prior experience/treatment: Naive, normal diet
 - Sex ratio: All male
 - Age: 17 weeks
-- Tissues: Adipose, Liver (data releases v1-v3 only)
+- Tissues: Adipose, Liver
 
 ##### <a id="R01EY021200" href="https://reporter.nih.gov/project-details/10361394">R01EY021200</a>: Genetic Modulators of Glaucoma
 

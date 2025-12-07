@@ -94,10 +94,10 @@ def cis_pval(tissue, gene, variant):
         return None
 
 
-def single_tissue(gene):
+def all_gene_esnps(gene):
     """Return table of significant cis-eSNPs for a gene"""
-    with zipfile.ZipFile(f"../data/v4/eqtl/singleTissueEqtl.v4.zip", "r") as archive:
-        fname = f"singleTissueEqtl.v4/{gene}.txt"
+    with zipfile.ZipFile(f"../data/v4/eqtl/all_gene_esnps.v4.zip", "r") as archive:
+        fname = f"all_gene_esnps.v4/{gene}.txt"
         if fname in archive.namelist():
             d = pd.read_csv(archive.open(fname), sep="\t", dtype={"chromosome": str})
             d["geneId"] = gene
@@ -190,7 +190,7 @@ for tissue in tissues:
 vcf = {}
 for dset in set(dataset.values()):
     vcf[dset] = pysam.VariantFile(f"../data/v4/geno/{dset}.rn8.vcf.gz")
-ref_vcf = vcf["ratgtex_v4_round11_1"]
+ref_vcf = vcf["ratgtex_v4_round11_2"]
 
 exons = pd.read_csv("../data/v4/exon.v4.tsv", sep="\t", dtype={"chromosome": str})
 
@@ -321,7 +321,7 @@ def med_gene_exp():
 @api.route("/api/v4/singleTissueEqtl", methods=["GET"])
 def single_tissue_eqtl():
     gene = request.args.get("geneId")
-    d = single_tissue(gene)
+    d = all_gene_esnps(gene)
     if d is None:
         return jsonify({"singleTissueEqtl": []})
     # Format p-values to 3 decimal places

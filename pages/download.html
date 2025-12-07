@@ -135,19 +135,6 @@ site.data.versions[version].tissues %}
   A table of cis-eQTLs from all tissues.
 </p>
 
-<strong>All significant cis-eQTL variant-gene pairs</strong>
-
-<p>
-  {% for tissue in tissues %}
-  <a
-    href="/data/{{ version }}/eqtl/cis_qtl_signif.{{ tissue.id }}.{{ version }}_{{ genome }}.txt.gz"
-    title="{{ tissue.name }}"
-  >
-    {{ tissue.id }}
-  </a>
-  {% unless forloop.last %} • {% endunless %} {% endfor %}
-</p>
-
 <p>
   <strong>
     <a href="/data/{{ version }}/eqtl/top_assoc.{{ version }}_{{ genome }}.tsv">
@@ -167,7 +154,7 @@ arbitrary cutoff of p &lt; 1e-5. No significance testing was performed.
 <p>
   {% for tissue in tissues %}
   <a
-    href="/data/{{ version }}/eqtl/trans_qtl_pairs.{{ tissue.id }}.{{ version }}_{{ genome }}.txt.gz"
+    href="/data/{{ version }}/xqtl/trans_qtl_pairs.{{ tissue.id }}.expression.{{ version }}_{{ genome }}.txt.gz"
     title="{{ tissue.name }}"
   >
     {{ tissue.id }}
@@ -185,7 +172,7 @@ arbitrary cutoff of p &lt; 1e-5. No significance testing was performed.
   <a
     href="/data/{{ version }}/xqtl/xqtls_indep.cross_modality.{{ version }}_{{ genome }}.tsv"
   >
-    cross-modality mapped</a
+    Cross-modality mapped</a
   >
   <em style="color: gray">
     (conditionally independent across modalities per gene per tissue)
@@ -252,7 +239,7 @@ arbitrary cutoff of p &lt; 1e-5. No significance testing was performed.
 <h2>Other info</h2>
 
 <p>
-  <a href="/data/{{ version }}/geno/ratgtex_v4_round11_1.{{ genome }}.vcf.gz">
+  <a href="/data/{{ version }}/geno/ratgtex_v4_round11_2.{{ genome }}.vcf.gz">
     Genotypes
   </a>
 </p>

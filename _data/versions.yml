@@ -100,6 +100,8 @@ v3-unmerged:
 v4:
   genome: rn8
   tissues:
+    - id: Adipose
+      name: Adipose
     - id: BLA
       name: Basolateral amygdala
     - id: Brain
@@ -112,6 +114,8 @@ v4:
       name: Infralimbic cortex
     - id: LHb
       name: Lateral habenula
+    - id: Liver
+      name: Liver
     - id: NAcc
       name: Nucleus accumbens core
     - id: OFC
