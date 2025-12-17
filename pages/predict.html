@@ -43,7 +43,7 @@ version: v4
 <p>
   We provide predictions for <strong>124,502</strong> unique RNA phenotypes for
   <strong>19,885 genes</strong> for all rats genotyped by our NIDA center (Round
-  11.2, N=24,722). These include only phenotypes that are heritable (P&le;0.01)
+  11.2, N=24,722). These include only phenotypes that are heritable (P&lt;0.01)
   in the indicated tissue.
 </p>
 
@@ -70,6 +70,8 @@ version: v4
     {% endfor %}
   </tbody>
 </table>
+
+<br />
 
 <p>
   The table below shows per-phenotype heritability estimates (h<sup>2</sup>) and
@@ -106,11 +108,13 @@ version: v4
 <script>
   (async function () {
     const url = "/data/predict/phenotype_stats.tsv.gz";
+    const AUTOCOMPLETE_URL = "/data/v4/autocomplete.v4.json";
     const loadingEl = document.getElementById("loading");
     const errorEl = document.getElementById("error");
     const tableContainer = document.getElementById("table-container");
     const rowSummary = document.getElementById("row-summary");
     const GENE_COL_INDEX = 2;
+    const geneListPromise = loadGeneList();
 
     function setError(msg) {
       if (loadingEl) loadingEl.style.display = "none";
@@ -123,6 +127,97 @@ version: v4
     function parseNumber(value) {
       const num = parseFloat(value);
       return Number.isFinite(num) ? num : null;
+    }
+
+    async function loadGeneList() {
+      try {
+        const resp = await fetch(AUTOCOMPLETE_URL, { cache: "no-store" });
+        if (!resp.ok) {
+          throw new Error(
+            "HTTP " + resp.status + " fetching autocomplete data"
+          );
+        }
+        const json = await resp.json();
+        return Array.isArray(json) ? json : [];
+      } catch (err) {
+        console.warn("Failed to load gene autocomplete list", err);
+        return [];
+      }
+    }
+
+    function createGeneSet(genes) {
+      const set = new Set();
+      genes.forEach((gene) => {
+        if (typeof gene === "string" && gene) {
+          set.add(gene.toLowerCase());
+        }
+      });
+      return set;
+    }
+
+    function setupGeneAutocomplete({ tableInstance, tableEl, genes, geneSet }) {
+      if (!tableInstance || !tableEl || !genes.length) return;
+      const filterInput = tableEl
+        .closest(".dataTables_wrapper")
+        .find("div.dataTables_filter input[type='search']");
+      if (!filterInput.length) return;
+
+      // Disable default live search; filtering happens only after autocomplete selection.
+      filterInput.off(".DT");
+
+      const defaultEmptyText =
+        (tableInstance.settings &&
+          tableInstance.settings()[0] &&
+          tableInstance.settings()[0].oLanguage.sZeroRecords) ||
+        "No matching records found";
+
+      filterInput.attr("placeholder", "Gene symbol");
+
+      function updateGeneFeedback() {
+        const currentValue = (filterInput.val() || "").trim();
+        const visibleRows = tableInstance
+          .rows({ filter: "applied" })
+          .data().length;
+        const emptyCell = tableEl.find("td.dataTables_empty");
+        if (!emptyCell.length) return;
+        if (
+          currentValue &&
+          visibleRows === 0 &&
+          geneSet.has(currentValue.toLowerCase())
+        ) {
+          emptyCell.text(
+            `${currentValue} is a valid gene but has no heritable phenotypes in this release.`
+          );
+        } else {
+          emptyCell.text(defaultEmptyText);
+        }
+      }
+
+      function applyGeneFilter(geneValue) {
+        filterInput.val(geneValue || "");
+        tableInstance.draw();
+      }
+
+      filterInput.autocomplete({
+        source: function (request, response) {
+          const results = $.ui.autocomplete.filter(genes, request.term || "");
+          response(results.slice(0, 10));
+        },
+        select: function (event, ui) {
+          const selectedGene = (ui.item && ui.item.value) || "";
+          if (!selectedGene) return false;
+          applyGeneFilter(selectedGene);
+          return false;
+        },
+      });
+
+      filterInput.on("input", function () {
+        if (!this.value) {
+          applyGeneFilter("");
+        }
+      });
+
+      tableEl.on("draw.dt", updateGeneFeedback);
     }
 
     async function loadTextFile(tUrl) {
@@ -212,7 +307,8 @@ version: v4
         return gene === normalizedSearch;
       });
 
-      $("#predict-table").DataTable({
+      const tableEl = $("#predict-table");
+      const dataTable = tableEl.DataTable({
         data,
         columns: [
           { title: "Tissue", className: "dt-nowrap" },
@@ -233,8 +329,16 @@ version: v4
         responsive: true,
         columnDefs: [{ targets: [4, 5, 6, 8, 9], type: "num" }],
         language: {
-          search: "Search gene (exact match):",
+          search: "Search gene (select from list):",
         },
+      });
+
+      const genes = await geneListPromise;
+      setupGeneAutocomplete({
+        tableInstance: dataTable,
+        tableEl,
+        genes,
+        geneSet: createGeneSet(genes),
       });
     } catch (err) {
       console.error(err);
