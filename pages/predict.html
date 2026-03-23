@@ -24,10 +24,8 @@ version: v4
     Stratify individuals by a gene's genetically predicted expression or other
     RNA phenotype to test hypotheses about the gene's role in observed traits.
     See
-    <a
-      href="https://www.biorxiv.org/content/10.1101/2025.10.14.682432.abstract"
-    >
-      Campo et al. 2025 (preprint)
+    <a href="https://doi.org/10.1016/j.neuropharm.2026.110881">
+      Campo et al. 2026
     </a>
   </li>
   <li>
@@ -41,8 +39,8 @@ version: v4
 </ul>
 
 <p>
-  We provide predictions for <strong>124,502</strong> unique RNA phenotypes for
-  <strong>19,885 genes</strong> for all rats genotyped by our NIDA center (Round
+  We provide predictions for <strong>107,824</strong> unique RNA phenotypes for
+  <strong>19,796 genes</strong> for all rats genotyped by our NIDA center (Round
   11.2, N=24,722). These include only phenotypes that are heritable (P&lt;0.01)
   in the indicated tissue.
 </p>
@@ -134,7 +132,7 @@ version: v4
         const resp = await fetch(AUTOCOMPLETE_URL, { cache: "no-store" });
         if (!resp.ok) {
           throw new Error(
-            "HTTP " + resp.status + " fetching autocomplete data"
+            "HTTP " + resp.status + " fetching autocomplete data",
           );
         }
         const json = await resp.json();
@@ -186,7 +184,7 @@ version: v4
           geneSet.has(currentValue.toLowerCase())
         ) {
           emptyCell.text(
-            `${currentValue} is a valid gene but has no heritable phenotypes in this release.`
+            `${currentValue} is a valid gene but has no heritable phenotypes in this release.`,
           );
         } else {
           emptyCell.text(defaultEmptyText);

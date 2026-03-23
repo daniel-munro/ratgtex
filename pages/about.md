@@ -38,7 +38,7 @@ The [ratgtex-pipeline](https://github.com/daniel-munro/ratgtex-pipeline) reposit
 - RNA-seq reads mapped using [STAR](https://pubmed.ncbi.nlm.nih.gov/23104886/) 2.7.11b
 - Phenotyping:
   - TSS and polyA site usage quantified using [txrevise](https://pubmed.ncbi.nlm.nih.gov/30618377/) and [kallisto](https://pubmed.ncbi.nlm.nih.gov/27043002/)
-  - Expression levels and isoform ratios quantified using [kallistpo](https://pubmed.ncbi.nlm.nih.gov/27043002/)
+  - Expression levels and isoform ratios quantified using [kallisto](https://pubmed.ncbi.nlm.nih.gov/27043002/)
   - Intron excision ratios (alternative splicing) quantified using [RegTools](https://pubmed.ncbi.nlm.nih.gov/36949070/) and [LeafCutter](https://pubmed.ncbi.nlm.nih.gov/29229983/)
   - RNA stability quantified using [featureCounts](https://pubmed.ncbi.nlm.nih.gov/24227677/) to count exonic and intronic reads and using their ratio as a [model of mRNA stability](https://pubmed.ncbi.nlm.nih.gov/26098447/)
 - xQTL mapping:

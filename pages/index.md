@@ -9,7 +9,7 @@ layout: base
 
 This portal provides a multimodal collection of RNA phenotypes (gene expression, alternative splicing, etc.), xQTLs for those phenotypes, and TWAS results for multiple rat tissues. It is managed by the [NIDA Center of Excellence for Genetics, Genomics, and Epigenetics of Substance Use Disorders in Outbred Rats (P30DA060810)](https://ratgenes.org).
 
-### <span class="badge text-bg-success">Data Release v4</span>
+#### <span class="badge text-bg-success">Data Release v4</span>
 
 The data and visualizations on this site are for the RatGTEx v4 release. The main changes from v3 are:
 
@@ -65,21 +65,21 @@ More info on the [ratgenes.org eQTL page](https://ratgenes.org/research-projects
 - Prior experience/treatment: Naive
 - Sex ratio: 43 Female, 45 Male
 - Age: Mean 86.3 days, SD 3.1
-- Tissues: IL, LHb, NAcc, OFC, PL
+- Tissues: IL, LHb, NAcc1, OFC, PL1
 
 ##### <a id="P50DA037844-y6-10-proj1" href="https://ratgenes.org/research-projects/rp1new/">P50DA037844 Y6-10, Project 1</a>: Neurogenetic Substrates of Cocaine Addiction
 
 - Investigator: Paul Meyer, University at Buffalo
 - Prior experience/treatment: Exposure to cocaine
 - Sex ratio: 74 Female, 75 Male
-- Tissues: IC, NAcc, pVTA
+- Tissues: IC, NAcc4, pVTA2
 
 ##### <a id="P50DA037844-y6-10-proj2" href="https://ratgenes.org/research-projects/rp2/">P50DA037844 Y6-10, Project 2</a>: Socially-acquired nicotine self-administration
 
 - Investigator: Hao Chen, UTHSC
 - Prior experience/treatment: Naive
 - Sex ratio: 84 Female, 81 Male
-- Tissues: NAcc, PL, pVTA
+- Tissues: NAcc3, PL3, pVTA1
 
 ##### <a id="pilot-twas" href="https://ratgenes.org/2020-pilot-grants-awarded/">Pilot: Creating the dataset for TWAS in HS rats</a>
 
@@ -117,7 +117,7 @@ More info on the [ratgenes.org eQTL page](https://ratgenes.org/research-projects
 - Investigators: Suzanne Mitchell and Robert Hitzemann, OHSU
 - Prior experience/treatment: Behavior testing - delay discounting
 - Sex ratio: 100 Female, 100 Male
-- Tissues: BLA, NAcc, PL
+- Tissues: BLA, NAcc2, PL2
 
 ### Visualizations
 
