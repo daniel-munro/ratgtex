@@ -69,6 +69,9 @@ def validate_genes(ids, genes):
 def format_per_tissue_gene_info(info: list, tissues: list):
     """Collect per-tissue expression and eQTL indicators into a list"""
     for gene in info:
+        # Convert the summary indicators to native booleans for the JSON API.
+        gene["hasEqtl"] = bool(gene["hasEqtl"])
+        gene["hasTwas"] = bool(gene["hasTwas"])
         gene["statusInTissue"] = []
         for tissue in tissues:
             item = {

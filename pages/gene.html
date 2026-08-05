@@ -30,8 +30,11 @@ layout: base
 
   <p>
     <a id="phenogen-link" target="_blank" href="">
-      <button class="btn btn-primary">View in PhenoGen</button>
-    </a>
+      <button class="btn btn-primary">View in PhenoGen</button></a
+    >
+    <a id="twas-link" target="_blank" rel="noopener noreferrer" href="" hidden>
+      <button class="btn btn-primary">View in Rat TWAS Hub</button></a
+    >
   </p>
 
   <h5>Gene expression &amp; eQTL status per tissue</h5>
@@ -115,7 +118,7 @@ layout: base
     if (sigDigitColumns.has(column)) {
       return formatSignificantDigits(
         value,
-        scientificNotationColumns.has(column)
+        scientificNotationColumns.has(column),
       );
     }
     return value;
@@ -128,8 +131,19 @@ layout: base
     $("#gev-link").attr("href", "/gene-eqtl-visualizer/#" + info.geneId);
     $("#phenogen-link").attr(
       "href",
-      "https://phenogen.org/gene.jsp?speciesCB=Rn&auto=Y&geneTxt=" + info.geneId
+      "https://phenogen.org/gene.jsp?speciesCB=Rn&auto=Y&geneTxt=" +
+        info.geneId,
     );
+    if (info.hasTwas) {
+      $("#twas-link")
+        .attr(
+          "href",
+          "https://twas.ratgtex.org/genes/" +
+            encodeURIComponent(info.geneId) +
+            "/",
+        )
+        .prop("hidden", false);
+    }
     info.statusInTissue.forEach(function (tissue) {
       var status = `<p><strong>${tissue.tissueSiteDetailId}:</strong>`;
       if (tissue.expressed) {
@@ -157,7 +171,7 @@ layout: base
     GeneExpressionViolinPlot.launch(
       "gene-expr-vplot",
       "gene-expr-vplot-tooltip",
-      info.geneId
+      info.geneId,
     );
 
     $.ajax({
@@ -165,7 +179,7 @@ layout: base
       url: `/api/v4/eqtl?geneId=${info.geneId}`,
       success: function (data) {
         $("#eqtl-table").append(
-          "<thead><tr><th>Tissue</th><th>Representative Variant ID</th><th>Ref</th><th>Alt</th><th>Adjusted P-Value</th><th>log<sub>2</sub>aFC</th></tr></thead><tbody>"
+          "<thead><tr><th>Tissue</th><th>Representative Variant ID</th><th>Ref</th><th>Alt</th><th>Adjusted P-Value</th><th>log<sub>2</sub>aFC</th></tr></thead><tbody>",
         );
         var cols = [
           "tissueSiteDetailId",
@@ -195,7 +209,7 @@ layout: base
       url: `/api/v4/singleTissueEqtl?geneId=${info.geneId}`,
       success: function (data) {
         $("#eqtl-all-table").append(
-          "<thead><tr><th>Tissue</th><th>Variant ID</th><th>Nominal P-Value</th><th>Norm. Effect Size</th></tr></thead><tbody>"
+          "<thead><tr><th>Tissue</th><th>Variant ID</th><th>Nominal P-Value</th><th>Norm. Effect Size</th></tr></thead><tbody>",
         );
         var cols = ["tissueSiteDetailId", "variantId", "pValue", "nes"];
         $(data["singleTissueEqtl"]).each(function (i, rowData) {
@@ -218,7 +232,7 @@ layout: base
       url: `/api/v4/xqtl?geneId=${info.geneId}`,
       success: function (data) {
         $("#xqtl-table").append(
-          "<thead><tr><th>Tissue</th><th>Modality</th><th>Phenotype ID</th><th>Representative Variant ID</th><th>Ref</th><th>Alt</th><th>Adjusted P-Value</th></tr></thead><tbody>"
+          "<thead><tr><th>Tissue</th><th>Modality</th><th>Phenotype ID</th><th>Representative Variant ID</th><th>Ref</th><th>Alt</th><th>Adjusted P-Value</th></tr></thead><tbody>",
         );
         var cols = [
           "tissueSiteDetailId",

@@ -248,6 +248,10 @@ paths:
                         hasEqtl:
                           type: boolean
                           example: true
+                        hasTwas:
+                          type: boolean
+                          description: Whether the gene has a page in the Rat TWAS Hub
+                          example: true
                         start:
                           type: string
                           example: 100858924
