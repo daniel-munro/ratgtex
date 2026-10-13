@@ -142,6 +142,6 @@ Code for visualizations was adapted from the [GTEx portal viz tools](https://git
 
 ### More info
 
-[RRID:SCR_022145](https://scicrunch.org/resources/data/record/nlx_144509-1/SCR_022145/resolver)
+[RRID:SCR_022145](https://rrid.site/data/record/nlx_144509-1/SCR_022145/resolver)
 
-See also [PhenoGen Informatics](https://phenogen.org/index.jsp), the site for quantitative genetics of the transcriptome.
+See also [PhenoGen Informatics](https://phenogen.org), the site for quantitative genetics of the transcriptome.

@@ -29,9 +29,6 @@ layout: base
   <p id="gene-description"></p>
 
   <p>
-    <a id="phenogen-link" target="_blank" href="">
-      <button class="btn btn-primary">View in PhenoGen</button></a
-    >
     <a id="twas-link" target="_blank" rel="noopener noreferrer" href="" hidden>
       <button class="btn btn-primary">View in Rat TWAS Hub</button></a
     >
@@ -129,11 +126,6 @@ layout: base
     var desc = `${info.description}<br>${info.chromosome}:${info.start}-${info.end} (${info.strand})`;
     $("#gene-description").html(desc);
     $("#gev-link").attr("href", "/gene-eqtl-visualizer/#" + info.geneId);
-    $("#phenogen-link").attr(
-      "href",
-      "https://phenogen.org/gene.jsp?speciesCB=Rn&auto=Y&geneTxt=" +
-        info.geneId,
-    );
     if (info.hasTwas) {
       $("#twas-link")
         .attr(
