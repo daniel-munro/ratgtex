@@ -147,6 +147,23 @@ site.data.versions[version].tissues %}
   eQTLs.
 </p>
 
+<p>
+  <strong>
+    <a
+      href="/data/{{ version }}/mash/mash_tissue_gene_leads.expression.{{ version }}_{{ genome }}.tsv.gz"
+    >
+      Cross-tissue mash eQTL results
+    </a>
+  </strong>
+  <br />
+  A table of the lead variant per gene per tissue after multivariate adaptive
+  shrinkage (mash), which shares information across tissues. Includes original
+  effect estimates and standard errors, nominal p-values, posterior effect
+  estimates and standard deviations, local false sign rates (lfsr), and local
+  false discovery rates (lfdr). Lead variants are selected by lowest lfsr;
+  the significant column indicates lfsr &le; 0.05.
+</p>
+
 <strong>trans-eQTLs</strong>
 <br />
 All SNP-gene associations genome-wide with TSS distance &gt; 5 Mb and with an
