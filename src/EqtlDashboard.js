@@ -7,6 +7,7 @@ import { select } from "d3-selection";
 import GroupedViolin from "./modules/GroupedViolin.js";
 import {
   getGtexUrls,
+  getGenotypeExpressionUrl,
   parseTissueSites,
   parseDynEqtl,
 } from "./modules/DataParser.js";
@@ -457,9 +458,7 @@ function _renderEqtlPlot(
 
   // queue up all tissue IDs
   tissues.forEach((tId) => {
-    let urlRoot = urls["dyneqtl"];
-    // let url = `${urlRoot}?snp_id=${variant.variantId}&gene_id=${gene.geneId}&tissue=${tId}`; // use variant ID, gene ID and tissue ID to query the dyneqtl
-    let url = `${urlRoot}variantId=${variant.variantId}&geneId=${gene.geneId}&tissueSiteDetailId=${tId}`; // use variant ID, gene ID and tissue ID to query the dyneqtl
+    const url = getGenotypeExpressionUrl(gene.geneId, variant.variantId, tId, urls);
     promises.push(_apiCall(url, tId));
   });
 

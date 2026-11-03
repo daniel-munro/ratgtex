@@ -6,11 +6,14 @@
 export function getGtexUrls() {
   const host = "/api/v4/";
   return {
-    singleTissueEqtl: host + "singleTissueEqtl?geneId=",
-    dyneqtl: host + "dyneqtl?",
+    significantCisEqtls: host + "significantCisEqtls?geneId=",
+    genotypeExpression: host + "genotypeExpression?",
+    // Retain the older JavaScript option keys for custom integrations.
+    singleTissueEqtl: host + "significantCisEqtls?geneId=",
+    dyneqtl: host + "genotypeExpression?",
     variantId: host + "variant?variantId=",
     exon: host + "exon?geneId=",
-    geneExp: host + "geneExpression?geneId=",
+    geneExp: host + "geneExpression?expressionScale=tpm&geneId=",
     medGeneExp: host + "medianGeneExpression?",
     topInTissueFiltered:
       host + "topExpressedGene?filterMtGene=true&tissueSiteDetailId=",
@@ -18,6 +21,17 @@ export function getGtexUrls() {
     geneId: host + "gene?geneId=",
     tissue: host + "tissueInfo",
   };
+}
+
+/** Both eQTL plots display the released inverse-normal transformed phenotype. */
+export function getGenotypeExpressionUrl(geneId, variantId, tissueId, urls = getGtexUrls()) {
+  const query = new URLSearchParams({
+    variantId,
+    geneId,
+    tissueSiteDetailId: tissueId,
+    expressionScale: "normalized",
+  });
+  return (urls.genotypeExpression ?? urls.dyneqtl) + query;
 }
 
 /**

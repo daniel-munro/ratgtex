@@ -198,7 +198,7 @@ layout: base
 
     $.ajax({
       dataType: "json",
-      url: `/api/v4/singleTissueEqtl?geneId=${info.geneId}`,
+      url: `/api/v4/significantCisEqtls?geneId=${info.geneId}`,
       success: function (data) {
         $("#eqtl-all-table").append(
           "<thead><tr><th>Tissue</th><th>Variant ID</th><th>Nominal P-Value</th><th>Norm. Effect Size</th></tr></thead><tbody>",

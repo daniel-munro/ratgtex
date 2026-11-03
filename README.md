@@ -48,11 +48,17 @@ These tests exercise rendering and interactions with representative data in jsdo
 
 ### API docs
 
+See [api/README.md](api/README.md) for server configuration, expression indexing, API conventions, tests, and suggested next-release HPC changes. The API reads existing release files and can generate optional per-gene indexes without regenerating the scientific data.
+
 Render the API doc HTML page from openapi.yaml (and add frontmatter specifying page URL):
 
 ```shell
 npx @redocly/cli build-docs openapi.yaml -o pages/about_api.html
-sed -i '' '1s|^|---\npermalink: /about/api/\n---\n|' pages/about_api.html
+python3 - <<'PYDOC'
+from pathlib import Path
+path = Path("pages/about_api.html")
+path.write_text("---\npermalink: /about/api/\n---\n{% raw %}\n" + path.read_text() + "\n{% endraw %}\n")
+PYDOC
 ```
 
 ### Dependencies

@@ -9,7 +9,8 @@ import Heatmap from "../src/modules/Heatmap.js";
 import Dendrogram from "../src/modules/Dendrogram.js";
 import DendroHeatmap from "../src/modules/DendroHeatmap.js";
 import { launch } from "../src/GeneExpressionViolinPlot.js";
-import { parseSingleTissueEqtls } from "../src/modules/DataParser.js";
+import { render as renderEqtlViolin } from "../src/EqtlViolinPlot.js";
+import { getGtexUrls, getGenotypeExpressionUrl, parseSingleTissueEqtls } from "../src/modules/DataParser.js";
 import { downloadSvg } from "../src/modules/utils.js";
 
 let dom;
@@ -151,4 +152,39 @@ test("gene expression tooltips remain attached to their own chart", async (t) =>
   assert.match(document.querySelector("#tip2").textContent, /Median TPM/);
   assert.ok(document.querySelector("#plot-spinner"));
   assert.ok(document.querySelector("#other-spinner"));
+});
+
+
+test("expression request URLs distinguish eQTL normalization from gene-page TPM", () => {
+  const eqtl = new URL(getGenotypeExpressionUrl("GeneA", "chr1:10", "Brain"), "https://example.org");
+  assert.equal(eqtl.pathname, "/api/v4/genotypeExpression");
+  assert.equal(eqtl.searchParams.get("expressionScale"), "normalized");
+  assert.equal(eqtl.searchParams.get("variantId"), "chr1:10");
+  const associations = new URL(getGtexUrls().significantCisEqtls + "GeneA", "https://example.org");
+  assert.equal(associations.pathname, "/api/v4/significantCisEqtls");
+  const legacyOptions = new URL(getGenotypeExpressionUrl("GeneA", "chr1:10", "Brain", { dyneqtl: "/custom?" }), "https://example.org");
+  assert.equal(legacyOptions.pathname, "/custom");
+  const geneExpression = new URL(getGtexUrls().geneExp + "GeneA", "https://example.org");
+  assert.equal(geneExpression.searchParams.get("expressionScale"), "tpm");
+});
+
+test("eQTL violin requests and plots inverse-normal transformed sample values", async (t) => {
+  const normalized = [-2, -1, 0, 1, 2];
+  t.mock.method(globalThis, "fetch", async (url) => {
+    const request = new URL(url, "https://example.org");
+    assert.equal(request.pathname, "/api/v4/genotypeExpression");
+    assert.equal(request.searchParams.get("expressionScale"), "normalized");
+    return new Response(JSON.stringify({
+      data: normalized, genotypes: [0, 0, 1, 1, 2], ref: "A", alt: "G",
+      pValue: .01, pValueThreshold: .05, tissueSiteDetailId: "Brain",
+    }));
+  });
+  const par = {
+    id: "plot", width: 500, height: 300,
+    marginTop: 50, marginRight: 50, marginBottom: 50, marginLeft: 50,
+    yLabel: "Norm. Expression",
+  };
+  await renderEqtlViolin(par, "GeneA", "chr1:10", "Brain");
+  assert.deepEqual(par.data.map((group) => group.values), [[-2, -1], [0, 1], [2]]);
+  assert.deepEqual(select("#plot").selectAll(".violin-points circle").data(), normalized);
 });

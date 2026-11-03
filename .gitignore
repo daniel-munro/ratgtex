@@ -2,7 +2,7 @@
 .DS_Store
 data
 deploy.sh
-api/__pycache__
+__pycache__/
 assets/js/*.min.js
 _site
 .sass-cache

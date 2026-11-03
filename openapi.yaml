@@ -1,8 +1,24 @@
 openapi: 3.0.0
 info:
   title: RatGTEx REST API
-  version: "4.0.0"
-  description: This API provides data for the visualizations in the RatGTEx data portal. This version (v4) provides data for RatGTEx data release v4, which uses the GRCr8 genome assembly.
+  version: 4.1.0
+  description: >-
+    Read-only API for RatGTEx release v4 (Rattus norvegicus, GRCr8). Existing
+    GTEx-derived endpoint and response names remain supported. Gene IDs are rat
+    gene symbols/annotation identifiers; exact spelling is preferred, with
+    unambiguous case-insensitive matching. Variant IDs use
+    chromosome:1-based-position and identify one biallelic record, not an
+    allele-complete variant identifier. Gene/exon coordinates are 1-based
+    inclusive.
+
+
+    Use /metadata to discover release conventions, tissues, genotype datasets, and request limits; /genes provides paginated gene discovery. Prefer tissueId in new code; tissueSiteDetailId remains a query alias and the response field name. Do not send both aliases. List parameters are comma-separated, whitespace-trimmed and deduplicated; repeated query parameters are rejected. Missing/invalid parameters return JSON errors. Collection lookups may return empty arrays; notFound lists unresolved identifiers where supported. Missing/nonfinite numeric values are JSON null.
+
+
+    /geneExpression defaults to unnormalized TPM. /genotypeExpression defaults to quantile-normalized, inverse-normal transformed expression, matching the eQTL visualization labels and correcting the former duplicate-TPM loading bug. expressionScale=tpm or expressionScale=normalized explicitly selects either source on both endpoints. No additional covariate adjustment is performed at request time. /genotypeExpression means genotype-stratified expression, not a temporal/dynamic eQTL test. Nominal association p-values come from the compiled mapping results; selecting an expression scale does not recompute them. maf is corrected to minor allele frequency; altAlleleFrequency preserves the alternate-allele-frequency quantity previously mislabeled maf.
+
+
+    Successful responses support ETag/If-None-Match, gzip, and a five-minute public cache. The API is intended for bounded queries; use release downloads for bulk sample matrices and association files. Restart workers after replacing release files. Preferred endpoint names are /genotypeExpression and /significantCisEqtls. Their former paths /dyneqtl and /singleTissueEqtl remain supported as deprecated aliases with identical query parameters, defaults and response envelopes. Adding these paths is backward compatible; removing the aliases would require a breaking API revision, independently of data release versioning.
   contact:
     name: Daniel Munro
     x-role: responsible developer
@@ -24,23 +40,47 @@ paths:
     get:
       tags:
         - xQTL
-      summary: Dynamic eQTL for one gene-variant pair
-      description: Fetch information for one gene-variant pair in one tissue
+      summary: Genotype-stratified expression for one gene and variant
+      description: Deprecated alias of /genotypeExpression. Use that path for new
+        integrations. Query parameters, defaults and response envelopes are
+        identical. Return expression and genotype dosage arrays in matching
+        sample order. The default is the released quantile-normalized,
+        inverse-normal transformed expression phenotype; expressionScale=tpm
+        explicitly selects unnormalized TPM. P-values are precomputed, not
+        recalculated from these vectors. Only fully called diploid biallelic
+        genotypes contribute to frequencies; partial, missing, haploid or
+        non-biallelic calls become null. Frequencies are null if all calls are
+        missing. A sample absent from the VCF has null dosage.
       parameters:
         - name: geneId
           in: query
-          description: Gene ID
+          description: Gene ID Rat gene symbol/annotation identifier, not an Ensembl ID.
           required: true
           schema:
             type: string
             example: Cd300lf
+        - name: tissueId
+          in: query
+          required: false
+          description: Exactly one tissue is required using either alias.
+          schema:
+            type: array
+            items:
+              type: string
+            maxItems: 100
+          style: form
+          explode: false
         - name: tissueSiteDetailId
           in: query
-          description: Tissue ID
-          required: true
+          required: false
+          description: Legacy alias of tissueId. Do not use both aliases.
           schema:
-            type: string
-            example: IL
+            type: array
+            items:
+              type: string
+            maxItems: 100
+          style: form
+          explode: false
         - name: variantId
           in: query
           description: Variant ID
@@ -48,6 +88,26 @@ paths:
           schema:
             type: string
             example: chr10:100826333
+        - name: expressionScale
+          in: query
+          required: false
+          description: "tpm: unnormalized transcripts per million. normalized:
+            quantile-normalized, inverse-normal transformed expression
+            phenotype. Does not recompute association statistics."
+          schema:
+            type: string
+            enum:
+              - tpm
+              - normalized
+            default: normalized
+        - name: includeSampleIds
+          in: query
+          required: false
+          description: Include sampleIds aligned one-to-one with data and, for /dyneqtl,
+            genotypes. Sample order is meaningful only together with these IDs.
+          schema:
+            type: boolean
+            default: false
       responses:
         "200":
           description: Success
@@ -63,7 +123,13 @@ paths:
                     type: array
                     items:
                       type: number
-                    example: [2.2338, 3.78302, 3.71887, 3.05015, 2.46061]
+                      nullable: true
+                    example:
+                      - 2.2338
+                      - 3.78302
+                      - 3.71887
+                      - 3.05015
+                      - 2.46061
                   geneId:
                     type: string
                     example: Cd300lf
@@ -71,7 +137,15 @@ paths:
                     type: array
                     items:
                       type: integer
-                    example: [1, 1, null, 1, 0]
+                      nullable: true
+                      minimum: 0
+                      maximum: 2
+                    example:
+                      - 1
+                      - 1
+                      - null
+                      - 1
+                      - 0
                   hetCount:
                     type: integer
                     example: 35
@@ -83,13 +157,18 @@ paths:
                     example: 27
                   maf:
                     type: number
-                    example: 0.42948717948717946
+                    nullable: true
+                    description: Minor allele frequency min(AF, 1-AF) among fully called diploid
+                      samples. Corrected from the old alternate-allele-frequency
+                      calculation.
                   pValue:
                     type: number
-                    example: 8.43005e-08
+                    example: 8.43005e-8
+                    nullable: true
                   pValueThreshold:
                     type: number
                     example: 0.00172939
+                    nullable: true
                   ref:
                     type: string
                     example: C
@@ -99,6 +178,43 @@ paths:
                   variantId:
                     type: string
                     example: chr10:100826333
+                  altAlleleFrequency:
+                    type: number
+                    nullable: true
+                    description: Alternate allele frequency among fully called diploid samples; can
+                      exceed 0.5.
+                  calledSampleCount:
+                    type: integer
+                  missingGenotypeCount:
+                    type: integer
+                  genotypeDatasetId:
+                    type: string
+                  expressionScale:
+                    type: string
+                    enum:
+                      - tpm
+                      - normalized
+                  unit:
+                    type: string
+                    enum:
+                      - TPM
+                      - normalized expression
+                  sampleIds:
+                    type: array
+                    items:
+                      type: string
+        "304":
+          description: Unchanged representation (If-None-Match matched the ETag).
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "422":
+          $ref: "#/components/responses/422"
+        "503":
+          $ref: "#/components/responses/503"
+      operationId: dyneqtl
+      deprecated: true
   /eqtl:
     get:
       tags:
@@ -108,11 +224,53 @@ paths:
       parameters:
         - name: geneId
           in: query
-          description: Gene ID
+          description: Gene ID Rat gene symbol/annotation identifier, not an Ensembl ID.
           required: true
           schema:
             type: string
             example: Cd300lf
+        - name: tissueId
+          in: query
+          required: false
+          description: Select tissues; omitted means all tissues.
+          schema:
+            type: array
+            items:
+              type: string
+            maxItems: 100
+          style: form
+          explode: false
+        - name: tissueSiteDetailId
+          in: query
+          required: false
+          description: Legacy alias of tissueId. Do not use both aliases.
+          schema:
+            type: array
+            items:
+              type: string
+            maxItems: 100
+          style: form
+          explode: false
+        - name: limit
+          in: query
+          required: false
+          description: Optional page size. Omit both limit and offset to preserve the full
+            legacy response.
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 1000
+            default: 100
+        - name: offset
+          in: query
+          required: false
+          description: Zero-based record offset. Pagination metadata appears when limit or
+            offset is supplied.
+          schema:
+            type: integer
+            minimum: 0
+            maximum: 1000000000
+            default: 0
       responses:
         "200":
           description: Success
@@ -135,9 +293,13 @@ paths:
                         log2aFC:
                           type: number
                           example: 0.65925
+                          nullable: true
                         pValueBeta:
                           type: number
-                          example: 8.05017e-06
+                          example: 0.00000805017
+                          description: Beta-approximated permutation p-value from the source file. This is
+                            not a q-value or FDR.
+                          nullable: true
                         ref:
                           type: string
                           example: C
@@ -147,6 +309,40 @@ paths:
                         variantId:
                           type: string
                           example: chr10:100826333
+                        chromosome:
+                          type: string
+                        pos:
+                          type: integer
+                        altAlleleFrequency:
+                          type: number
+                          nullable: true
+                        tssDistance:
+                          type: integer
+                        pValue:
+                          type: number
+                          nullable: true
+                          description: Nominal association p-value.
+                        slope:
+                          type: number
+                          nullable: true
+                          description: Nominal regression coefficient from the compiled pipeline output.
+                        slopeSE:
+                          type: number
+                          nullable: true
+                          description: Standard error of the nominal regression coefficient.
+                        rank:
+                          type: integer
+                  pagination:
+                    $ref: "#/components/schemas/Pagination"
+        "304":
+          description: Unchanged representation (If-None-Match matched the ETag).
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "503":
+          $ref: "#/components/responses/503"
+      operationId: eqtl
   /exon:
     get:
       tags:
@@ -156,11 +352,31 @@ paths:
       parameters:
         - name: geneId
           in: query
-          description: Gene ID
+          description: Gene ID Rat gene symbol/annotation identifier, not an Ensembl ID.
           required: true
           schema:
             type: string
             example: Cd300lf
+        - name: limit
+          in: query
+          required: false
+          description: Optional page size. Omit both limit and offset to preserve the full
+            legacy response.
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 1000
+            default: 100
+        - name: offset
+          in: query
+          required: false
+          description: Zero-based record offset. Pagination metadata appears when limit or
+            offset is supplied.
+          schema:
+            type: integer
+            minimum: 0
+            maximum: 1000000000
+            default: 0
       responses:
         "200":
           description: Success
@@ -197,11 +413,24 @@ paths:
                           example: 100874927
                         strand:
                           type: string
-                          enum: ["-", "+"]
+                          enum:
+                            - "-"
+                            - +
                           example: "-"
                         transcriptId:
                           type: string
                           example: Cd300lf
+                  pagination:
+                    $ref: "#/components/schemas/Pagination"
+        "304":
+          description: Unchanged representation (If-None-Match matched the ETag).
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "503":
+          $ref: "#/components/responses/503"
+      operationId: exon
   /gene:
     get:
       tags:
@@ -211,13 +440,17 @@ paths:
       parameters:
         - name: geneId
           in: query
-          description: One or more gene IDs
+          description: One or more gene IDs Rat gene symbol/annotation identifier, not an
+            Ensembl ID.
           required: true
           schema:
             type: array
             items:
               type: string
-            example: [Cd300lf, Eno1]
+            example:
+              - Cd300lf
+              - Eno1
+            maxItems: 500
           style: form
           explode: false
       responses:
@@ -253,7 +486,7 @@ paths:
                           description: Whether the gene has a page in the Rat TWAS Hub
                           example: true
                         start:
-                          type: string
+                          type: integer
                           example: 100858924
                         statusInTissue:
                           type: array
@@ -278,20 +511,82 @@ paths:
                         tss:
                           type: integer
                           example: 100875111
+                  notFound:
+                    type: array
+                    items:
+                      type: string
+        "304":
+          description: Unchanged representation (If-None-Match matched the ETag).
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "503":
+          $ref: "#/components/responses/503"
+      operationId: gene
   /geneExpression:
     get:
       tags:
         - expression
-      summary: Per-sample expression for a gene across tissues
-      description: Fetch per-sample expression (TPM) for a gene across all tissues
+      summary: Per-sample expression for selected genes and tissues
+      description: Return sample expression vectors. Absent gene/tissue measurements
+        are omitted. A gene exists independently of whether a normalized
+        phenotype was retained for that tissue. Default values remain TPM.
       parameters:
         - name: geneId
           in: query
-          description: Gene ID
           required: true
+          description: Up to 10 gene IDs.
+          schema:
+            type: array
+            items:
+              type: string
+            maxItems: 10
+          style: form
+          explode: false
+        - name: tissueId
+          in: query
+          required: false
+          description: Select tissues; omitted means all tissues.
+          schema:
+            type: array
+            items:
+              type: string
+            maxItems: 100
+          style: form
+          explode: false
+        - name: tissueSiteDetailId
+          in: query
+          required: false
+          description: Legacy alias of tissueId. Do not use both aliases.
+          schema:
+            type: array
+            items:
+              type: string
+            maxItems: 100
+          style: form
+          explode: false
+        - name: expressionScale
+          in: query
+          required: false
+          description: "tpm: unnormalized transcripts per million. normalized:
+            quantile-normalized, inverse-normal transformed expression
+            phenotype. Does not recompute association statistics."
           schema:
             type: string
-            example: Cd300lf
+            enum:
+              - tpm
+              - normalized
+            default: tpm
+        - name: includeSampleIds
+          in: query
+          required: false
+          description: Include sampleIds aligned one-to-one with data and, for
+            /genotypeExpression, genotypes. Sample order is meaningful only
+            together with these IDs.
+          schema:
+            type: boolean
+            default: false
       responses:
         "200":
           description: Success
@@ -309,7 +604,12 @@ paths:
                           type: array
                           items:
                             type: number
-                          example: [3.33544, 2.679, 4.03568, 2.18627]
+                            nullable: true
+                          example:
+                            - 3.33544
+                            - 2.679
+                            - 4.03568
+                            - 2.18627
                         datasetId:
                           type: string
                           example: ratgtex_v4
@@ -324,37 +624,93 @@ paths:
                           example: IL
                         unit:
                           type: string
-                          enum: [TPM]
-                          example: TPM
+                          enum:
+                            - TPM
+                            - normalized expression
+                        expressionScale:
+                          type: string
+                          enum:
+                            - tpm
+                            - normalized
+                        sampleCount:
+                          type: integer
+                        genotypeDatasetId:
+                          type: string
+                        sampleIds:
+                          type: array
+                          items:
+                            type: string
+                  notFound:
+                    type: array
+                    items:
+                      type: string
+        "304":
+          description: Unchanged representation (If-None-Match matched the ETag).
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "503":
+          $ref: "#/components/responses/503"
+      operationId: geneExpression
   /medianGeneExpression:
     get:
       tags:
         - expression
       summary: Median expression for genes in selected tissues
-      description: Fetch median expression (TPM) for one or more genes in one or more tissues
+      description: Fetch median expression (TPM) for one or more genes in one or more
+        tissues Unresolved genes are omitted. Empty results and singleton
+        dimensions have clusters set to the legacy string "Not enough data".
+        Missing/nonfinite distances also omit clustering. Median values retain
+        the release file precision.
       parameters:
         - name: geneId
           in: query
-          description: One or more gene IDs.
+          description: One or more gene IDs. Rat gene symbol/annotation identifier, not an
+            Ensembl ID.
           required: true
           schema:
             type: array
             items:
               type: string
-            example: [Polr3k, Rtel1, Eno1]
+            example:
+              - Polr3k
+              - Rtel1
+              - Eno1
+            maxItems: 500
           style: form
           explode: false
-        - name: tissueSiteDetailId
+        - name: tissueId
           in: query
-          description: One or more tissue IDs. If omitted, all tissues are included.
           required: false
+          description: Select tissues; omitted means all tissues.
           schema:
             type: array
             items:
               type: string
-            example: [IL, LHb, NAcc]
+            maxItems: 100
           style: form
           explode: false
+        - name: tissueSiteDetailId
+          in: query
+          required: false
+          description: Legacy alias of tissueId. Do not use both aliases.
+          schema:
+            type: array
+            items:
+              type: string
+            maxItems: 100
+          style: form
+          explode: false
+        - name: cluster
+          in: query
+          required: false
+          description: Compute average-linkage Euclidean clustering with optimal leaf
+            ordering on the released TPM medians. Maximum 200 genes when
+            enabled; 500 with cluster=false.
+          schema:
+            type: boolean
+            default: true
       responses:
         "200":
           description: Success
@@ -368,10 +724,10 @@ paths:
                     properties:
                       gene:
                         type: string
-                        example: "((Rtel1:233.244,Polr3k:233.244):1054.57,Eno1:1287.81);"
+                        example: ((Rtel1:233.244,Polr3k:233.244):1054.57,Eno1:1287.81);
                       tissue:
                         type: string
-                        example: "((IL:12.7061,LHb:12.7061):291.773,NAcc:304.479);"
+                        example: ((IL:12.7061,LHb:12.7061):291.773,NAcc:304.479);
                   medianGeneExpression:
                     type: array
                     items:
@@ -386,20 +742,80 @@ paths:
                         tissueSiteDetailId:
                           type: string
                           example: IL
+                  notFound:
+                    type: array
+                    items:
+                      type: string
+        "304":
+          description: Unchanged representation (If-None-Match matched the ETag).
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "503":
+          $ref: "#/components/responses/503"
+      operationId: medianGeneExpression
   /singleTissueEqtl:
     get:
       tags:
         - xQTL
       summary: Significant single-tissue cis-variants for a gene
-      description: Fetch all significant cis-variants in all tissues for a gene
+      description: Deprecated alias of /significantCisEqtls. Use that path for new
+        integrations. Query parameters, defaults and response envelopes are
+        identical. Fetch all significant cis-variants in all tissues for a gene
+        Returns the full numeric precision stored in the source archive; no
+        additional rounding is applied. This contains significant associations,
+        not every tested cis-window variant.
       parameters:
         - name: geneId
           in: query
-          description: Gene ID
+          description: Gene ID Rat gene symbol/annotation identifier, not an Ensembl ID.
           required: true
           schema:
             type: string
             example: Cd300lf
+        - name: tissueId
+          in: query
+          required: false
+          description: Select tissues; omitted means all tissues.
+          schema:
+            type: array
+            items:
+              type: string
+            maxItems: 100
+          style: form
+          explode: false
+        - name: tissueSiteDetailId
+          in: query
+          required: false
+          description: Legacy alias of tissueId. Do not use both aliases.
+          schema:
+            type: array
+            items:
+              type: string
+            maxItems: 100
+          style: form
+          explode: false
+        - name: limit
+          in: query
+          required: false
+          description: Optional page size. Omit both limit and offset to preserve the full
+            legacy response.
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 1000
+            default: 100
+        - name: offset
+          in: query
+          required: false
+          description: Zero-based record offset. Pagination metadata appears when limit or
+            offset is supplied.
+          schema:
+            type: integer
+            minimum: 0
+            maximum: 1000000000
+            default: 0
       responses:
         "200":
           description: Success
@@ -422,6 +838,7 @@ paths:
                         nes:
                           type: number
                           example: 0.592446
+                          description: Legacy name for the regression slope (not log2 aFC).
                         pValue:
                           type: number
                           example: 2.111e-10
@@ -434,6 +851,22 @@ paths:
                         variantId:
                           type: string
                           example: chr10:99876736
+                        slope:
+                          type: number
+                          nullable: true
+                          description: Preferred explicit name for the value also returned as nes.
+                  pagination:
+                    $ref: "#/components/schemas/Pagination"
+        "304":
+          description: Unchanged representation (If-None-Match matched the ETag).
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "503":
+          $ref: "#/components/responses/503"
+      operationId: singleTissueEqtl
+      deprecated: true
   /tissueInfo:
     get:
       tags:
@@ -458,10 +891,11 @@ paths:
                           example: 377eb8
                         colorRgb:
                           type: string
-                          example: "55,126,184"
+                          example: 55,126,184
                         dataset:
                           type: string
                           example: ratgtex_v4_round11_1
+                          description: Genotype cohort ID; use as genotypeDatasetId where supported.
                         datasetId:
                           type: string
                           example: ratgtex_v4
@@ -471,9 +905,6 @@ paths:
                         expressedGeneCount:
                           type: integer
                           example: 24107
-                        hasEgenes:
-                          type: boolean
-                          example: true
                         rnaSeqAndGenotypeSampleCount:
                           type: integer
                           example: 83
@@ -492,6 +923,18 @@ paths:
                         tissueSiteDetailId:
                           type: string
                           example: IL
+                        hasEGenes:
+                          type: boolean
+                          example: true
+        "304":
+          description: Unchanged representation (If-None-Match matched the ETag).
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "503":
+          $ref: "#/components/responses/503"
+      operationId: tissueInfo
   /topExpressedGene:
     get:
       tags:
@@ -506,13 +949,37 @@ paths:
           schema:
             type: boolean
             example: true
+        - name: tissueId
+          in: query
+          required: false
+          description: Exactly one tissue is required using either alias.
+          schema:
+            type: array
+            items:
+              type: string
+            maxItems: 100
+          style: form
+          explode: false
         - name: tissueSiteDetailId
           in: query
-          description: Tissue ID
-          required: true
+          required: false
+          description: Legacy alias of tissueId. Do not use both aliases.
           schema:
-            type: string
-            example: IL
+            type: array
+            items:
+              type: string
+            maxItems: 100
+          style: form
+          explode: false
+        - name: limit
+          in: query
+          required: false
+          description: Maximum returned genes, after mitochondrial filtering.
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 50
       responses:
         "200":
           description: Success
@@ -543,14 +1010,26 @@ paths:
                           example: IL
                         unit:
                           type: string
-                          enum: [TPM]
+                          enum:
+                            - TPM
                           example: TPM
+        "304":
+          description: Unchanged representation (If-None-Match matched the ETag).
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "503":
+          $ref: "#/components/responses/503"
+      operationId: topExpressedGene
   /variant:
     get:
       tags:
         - reference
       summary: Metadata for one or more variants
-      description: Fetch information for one or more variants
+      description: Fetch information for one or more variants Exact 1-based positions
+        are required. Missing, ambiguous-position and multiallelic records are
+        listed in notFound.
       parameters:
         - name: variantId
           in: query
@@ -560,9 +1039,20 @@ paths:
             type: array
             items:
               type: string
-            example: [chr10:100826333, chr10:100955984]
+            example:
+              - chr10:100826333
+              - chr10:100955984
+            maxItems: 100
           style: form
           explode: false
+        - name: genotypeDatasetId
+          in: query
+          required: false
+          description: Genotype cohort to query, as listed by /metadata. Default preserves
+            ratgtex_v4_round11_2 when present, otherwise the first tissue
+            cohort. A variant absent in that cohort is listed in notFound.
+          schema:
+            type: string
       responses:
         "200":
           description: Success
@@ -591,6 +1081,21 @@ paths:
                         variantId:
                           type: string
                           example: chr10:100826333
+                        genotypeDatasetId:
+                          type: string
+                  notFound:
+                    type: array
+                    items:
+                      type: string
+        "304":
+          description: Unchanged representation (If-None-Match matched the ETag).
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "503":
+          $ref: "#/components/responses/503"
+      operationId: variant
   /xqtl:
     get:
       tags:
@@ -600,11 +1105,59 @@ paths:
       parameters:
         - name: geneId
           in: query
-          description: Gene ID
+          description: Gene ID Rat gene symbol/annotation identifier, not an Ensembl ID.
           required: true
           schema:
             type: string
             example: Cd300lf
+        - name: tissueId
+          in: query
+          required: false
+          description: Select tissues; omitted means all tissues.
+          schema:
+            type: array
+            items:
+              type: string
+            maxItems: 100
+          style: form
+          explode: false
+        - name: tissueSiteDetailId
+          in: query
+          required: false
+          description: Legacy alias of tissueId. Do not use both aliases.
+          schema:
+            type: array
+            items:
+              type: string
+            maxItems: 100
+          style: form
+          explode: false
+        - name: limit
+          in: query
+          required: false
+          description: Optional page size. Omit both limit and offset to preserve the full
+            legacy response.
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 1000
+            default: 100
+        - name: offset
+          in: query
+          required: false
+          description: Zero-based record offset. Pagination metadata appears when limit or
+            offset is supplied.
+          schema:
+            type: integer
+            minimum: 0
+            maximum: 1000000000
+            default: 0
+        - name: modality
+          in: query
+          required: false
+          description: Optional modality filter; values must occur in the release.
+          schema:
+            type: string
       responses:
         "200":
           description: Success
@@ -630,6 +1183,9 @@ paths:
                         pValueBeta:
                           type: number
                           example: 3.72035e-15
+                          description: Beta-approximated permutation p-value from the source file. This is
+                            not a q-value or FDR.
+                          nullable: true
                         phenotypeId:
                           type: string
                           example: Cd300lf__chr10_100862967_100866541_clu_7827_-
@@ -642,3 +1198,664 @@ paths:
                         variantId:
                           type: string
                           example: chr10:101009133
+                        chromosome:
+                          type: string
+                        pos:
+                          type: integer
+                        altAlleleFrequency:
+                          type: number
+                          nullable: true
+                        tssDistance:
+                          type: integer
+                        pValue:
+                          type: number
+                          nullable: true
+                          description: Nominal association p-value.
+                        slope:
+                          type: number
+                          nullable: true
+                          description: Nominal regression coefficient from the compiled pipeline output.
+                        slopeSE:
+                          type: number
+                          nullable: true
+                          description: Standard error of the nominal regression coefficient.
+                        rank:
+                          type: integer
+                  pagination:
+                    $ref: "#/components/schemas/Pagination"
+        "304":
+          description: Unchanged representation (If-None-Match matched the ETag).
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "503":
+          $ref: "#/components/responses/503"
+      operationId: xqtl
+  /metadata:
+    get:
+      tags:
+        - reference
+      operationId: metadata
+      summary: Release, terminology, limits, and endpoint discovery
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  dataRelease:
+                    type: string
+                    example: v4
+                  genomeAssembly:
+                    type: string
+                    example: GRCr8
+                  species:
+                    type: string
+                    example: Rattus norvegicus
+                  tissueIds:
+                    type: array
+                    items:
+                      type: string
+                  genotypeDatasetIds:
+                    type: array
+                    items:
+                      type: string
+                  endpoints:
+                    type: array
+                    items:
+                      type: string
+                  documentation:
+                    type: string
+                  openapi:
+                    type: string
+                  coordinateSystems:
+                    type: object
+                    additionalProperties:
+                      type: string
+                  expressionScales:
+                    type: object
+                    additionalProperties:
+                      type: string
+                    description: Definitions of the released sample vectors; no request-time
+                      normalization or covariate adjustment.
+                  terminology:
+                    type: object
+                    additionalProperties:
+                      type: string
+                  limits:
+                    type: object
+                    additionalProperties:
+                      type: integer
+                  endpointAliases:
+                    type: object
+                    additionalProperties:
+                      type: string
+                    description: Deprecated paths mapped to their preferred replacements. Both
+                      remain supported.
+        "304":
+          description: Unchanged representation.
+        "400":
+          $ref: "#/components/responses/400"
+        "503":
+          $ref: "#/components/responses/503"
+  /genes:
+    get:
+      tags:
+        - reference
+      operationId: genes
+      summary: Paginated gene directory and search
+      parameters:
+        - name: query
+          in: query
+          required: false
+          description: Optional literal substring matched case-insensitively against gene
+            IDs and descriptions.
+          schema:
+            type: string
+        - name: limit
+          in: query
+          required: false
+          description: Page size; this endpoint always returns pagination metadata.
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 1000
+            default: 100
+        - name: offset
+          in: query
+          required: false
+          description: Zero-based record offset. Pagination metadata appears when limit or
+            offset is supplied.
+          schema:
+            type: integer
+            minimum: 0
+            maximum: 1000000000
+            default: 0
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  gene:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        chromosome:
+                          type: string
+                          example: chr10
+                        description:
+                          type: string
+                          example: Cd300 molecule-like family member F
+                        end:
+                          type: integer
+                          example: 100875111
+                        geneId:
+                          type: string
+                          example: Cd300lf
+                        hasEqtl:
+                          type: boolean
+                          example: true
+                        hasTwas:
+                          type: boolean
+                          description: Whether the gene has a page in the Rat TWAS Hub
+                          example: true
+                        start:
+                          type: integer
+                          example: 100858924
+                        statusInTissue:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              eqtl:
+                                type: boolean
+                                example: true
+                              expressed:
+                                type: boolean
+                                example: true
+                              testedEqtl:
+                                type: boolean
+                                example: true
+                              tissueSiteDetailId:
+                                type: string
+                                example: IL
+                        strand:
+                          type: string
+                          example: "-"
+                        tss:
+                          type: integer
+                          example: 100875111
+                  pagination:
+                    type: object
+                    properties:
+                      total:
+                        type: integer
+                      limit:
+                        type: integer
+                      offset:
+                        type: integer
+        "304":
+          description: Unchanged representation.
+        "400":
+          $ref: "#/components/responses/400"
+        "503":
+          $ref: "#/components/responses/503"
+  /expressionSummary:
+    get:
+      tags:
+        - expression
+      operationId: expressionSummary
+      summary: Compact per-tissue expression summaries
+      description: Summaries use finite measurements only, without returning sample
+        vectors. Quartiles use linear interpolation; no sampling or
+        approximation. These medians are computed from the per-sample file;
+        medianGeneExpression uses the precompiled release matrix, rounded during
+        data preparation.
+      parameters:
+        - name: geneId
+          in: query
+          required: true
+          description: Up to 10 gene IDs.
+          schema:
+            type: array
+            items:
+              type: string
+            maxItems: 10
+          style: form
+          explode: false
+        - name: tissueId
+          in: query
+          required: false
+          description: Select tissues; omitted means all tissues.
+          schema:
+            type: array
+            items:
+              type: string
+            maxItems: 100
+          style: form
+          explode: false
+        - name: tissueSiteDetailId
+          in: query
+          required: false
+          description: Legacy alias of tissueId. Do not use both aliases.
+          schema:
+            type: array
+            items:
+              type: string
+            maxItems: 100
+          style: form
+          explode: false
+        - name: expressionScale
+          in: query
+          required: false
+          description: "tpm: unnormalized transcripts per million. normalized:
+            quantile-normalized, inverse-normal transformed expression
+            phenotype. Does not recompute association statistics."
+          schema:
+            type: string
+            enum:
+              - tpm
+              - normalized
+            default: tpm
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  expressionSummary:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        geneId:
+                          type: string
+                          example: Cd300lf
+                        tissueSiteDetailId:
+                          type: string
+                          example: IL
+                        expressionScale:
+                          type: string
+                          enum:
+                            - tpm
+                            - normalized
+                        unit:
+                          type: string
+                          enum:
+                            - TPM
+                            - normalized expression
+                        sampleCount:
+                          type: integer
+                        nonMissingCount:
+                          type: integer
+                        zeroCount:
+                          type: integer
+                        mean:
+                          type: number
+                          nullable: true
+                        median:
+                          type: number
+                          nullable: true
+                        q1:
+                          type: number
+                          nullable: true
+                        q3:
+                          type: number
+                          nullable: true
+                        min:
+                          type: number
+                          nullable: true
+                        max:
+                          type: number
+                          nullable: true
+                  notFound:
+                    type: array
+                    items:
+                      type: string
+        "304":
+          description: Unchanged representation.
+        "400":
+          $ref: "#/components/responses/400"
+        "503":
+          $ref: "#/components/responses/503"
+  /genotypeExpression:
+    get:
+      tags:
+        - xQTL
+      summary: Genotype-stratified expression for one gene and variant
+      description: Return expression and genotype dosage arrays in matching sample
+        order. The default is the released quantile-normalized, inverse-normal
+        transformed expression phenotype; expressionScale=tpm explicitly selects
+        unnormalized TPM. P-values are precomputed, not recalculated from these
+        vectors. Only fully called diploid biallelic genotypes contribute to
+        frequencies; partial, missing, haploid or non-biallelic calls become
+        null. Frequencies are null if all calls are missing. A sample absent
+        from the VCF has null dosage.
+      parameters:
+        - name: geneId
+          in: query
+          description: Gene ID Rat gene symbol/annotation identifier, not an Ensembl ID.
+          required: true
+          schema:
+            type: string
+            example: Cd300lf
+        - name: tissueId
+          in: query
+          required: false
+          description: Exactly one tissue is required using either alias.
+          schema:
+            type: array
+            items:
+              type: string
+            maxItems: 100
+          style: form
+          explode: false
+        - name: tissueSiteDetailId
+          in: query
+          required: false
+          description: Legacy alias of tissueId. Do not use both aliases.
+          schema:
+            type: array
+            items:
+              type: string
+            maxItems: 100
+          style: form
+          explode: false
+        - name: variantId
+          in: query
+          description: Variant ID
+          required: true
+          schema:
+            type: string
+            example: chr10:100826333
+        - name: expressionScale
+          in: query
+          required: false
+          description: "tpm: unnormalized transcripts per million. normalized:
+            quantile-normalized, inverse-normal transformed expression
+            phenotype. Does not recompute association statistics."
+          schema:
+            type: string
+            enum:
+              - tpm
+              - normalized
+            default: normalized
+        - name: includeSampleIds
+          in: query
+          required: false
+          description: Include sampleIds aligned one-to-one with data and, for
+            /genotypeExpression, genotypes. Sample order is meaningful only
+            together with these IDs.
+          schema:
+            type: boolean
+            default: false
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  alt:
+                    type: string
+                    example: T
+                  data:
+                    type: array
+                    items:
+                      type: number
+                      nullable: true
+                    example:
+                      - 2.2338
+                      - 3.78302
+                      - 3.71887
+                      - 3.05015
+                      - 2.46061
+                  geneId:
+                    type: string
+                    example: Cd300lf
+                  genotypes:
+                    type: array
+                    items:
+                      type: integer
+                      nullable: true
+                      minimum: 0
+                      maximum: 2
+                    example:
+                      - 1
+                      - 1
+                      - null
+                      - 1
+                      - 0
+                  hetCount:
+                    type: integer
+                    example: 35
+                  homoAltCount:
+                    type: integer
+                    example: 16
+                  homoRefCount:
+                    type: integer
+                    example: 27
+                  maf:
+                    type: number
+                    nullable: true
+                    description: Minor allele frequency min(AF, 1-AF) among fully called diploid
+                      samples. Corrected from the old alternate-allele-frequency
+                      calculation.
+                  pValue:
+                    type: number
+                    example: 8.43005e-8
+                    nullable: true
+                  pValueThreshold:
+                    type: number
+                    example: 0.00172939
+                    nullable: true
+                  ref:
+                    type: string
+                    example: C
+                  tissueSiteDetailId:
+                    type: string
+                    example: IL
+                  variantId:
+                    type: string
+                    example: chr10:100826333
+                  altAlleleFrequency:
+                    type: number
+                    nullable: true
+                    description: Alternate allele frequency among fully called diploid samples; can
+                      exceed 0.5.
+                  calledSampleCount:
+                    type: integer
+                  missingGenotypeCount:
+                    type: integer
+                  genotypeDatasetId:
+                    type: string
+                  expressionScale:
+                    type: string
+                    enum:
+                      - tpm
+                      - normalized
+                  unit:
+                    type: string
+                    enum:
+                      - TPM
+                      - normalized expression
+                  sampleIds:
+                    type: array
+                    items:
+                      type: string
+        "304":
+          description: Unchanged representation (If-None-Match matched the ETag).
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "422":
+          $ref: "#/components/responses/422"
+        "503":
+          $ref: "#/components/responses/503"
+      operationId: genotypeExpression
+  /significantCisEqtls:
+    get:
+      tags:
+        - xQTL
+      summary: Significant single-tissue cis-variants for a gene
+      description: Fetch all significant cis-variants in all tissues for a gene
+        Returns the full numeric precision stored in the source archive; no
+        additional rounding is applied. This contains significant associations,
+        not every tested cis-window variant. The response retains the
+        singleTissueEqtl collection key for compatibility. These are significant
+        cis-eQTL associations across the selected tissues, distinct from the
+        conditionally independent leads returned by /eqtl.
+      parameters:
+        - name: geneId
+          in: query
+          description: Gene ID Rat gene symbol/annotation identifier, not an Ensembl ID.
+          required: true
+          schema:
+            type: string
+            example: Cd300lf
+        - name: tissueId
+          in: query
+          required: false
+          description: Select tissues; omitted means all tissues.
+          schema:
+            type: array
+            items:
+              type: string
+            maxItems: 100
+          style: form
+          explode: false
+        - name: tissueSiteDetailId
+          in: query
+          required: false
+          description: Legacy alias of tissueId. Do not use both aliases.
+          schema:
+            type: array
+            items:
+              type: string
+            maxItems: 100
+          style: form
+          explode: false
+        - name: limit
+          in: query
+          required: false
+          description: Optional page size. Omit both limit and offset to preserve the full
+            legacy response.
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 1000
+            default: 100
+        - name: offset
+          in: query
+          required: false
+          description: Zero-based record offset. Pagination metadata appears when limit or
+            offset is supplied.
+          schema:
+            type: integer
+            minimum: 0
+            maximum: 1000000000
+            default: 0
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  singleTissueEqtl:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        chromosome:
+                          type: string
+                          example: chr10
+                        geneId:
+                          type: string
+                          example: Cd300lf
+                        nes:
+                          type: number
+                          example: 0.592446
+                          description: Legacy name for the regression slope (not log2 aFC).
+                        pValue:
+                          type: number
+                          example: 2.111e-10
+                        pos:
+                          type: integer
+                          example: 99876736
+                        tissueSiteDetailId:
+                          type: string
+                          example: BLA
+                        variantId:
+                          type: string
+                          example: chr10:99876736
+                        slope:
+                          type: number
+                          nullable: true
+                          description: Preferred explicit name for the value also returned as nes.
+                  pagination:
+                    $ref: "#/components/schemas/Pagination"
+        "304":
+          description: Unchanged representation (If-None-Match matched the ETag).
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "503":
+          $ref: "#/components/responses/503"
+      operationId: significantCisEqtls
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        status:
+          type: integer
+    Pagination:
+      type: object
+      properties:
+        total:
+          type: integer
+        limit:
+          type: integer
+        offset:
+          type: integer
+  responses:
+    "400":
+      description: Missing or invalid query parameters.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    "404":
+      description: Requested resource not found.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    "422":
+      description: Variant is not biallelic.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    "503":
+      description: Required release files are unavailable.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
