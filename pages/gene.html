@@ -204,7 +204,7 @@ layout: base
           "<thead><tr><th>Tissue</th><th>Variant ID</th><th>Nominal P-Value</th><th>Norm. Effect Size</th></tr></thead><tbody>",
         );
         var cols = ["tissueSiteDetailId", "variantId", "pValue", "nes"];
-        $(data["singleTissueEqtl"]).each(function (i, rowData) {
+        $(data["significantCisEqtls"]).each(function (i, rowData) {
           var row = $("<tr></tr>");
           $(cols).each(function (j, col) {
             var displayValue = formatCellValue(col, rowData[col]);

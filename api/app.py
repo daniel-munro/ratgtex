@@ -1,4 +1,4 @@
-"""RatGTEx v4 read API. Existing portal routes remain backward compatible.
+"""RatGTEx v4 read API.
 
 Configuration and data preparation: see api/README.md.
 """
@@ -21,9 +21,11 @@ from scipy.cluster.hierarchy import linkage, to_tree
 from werkzeug.exceptions import HTTPException
 
 if __package__:
-    from .data_store import DataStore, SCALES
+    from .data_store import DataStore, SCALES, MODALITIES
+    from .association import AssociationDataError
 else:  # Existing gunicorn --chdir api app:api and python api/app.py commands.
-    from data_store import DataStore, SCALES
+    from data_store import DataStore, SCALES, MODALITIES
+    from association import AssociationDataError
 
 
 class APIError(Exception):
@@ -229,6 +231,11 @@ def create_app(config=None, store=None):
         app.logger.error("Release file unavailable: %s", error)
         return jsonify(error="Required release data are unavailable on this server.", status=503), 503
 
+    @app.errorhandler(AssociationDataError)
+    def association_unavailable(error):
+        app.logger.error("Association inputs unavailable: %s", error)
+        return jsonify(error=str(error), status=503), 503
+
     @app.errorhandler(HTTPException)
     def http_error(error):
         return jsonify(error=error.description, status=error.code), error.code
@@ -293,18 +300,22 @@ def create_app(config=None, store=None):
             tissueIds=store.tissues, genotypeDatasetIds=list(dict.fromkeys(store.datasets.values())),
             coordinateSystems={"variantId": "chromosome:position; position is 1-based",
                                "genesAndExons": "1-based inclusive"},
+            modalities=list(MODALITIES),
+            nominalAssociation={"method": "Additive OLS with intercept and modality-specific covariates",
+                                "phenotypeScale": "normalized", "missingGenotypes": "mean imputed for inference only",
+                                "pValueSource": "computed", "covariateScope": "modality",
+                                "multipleTesting": "Precomputed modality-specific gene/group thresholds; no request-time permutations",
+                                "cisWindowBp": 1000000, "minimumMAF": .01, "minimumMAC": 2},
             expressionScales={"tpm": "Unnormalized expression in transcripts per million",
                               "normalized": "Quantile-normalized, inverse-normal transformed expression phenotype; no additional request-time covariate adjustment"},
             terminology={"geneId": "Rat gene symbol/annotation identifier, not an Ensembl identifier",
-                         "tissueId": "Preferred query name; tissueSiteDetailId is the legacy alias",
-                         "genotypeExpression": "Genotype-stratified expression; not a test of temporal/dynamic regulation",
+                         "tissueId": "Tissue identifier; tissueSiteDetailId is an accepted query alias",
+                         "genotypePhenotypes": "Normalized RNA phenotype vectors and nominal associations for a variant",
                          "maf": "Minor allele frequency among fully called diploid samples",
                          "altAlleleFrequency": "Alternate allele frequency, which may exceed 0.5",
-                         "nes": "Legacy name for the nominal regression slope; not log2 allelic fold change",
+                         "nes": "Nominal regression slope on the normalized phenotype scale",
                          "pValueBeta": "Beta-approximated permutation p-value from the compiled pipeline output"},
             limits={"geneIds": 500, "expressionGeneIds": 10, "variantIds": 100, "clusterGenes": 200, "pageSize": 1000},
-            endpointAliases={"/api/v4/dyneqtl": "/api/v4/genotypeExpression",
-                             "/api/v4/singleTissueEqtl": "/api/v4/significantCisEqtls"},
             endpoints=sorted(rule.rule for rule in app.url_map.iter_rules() if rule.rule.startswith("/api/")),
             documentation="/about/api/", openapi="/openapi.yaml",
         )
@@ -361,14 +372,13 @@ def create_app(config=None, store=None):
         return page(frame, "xqtl")
 
     @app.get("/api/v4/significantCisEqtls")
-    @app.get("/api/v4/singleTissueEqtl")
     def single_tissue_eqtl():
         frame = store.significant_associations(one_gene())
         if "tissueId" in request.args or "tissueSiteDetailId" in request.args:
             tissues = selected_tissues()
             if not frame.empty:
                 frame = frame.loc[frame.tissueSiteDetailId.isin(tissues)]
-        return page(frame, "singleTissueEqtl")
+        return page(frame, "significantCisEqtls")
 
     @app.get("/api/v4/geneExpression")
     def gene_expression():
@@ -458,42 +468,59 @@ def create_app(config=None, store=None):
                               "ref": rec.ref, "variantId": name, "genotypeDatasetId": dataset})
         return jsonify(variant=infos, notFound=missing)
 
-    @app.get("/api/v4/genotypeExpression")
-    @app.get("/api/v4/dyneqtl")
-    def genotype_expression():
-        gene = one_gene()
-        tissue = one_tissue()
-        variant = identifiers("variantId", 1)[0]
-        scale = expression_scale("normalized")
-        include_samples = boolean("includeSampleIds")
-        expr = store.expression(tissue, gene, scale)
-        if expr is None:
-            raise APIError("Expression not found for this gene and tissue.", 404)
-        dataset = store.datasets[tissue]
+    def variant_genotypes(dataset, variant):
         with pysam.VariantFile(store.root / "geno" / f"{dataset}.rn8.vcf.gz") as vcf:
             rec = variant_record(variant, vcf)
             if rec is None:
                 raise APIError("Variant not found: " + variant, 404)
             if not rec.alts or len(rec.alts) != 1:
-                raise APIError("Genotype expression requires a biallelic variant.", 422)
-            sample_names = set(rec.samples.keys())
-            geno = [genotype(rec.samples[sample]["GT"]) if sample in sample_names else None for sample in expr.index]
-            ref, alt = rec.ref, rec.alts[0]
+                raise APIError("Genotype phenotypes require a biallelic variant.", 422)
+            return pd.Series({sample: genotype(rec.samples[sample]["GT"]) for sample in rec.samples}, dtype=object), rec.ref, rec.alts[0]
+
+    def cis_statistics(stats, variant, locus):
+        chrom, pos = variant.split(":")
+        is_cis = chrom == locus[0] and locus[1] - 1000000 <= int(pos) <= locus[2] + 1000000
+        if not is_cis:
+            stats = {**stats, "pValue": None, "slope": None, "slopeSE": None, "associationStatus": "outside_cis_window"}
+        return {**stats, "isCis": is_cis}
+
+    @app.get("/api/v4/genotypePhenotypes")
+    def genotype_phenotypes():
+        gene, tissue = one_gene(), one_tissue()
+        variant = identifiers("variantId", 1)[0]
+        modality = parameter("modality", "expression")
+        if modality not in MODALITIES:
+            raise APIError("Unknown modality: " + modality)
+        include_samples = boolean("includeSampleIds")
+        selected = identifiers("phenotypeId", 1, required=False)
+        values, loci, threshold = store.phenotypes(tissue, modality, gene)
+        if selected:
+            values = values.loc[values.index.isin(selected)]
+        if values.empty:
+            return jsonify(genotypePhenotypes=[], geneId=gene, tissueSiteDetailId=tissue,
+                           variantId=variant, modality=modality)
+        dataset = store.datasets[tissue]
+        genotypes, ref, alt = variant_genotypes(dataset, variant)
+        stats = store.nominal_associations(tissue, modality, values, genotypes)
+        geno = [genotypes.get(sample) for sample in values.columns]
         counts = [geno.count(dosage) for dosage in (0, 1, 2)]
         called = sum(counts)
         frequency = (counts[1] + 2 * counts[2]) / (2 * called) if called else None
-        info = {"data": expr.to_numpy(), "geneId": gene, "genotypes": geno,
-                "hetCount": counts[1], "homoAltCount": counts[2], "homoRefCount": counts[0],
+        results = [{"phenotypeId": phenotype, "data": row.to_list(),
+                    **cis_statistics(stat, variant, loci[phenotype])}
+                   for (phenotype, row), stat in zip(values.iterrows(), stats)]
+        info = {"genotypePhenotypes": results, "geneId": gene, "variantId": variant,
+                "modality": modality, "tissueSiteDetailId": tissue, "genotypeDatasetId": dataset,
+                "genotypes": geno, "ref": ref, "alt": alt,
+                "homoRefCount": counts[0], "hetCount": counts[1], "homoAltCount": counts[2],
                 "calledSampleCount": called, "missingGenotypeCount": len(geno) - called,
+                "altAlleleFrequency": frequency,
                 "maf": min(frequency, 1 - frequency) if frequency is not None else None,
-                "altAlleleFrequency": frequency, "ref": ref, "alt": alt,
-                "pValue": store.cis_pvalue(tissue, gene, variant),
-                "pValueThreshold": store.thresholds.get((tissue, gene)),
-                "tissueSiteDetailId": tissue, "variantId": variant,
-                "genotypeDatasetId": dataset, "expressionScale": scale,
-                "unit": "TPM" if scale == "tpm" else "normalized expression"}
+                "pValueThreshold": threshold, "thresholdScope": "modality_gene_group",
+                "pValueSource": "computed", "covariateScope": "modality",
+                "associationPhenotypeScale": "normalized", "unit": "normalized phenotype"}
         if include_samples:
-            info["sampleIds"] = expr.index.tolist()
+            info["sampleIds"] = values.columns.tolist()
         return jsonify(info)
 
     return app

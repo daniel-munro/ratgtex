@@ -1,10 +1,6 @@
 # RatGTEx API
 
-The v4 API serves the compiled RatGTEx release files. The existing portal routes and response keys remain supported. `app:api` still works with the current Gunicorn configuration. API schema version 4.1 is an API revision, not a new scientific data release.
-
-## Run and test
-
-From the repository root:
+The API serves RatGTEx v4 data for the GRCr8 assembly. Run commands from the repository root:
 
 ```sh
 python -m pip install -r requirements.txt
@@ -12,80 +8,83 @@ python -m api.app
 python -m unittest discover -s tests -p 'test_*.py' -v
 ```
 
-Data paths resolve relative to the repository, independently of the working directory. Set `RATGTEX_DATA_DIR` to the absolute path of a different **v4** release directory. This code still uses v4 filenames; changing this setting does not add support for another release layout.
+`app:api` is the Gunicorn entry point. `RATGTEX_DATA_DIR` selects the v4 release directory; its default is this repository's `data/v4`, independently of the working directory. API schema versions describe the interface independently of scientific data releases. The public contract is [openapi.yaml](../openapi.yaml), rendered at `/about/api/`; `/metadata` lists modalities, tissues, cohorts, endpoints and request limits.
 
-The Flask factory `create_app(config=None, store=None)` supports isolated tests. Importing the application opens no data files or VCF handles. Reference tables load only when requested, under a lock to avoid duplicate cold loads in threaded workers. Gene lookups for exon and association tables use indexes instead of scanning an entire table per request.
+## Phenotype and association queries
 
-## Expression indexes and memory
+`/genotypePhenotypes` returns normalized RNA phenotype values and nominal cis associations for one gene, variant, tissue and modality:
 
-Previously, startup loaded every tissue's full sample-expression matrix twice, once as `tpm` and again as `iqn`; both loaded the same unnormalized files. There is now one bounded fallback matrix cache, shared by expression and genotype-expression requests. The default retained matrix budget is 128 MiB per worker; an oversized matrix can still be loaded temporarily to serve a cold request but is not retained. The budget is **not** a limit on total process memory: reference tables, ZIP directories, Python/scientific libraries, response bodies, and temporary computation also consume memory.
-
-For regular service, build the optional expression indexes:
-
-```sh
-# All tissues, both TPM and inverse-normal transformed expression
-python -m api.prepare_expression --data-dir /path/to/data/v4
-
-# Build just normalized expression when TPM indexes already exist
-python -m api.prepare_expression --data-dir /path/to/data/v4 --scales normalized
-
-# Rebuild just one tissue and scale
-python -m api.prepare_expression --data-dir /path/to/data/v4 --tissues IL --scales tpm
+```text
+/api/v4/genotypePhenotypes?geneId=Ifnlr1&variantId=chr5:153176222&tissueId=IL&modality=splicing
 ```
 
-This streams each gzip BED into `data/v4/api/expression/{tissue}.{scale}.sqlite3`. Each row contains one gene's zlib-compressed float64 vector; sample IDs are stored once per file. Requests use read-only SQLite queries and decompress only the requested vector. There is no full expression matrix in memory on this path. SQLite connections are closed after use. Building an index uses temporary files and atomic replacement, and duplicate gene/sample IDs or malformed rows abort the build. Index generation adds disk usage (about 1.9 GiB for all current local v4 TPM and normalized indexes); this is a disk-for-memory/latency tradeoff, not an additional required source format.
+`modality` defaults to `expression`. The same request and response structure applies to expression, isoform ratios, intron excision ratios, alternative TSS usage, alternative polyA usage and RNA stability. The `genotypePhenotypes` array contains every available phenotype belonging to the queried gene and modality, including non-significant phenotypes. Each item contains `phenotypeId`, `data`, nominal `pValue`, normalized-phenotype `slope`, `slopeSE` and testing status. Optional `phenotypeId` selects one phenotype from that gene. The shared `genotypes` array and each phenotype's `data` vector use matching sample order. `includeSampleIds=true` includes the aligned sample IDs.
 
-A source size and modification-time check prevents an index from serving values for a changed source file. Transfer matching BEDs and indexes with their modification times preserved, or rebuild the indexes on the serving host. Stale/missing indexes fall back to the original gzip BEDs. TPM prefers `expr/expr.tpm.*`; the equivalent `phenos/*.expression.unnorm.*` is accepted if the former is absent. `normalized` always uses `phenos/*.expression.norm.*` and never silently falls back to TPM.
+`/geneExpression` provides expression-only queries for up to ten genes, with optional tissue filtering. `expressionScale=tpm` (default) returns TPM; `expressionScale=normalized` returns the released quantile-normalized, inverse-normal transformed expression. `/expressionSummary` summarizes the same scales without sending individual values. Displayed vectors receive no additional covariate adjustment. Missing gene/tissue measurements are omitted. `datasetId` identifies the data release; `genotypeDatasetId` identifies the cohort.
 
-The existing `ratgtex-server-data` outputs are sufficient. Indexes can be generated locally, on the web server before deployment, or after compilation on the HPC; no upstream data regeneration is required for the API changes in this revision.
+`/eqtl` returns published independent expression associations. `/xqtl` returns published independent cross-modality associations and accepts a modality filter. `/significantCisEqtls` returns significant cis-expression associations, with the collection key `significantCisEqtls`. These endpoints report the published mapping results; their permutation and conditional statistics are distinct from the nominal tests calculated for a selected variant.
 
-## Serving and cache configuration
+## Nominal test model
+
+Inference uses the released normalized phenotype, an intercept, alternate-allele dosage and the released **modality-specific covariates**. Both phenotype and genotype are residualized against centered covariates. The two-sided t test has `n - k - 2` degrees of freedom. An eight-entry per-worker cache stores covariate QR decompositions, computed lazily in RAM.
+
+Missing hardcalls are mean-imputed for inference only. Displayed genotypes retain missing values; genotype counts and frequencies use fully called diploid biallelic samples. `maf` is minor allele frequency and `altAlleleFrequency` is alternate allele frequency. Both are null when no calls are available.
+
+Sample identities must match the covariate matrix. Missing covariates, mismatched samples or rank-deficient covariates return `503`. Constant/nonfinite vectors and all-missing genotypes return null statistics with an explicit `associationStatus`. Variants outside the phenotype's 1 Mb cis window, or failing v4's tissue-cohort MAF 0.01 / MAC 2 filters, also return null statistics.
+
+Responses include `pValueSource=computed`, `covariateScope=modality`, association sample count, imputed genotype count and residual degrees of freedom. Float64 CPU arithmetic can differ slightly from tensorQTL's float32 GPU arithmetic and rounded release exports. No request-time permutations or q-values are computed. The precomputed modality-specific gene/group threshold provides significance calibration; grouped modalities use the same gene-group threshold for all that gene's phenotypes. Published cross-modality associations use a distinct covariate model.
+
+## Index preparation and memory
+
+Every SQLite index follows the same path and schema:
+
+```text
+data/v4/api/phenotypes/{tissue}/{modality}.{scale}.sqlite3
+```
+
+`scale` is `normalized` for all modalities, or `tpm` for expression. Each database stores phenotype IDs, gene IDs, BED coordinates and compressed little-endian float64 sample vectors. Normalized indexes also embed modality-specific mapping thresholds. Sample IDs are stored once per database. Read-only queries retrieve only the requested gene's vectors; they do not load a full tissue/modality matrix.
+
+Build indexes from the existing `ratgtex-server-data` outputs:
+
+```sh
+# Normalized phenotypes for all tissues and six modalities
+python -m api.prepare_phenotypes --data-dir /path/to/data/v4
+
+# Expression TPM indexes for expression-only views
+python -m api.prepare_phenotypes --data-dir /path/to/data/v4 --modalities expression --scales tpm
+
+# Targeted preparation
+python -m api.prepare_phenotypes --data-dir /path/to/data/v4 --tissues IL --modalities splicing isoforms
+
+# Compare computed tests against strong, weak and fixed random released leads
+python -m api.validate_associations --data-dir /path/to/data/v4 --report nominal-validation.json
+```
+
+Inputs are normalized phenotype BEDs, indexed cohort VCFs, tissue rat IDs, modality-specific covariates, modality-specific `xqtl/top_assoc.*` summaries and the reference/tissue tables. TPM indexes use `expr/expr.tpm.*` when present, with `phenos/*.expression.unnorm.*` as an alternative source. No all-pairs nominal p-value export is required. The API does not read `cis_pvals/*.zip`; archive retention for public downloads is a separate deployment decision.
+
+Build indexes on the HPC after `ratgtex-server-data` finishes, using the same API code version that will serve them. Keep the builder in this repository and invoke its pinned version from the HPC workflow. Index creation streams one source matrix at a time, checks identifiers and coordinates, and replaces each database atomically. Reserve space for the largest temporary index as well as the final databases. On-server building is also available for repairs.
+
+Transfer indexes and matching source files together with mtimes preserved (`rsync -a` or equivalent). Metadata records the index format, tissue, modality, scale and source sizes/mtimes, including the threshold source. SQLite databases and their explicit little-endian vector encoding are portable between HPC and VPS. Record the serving API commit and validation report with the release. Publish the complete release and restart workers together; per-database replacement is not a transaction across a release's files.
+
+`/genotypePhenotypes` requires current indexes and returns `503` if an index is missing or stale. Expression-only queries can fall back to loading a source matrix. Their shared fallback matrix cache retains at most 128 MiB per worker by default; a larger matrix may be loaded temporarily without retention. This budget does not limit total process memory: reference tables, scientific libraries, response bodies and temporary computation also consume memory.
+
+## Serving and caching
 
 | Environment variable | Default | Meaning |
 | --- | --- | --- |
-| `RATGTEX_DATA_DIR` | Repository `data/v4` | Source release directory |
-| `RATGTEX_EXPRESSION_CACHE_MB` | `128` | Maximum retained fallback expression matrix bytes, in MiB, per worker; `0` disables retention |
-| `RATGTEX_RESPONSE_CACHE_MB` | `32` | Serialized response cache budget, in MiB, per worker; `0` disables it |
-| `RATGTEX_REFERENCE_DATASET` | `ratgtex_v4_round11_2` when present, otherwise first tissue cohort | Default cohort for variant metadata |
+| `RATGTEX_DATA_DIR` | Repository `data/v4` | Release directory |
+| `RATGTEX_EXPRESSION_CACHE_MB` | `128` | Retained expression fallback matrix budget per worker, in MiB; `0` disables retention |
+| `RATGTEX_RESPONSE_CACHE_MB` | `32` | Serialized response cache budget per worker, in MiB; `0` disables it |
+| `RATGTEX_REFERENCE_DATASET` | `ratgtex_v4_round11_2` when available, otherwise the first cohort | Default cohort for variant metadata |
 
-Successful JSON responses are cached for five minutes within both a byte budget and a 256-entry cap. Responses too large for the budget are not retained. Responses support weak ETags and conditional GET/HEAD, and gzip when accepted and beneficial. The representation cache stores uncompressed JSON; compression is negotiated per request. Errors are not cached. ZIP directories/handles are cached with an LRU limit of four per worker; archive members are looked up directly, without rebuilding a list of every member on every lookup. Cis p-value lookups scan one gene's member rather than constructing a full DataFrame.
+Successful JSON responses are cached for five minutes within a byte budget and a 256-entry limit. Responses support weak ETags, conditional GET/HEAD and negotiated gzip. Errors are not cached. Reference tables load lazily under a lock. VCF handles and SQLite connections are request-local and closed after use. ZIP handles used for significant-association lookups are bounded and closed on eviction. Workers have independent caches that assume immutable release files; restart them after data updates. Measure memory before increasing worker count.
 
-VCFs are opened lazily in request-local contexts and closed after use; no shared mutable iterator or native handle is inherited from an eagerly loaded application. Variant metadata skips sample decoding. Indexed lookups use exact VCF positions, excluding overlapping records that start at another position. Position-only IDs that resolve to multiple records are treated as unavailable, because the identifier cannot disambiguate the alleles.
+## Query conventions
 
-Caches assume immutable release files. **Publish the matching source files/indexes together and restart all workers after an update.** There is no cross-worker cache invalidation. Avoid multiplying workers before measuring their memory usage. The current Circus command can remain unchanged; this change does not tune worker count, proxy compression, or the existing infinite Gunicorn timeout.
-
-## Query and schema conventions
-
-
-New integrations and the site use the clearer endpoint names below. The old paths remain supported, with identical parameters, defaults, response bodies and error behavior; OpenAPI marks them deprecated and `/metadata` lists the alias mappings.
-
-| Preferred endpoint | Deprecated alias | Meaning |
-| --- | --- | --- |
-| `/genotypeExpression` | `/dyneqtl` | Per-sample expression grouped by a variant's genotype |
-| `/significantCisEqtls` | `/singleTissueEqtl` | Significant cis-eQTL associations across selected tissues |
-
-The `singleTissueEqtl` response collection key is retained on both association paths to avoid a separate response-schema migration. Other existing field names remain supported. Adding preferred paths is backward compatible within API 4.x; deleting old paths or renaming their required fields would need a breaking API revision. API contract revisions and scientific data releases do not have to happen together. There is no scheduled removal date for these aliases.
-
-The machine-readable contract is [openapi.yaml](../openapi.yaml); the generated public documentation is `pages/about_api.html`. `/api/v4/metadata` describes release/assembly, coordinate conventions, dataset IDs, terminology, endpoints and request limits.
-
-- Gene IDs are the rat gene symbols/annotation IDs in the release, not Ensembl IDs. Matching prefers an exact ID, then an unambiguous case-insensitive match. `/gene` returns `notFound` for unresolved IDs. `/genes?query=Cd300&limit=100&offset=0` provides a searchable, paginated directory; omit `query` to traverse all genes.
-- New queries may use `tissueId`; `tissueSiteDetailId` remains an alias. Responses retain `tissueSiteDetailId`. Supplying both aliases, repeating a query parameter, empty list elements, invalid booleans or unknown tissues gives a JSON `400`, rather than a server exception. Lists are comma-separated and deduplicated in first-seen order.
-- `/geneExpression` accepts up to 10 genes and optional tissue filtering. TPM is the default. `expressionScale=normalized` selects the quantile-normalized, inverse-normal transformed expression phenotype as released; the API applies no additional covariate adjustment. `includeSampleIds=true` exposes IDs aligned with the data vector. Missing gene/tissue measurements are omitted, not invented or filled with zeros. `datasetId` remains the release identifier; `genotypeDatasetId` identifies the cohort.
-- `/expressionSummary` returns sample/nonmissing counts, mean, median, quartiles, range and zero count for the same vectors. It does not send the vectors. Finite observations determine summaries. `/medianGeneExpression` continues to use the precompiled, rounded median matrix and the original raw-TPM average-linkage clustering. Set `cluster=false` for automated extraction without clustering. Clustering is capped at 200 genes; requests without clustering support 500. Empty/singleton/invalid-distance cases use the existing `"Not enough data"` sentinel.
-- `/genotypeExpression` returns genotype-stratified expression, **not** a dynamic/temporal eQTL test. It defaults to the released quantile-normalized, inverse-normal transformed phenotype, matching both eQTL plots. Both frontend callers also explicitly request `expressionScale=normalized`. Request `expressionScale=tpm` to obtain unnormalized TPM instead. Ordinary `/geneExpression` requests default to TPM, and the gene-expression plots explicitly select TPM. Genotypes are alternate-allele dosages; partial/missing/non-diploid/non-biallelic calls and expression samples absent from the VCF become `null`. Only fully called diploid samples contribute to frequencies. **`maf` is corrected to minor allele frequency**; `altAlleleFrequency` exposes the quantity that used to be mislabeled `maf`. Both are `null` if there are no called samples. Nominal p-values and thresholds come from compiled mapping results; changing the displayed expression scale does not refit the association.
-- `/eqtl` and `/xqtl` retain their original fields and now expose available regression slopes/standard errors, nominal p-values, alternate-allele frequency, rank and position information from the existing source tables. A beta-approximated permutation p-value (`pValueBeta`) is distinct from a nominal p-value (`pValue`) and a q-value. `log2aFC` is distinct from a normalized-phenotype regression slope. Tissue filters are supported; `/xqtl` also accepts `modality`.
-- `/significantCisEqtls` contains significant associations, not all tested cis-window variants. It retains `nes` and adds `slope` for the same regression coefficient. Additional runtime p-value rounding was removed; precision already lost upstream cannot be restored here.
-- `/eqtl`, `/xqtl`, `/significantCisEqtls` and `/exon` accept optional `limit` (1–1000) and `offset`. Without either, they return the full legacy collection. When either is supplied, `pagination` includes total/limit/offset. These limits bound transfer size; a ZIP member must still be decoded before pagination.
-- `/variant` accepts `genotypeDatasetId`, rather than silently assuming that the default cohort contains every release variant. IDs absent/ambiguous/multiallelic in that cohort appear in `notFound`. For genotype-expression requests, the tissue selects the cohort automatically.
-- Unknown genes return empty collection lookups for `/gene`, `/geneExpression` and `/medianGeneExpression`; endpoints requiring exactly one existing gene return `404`. Malformed parameters return `400`, unsupported multiallelic genotype-expression requests return `422`, and missing source files return `503`. All numbers are valid JSON: missing/nonfinite numbers are `null`, never `NaN` or `Infinity`.
-
-These are additive schema changes except for the scientific `maf` correction, removal of extra p-value rounding, and intentional validation/error handling changes. The site's existing fields and clustering behavior remain supported. `/geneExpression` defaults to TPM; `/genotypeExpression` now defaults to inverse-normal transformed values, correcting the old copy/paste loading bug and matching the eQTL plot labels. Automated callers that need the former TPM values from `/genotypeExpression` should explicitly set `expressionScale=tpm`.
-
-## Suggested next HPC release changes
-
-These are follow-ups, not prerequisites or changes made to `ratgtex-server-data` in this revision:
-
-1. Add an index-generation step after copying the expression BEDs, or run `api.prepare_expression` after syncing the completed release. Keep it in this repository for now so the index format and reader evolve together.
-2. In `scripts/all_gene_esnps.py`, replace the current `float_format="%g"` (six significant digits) with a precision-preserving format such as `"%.17g"`. Likewise review formatting in upstream R exports. Existing archives cannot recover their discarded digits; changing those needs an HPC rebuild.
-3. Produce a small release manifest with the assembly/annotation version, pipeline/software versions, normalization method per modality, cohort descriptions, file checksums and exact definitions of each statistic. That would allow richer provenance than the current filename-derived metadata and make future releases easier to validate automatically.
-4. If future visualizations need genome-wide or cross-gene association searches, export a queryable index keyed by gene, tissue, modality and genomic position instead of asking the web process to scan bulk ZIP/GZIP files. Existing per-gene archives remain appropriate for current visualizations. Add other phenotype modalities and cross-tissue mash results only with explicit effect-scale and model-provenance fields.
+- Gene IDs are rat gene symbols or annotation IDs, matched exactly or unambiguously without regard to case. `/genes?query=Cd300&limit=100&offset=0` searches the gene directory.
+- Variant IDs use `chromosome:position`, with 1-based positions. `/variant` accepts `genotypeDatasetId`; genotype/phenotype queries select the cohort from the tissue. Ambiguous positions and multiallelic records cannot identify a supported biallelic variant.
+- Use `tissueId` or `tissueSiteDetailId` for tissue filtering, supplying only one. Responses use `tissueSiteDetailId`. List parameters are comma-separated and deduplicated; repeated parameters and empty identifiers return `400`.
+- `/eqtl`, `/xqtl`, `/significantCisEqtls` and `/exon` accept `limit` (1–1000) and `offset`. Omitting both returns the full collection. Pagination bounds transfer size; a significant-association ZIP member is decoded before pagination.
+- `/medianGeneExpression` supports up to 500 genes with `cluster=false`; clustering supports up to 200 genes and uses raw-TPM average-linkage clustering. Unavailable clusters have the value `"Not enough data"`.
+- `pValue` is nominal; `pValueBeta` is a beta-approximated permutation p-value; `qValue` is a q-value. `slope` (also exposed as `nes` in expression associations) refers to normalized-phenotype regression, while `log2aFC` is log2 allelic fold change.
+- Empty collection lookups return empty arrays. Endpoints requiring one existing resource return `404` when it is absent. Invalid parameters return `400`, unsupported variants `422`, and unavailable release data or indexes `503`. Missing/nonfinite numbers are JSON null.

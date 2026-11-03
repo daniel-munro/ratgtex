@@ -7,10 +7,7 @@ export function getGtexUrls() {
   const host = "/api/v4/";
   return {
     significantCisEqtls: host + "significantCisEqtls?geneId=",
-    genotypeExpression: host + "genotypeExpression?",
-    // Retain the older JavaScript option keys for custom integrations.
-    singleTissueEqtl: host + "significantCisEqtls?geneId=",
-    dyneqtl: host + "genotypeExpression?",
+    genotypePhenotypes: host + "genotypePhenotypes?",
     variantId: host + "variant?variantId=",
     exon: host + "exon?geneId=",
     geneExp: host + "geneExpression?expressionScale=tpm&geneId=",
@@ -24,23 +21,21 @@ export function getGtexUrls() {
 }
 
 /** Both eQTL plots display the released inverse-normal transformed phenotype. */
-export function getGenotypeExpressionUrl(geneId, variantId, tissueId, urls = getGtexUrls()) {
+export function getGenotypePhenotypesUrl(geneId, variantId, tissueId, modality = "expression", urls = getGtexUrls()) {
   const query = new URLSearchParams({
     variantId,
     geneId,
-    tissueSiteDetailId: tissueId,
-    expressionScale: "normalized",
+    tissueId,
+    modality,
   });
-  return (urls.genotypeExpression ?? urls.dyneqtl) + query;
+  return urls.genotypePhenotypes + query;
 }
 
-/**
- * parse GTEx dyneqtl json
- * @param data {JSON} from GTEx dyneqtl web service
- * @returns data {JSON} modified data
- * @private
- */
-export function parseDynEqtl(json) {
+/** Select one phenotype and organize its values by genotype for a violin plot. */
+export function parseGenotypePhenotype(response, phenotypeId = response.geneId) {
+  const phenotype = response.genotypePhenotypes?.find((row) => row.phenotypeId === phenotypeId);
+  if (!phenotype) throw new Error(`Phenotype not found: ${phenotypeId}`);
+  const json = { ...response, ...phenotype };
   // check required json attributes
   [
     "data",
@@ -87,7 +82,7 @@ export function parseDynEqtl(json) {
  * @returns {List} of eqtls with attributes required for GEV rendering
  */
 export function parseSingleTissueEqtls(data, tissueSiteTable = undefined) {
-  const attr = "singleTissueEqtl";
+  const attr = "significantCisEqtls";
   if (!data.hasOwnProperty(attr))
     throw "Parsing Error: required attribute is not found: " + attr;
   return data[attr].map((d) => {

@@ -48,7 +48,7 @@ These tests exercise rendering and interactions with representative data in jsdo
 
 ### API docs
 
-See [api/README.md](api/README.md) for server configuration, expression indexing, API conventions, tests, and suggested next-release HPC changes. The API reads existing release files and can generate optional per-gene indexes without regenerating the scientific data.
+See [api/README.md](api/README.md) for server configuration, expression indexing, API conventions, tests, and suggested next-release HPC changes. The API reads existing release files and uses per-gene phenotype indexes for genotype association queries. Indexes are generated from those files without regenerating the scientific data.
 
 Render the API doc HTML page from openapi.yaml (and add frontmatter specifying page URL):
 

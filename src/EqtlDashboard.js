@@ -7,9 +7,9 @@ import { select } from "d3-selection";
 import GroupedViolin from "./modules/GroupedViolin.js";
 import {
   getGtexUrls,
-  getGenotypeExpressionUrl,
+  getGenotypePhenotypesUrl,
   parseTissueSites,
-  parseDynEqtl,
+  parseGenotypePhenotype,
 } from "./modules/DataParser.js";
 
 import {
@@ -458,7 +458,7 @@ function _renderEqtlPlot(
 
   // queue up all tissue IDs
   tissues.forEach((tId) => {
-    const url = getGenotypeExpressionUrl(gene.geneId, variant.variantId, tId, urls);
+    const url = getGenotypePhenotypesUrl(gene.geneId, variant.variantId, tId, "expression", urls);
     promises.push(_apiCall(url, tId));
   });
 
@@ -492,7 +492,7 @@ function _renderEqtlPlot(
             },
           ]);
         } else {
-          d = parseDynEqtl(d); // reformat eQTL results d
+          d = parseGenotypePhenotype(d); // reformat eQTL results d
           let group = tissueDict[d.tissueSiteDetailId]; // group is the tissue name, map tissue ID to tissue name
 
           input = input.concat([
@@ -540,7 +540,7 @@ function _apiCall(url, tissue) {
   return new Promise(function (resolve, reject) {
     json(url, { credentials: "include" })
       .then(function (request) {
-        resolve(request);
+        resolve(request.genotypePhenotypes?.length ? request : { tissue, status: "failed" });
       })
       .catch(function (err) {
         // report the tissue as failed

@@ -6,7 +6,7 @@
 "use strict";
 import { json } from "d3-fetch";
 import { createSvg } from "./modules/utils.js";
-import { getGtexUrls, getGenotypeExpressionUrl, parseDynEqtl } from "./modules/DataParser.js";
+import { getGtexUrls, getGenotypePhenotypesUrl, parseGenotypePhenotype } from "./modules/DataParser.js";
 import GroupedViolin from "./modules/GroupedViolin.js";
 
 export function render(
@@ -18,12 +18,12 @@ export function render(
   urls = getGtexUrls()
 ) {
   return json(
-    getGenotypeExpressionUrl(geneId, variantId, tissueId, urls),
+    getGenotypePhenotypesUrl(geneId, variantId, tissueId, "expression", urls),
     { credentials: "include" }
   ).then(function (jsonResp) {
-    const data = parseDynEqtl(jsonResp);
+    const data = parseGenotypePhenotype(jsonResp);
 
-    // construct the dynEqtl data for the three genotypes: ref, het, alt
+    // construct the phenotype data for the three genotypes: ref, het, alt
     par.data = [
       {
         group: groupName || data.tissueSiteDetailId,

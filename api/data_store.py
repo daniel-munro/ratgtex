@@ -17,8 +17,18 @@ import zlib
 import numpy as np
 import pandas as pd
 
+try:
+    from .association import AssociationDataError, CovariateModel
+except ImportError:  # gunicorn --chdir api app:api
+    from association import AssociationDataError, CovariateModel
+
 
 SCALES = ("tpm", "normalized")
+MODALITIES = ("expression", "isoforms", "splicing", "alt_TSS", "alt_polyA", "stability")
+
+
+def phenotype_index_path(root, tissue, modality, scale="normalized"):
+    return root / "api/phenotypes" / tissue / f"{modality}.{scale}.sqlite3"
 ASSOCIATION_COLUMNS = {
     "tissue": "tissueSiteDetailId", "gene_id": "geneId",
     "phenotype_id": "phenotypeId", "variant_id": "variantId",
@@ -65,6 +75,7 @@ class DataStore:
         self._expression = OrderedDict()
         self._expression_bytes = 0
         self._archives = OrderedDict()
+        self._covariates = OrderedDict()
         self._lock = RLock()
 
     @locked_cached_property
@@ -122,12 +133,6 @@ class DataStore:
     def xqtls(self):
         return self._associations("xqtl/xqtls_indep.cross_modality.v4_rn8.tsv")
 
-    @locked_cached_property
-    def thresholds(self):
-        return pd.read_csv(self.root / "eqtl/top_assoc.v4_rn8.tsv", sep="\t",
-                           usecols=["tissue", "gene_id", "pval_nominal_threshold"],
-                           index_col=["tissue", "gene_id"])["pval_nominal_threshold"]
-
     @staticmethod
     def by_gene(frame, gene):
         return frame.loc[[gene]] if gene in frame.index else frame.iloc[:0]
@@ -135,19 +140,21 @@ class DataStore:
     def expression(self, tissue, gene, scale="tpm"):
         """Return an independent Series; never expose a mutable cached frame."""
         path = expression_path(self.root, tissue, scale)
-        index = self.root / "api/expression" / f"{tissue}.{scale}.sqlite3"
+        index = phenotype_index_path(self.root, tissue, "expression", scale)
         if index.is_file():
             with closing(sqlite3.connect(index.as_uri() + "?mode=ro", uri=True)) as conn:
                 meta = dict(conn.execute("SELECT key, value FROM metadata"))
-                if json.loads(meta["source"]) == source_signature(path):
-                    row = conn.execute("SELECT data FROM expression WHERE gene_id = ?", (gene,)).fetchone()
+                if (meta.get("phenotype_format") == "phenotypes-v1"
+                        and meta.get("tissue") == tissue and meta.get("modality") == "expression"
+                        and meta.get("scale") == scale
+                        and json.loads(meta["source"]) == source_signature(path)):
+                    row = conn.execute("SELECT data FROM phenotype WHERE phenotype_id = ?", (gene,)).fetchone()
                     if row is None:
                         return None
                     samples = json.loads(meta["samples"])
                     values = np.frombuffer(zlib.decompress(row[0]), dtype="<f8").copy()
                     return pd.Series(values, index=samples, name=gene)
-        # Older releases work without preprocessing. Serialize cold loads to avoid
-        # concurrent requests loading the same large matrix more than once.
+        # Serialize cold fallback loads to avoid duplicate large matrices.
         with self._lock:
             key = (tissue, scale)
             if key in self._expression:
@@ -165,6 +172,77 @@ class DataStore:
                     self._expression_bytes += size
             return frame.loc[gene].astype(float).copy() if gene in frame.index else None
 
+    def covariate_model(self, tissue, modality):
+        with self._lock:
+            key = (tissue, modality)
+            if key in self._covariates:
+                model = self._covariates.pop(key)
+            else:
+                path = self.root / "covar" / f"covar.{tissue}.{modality}.v4.tsv"
+                # Check the raw header before pandas can rename duplicate IDs.
+                with path.open() as handle:
+                    samples = handle.readline().rstrip("\n\r").split("\t")[1:]
+                if len(samples) != len(set(samples)) or any(not sample for sample in samples):
+                    raise AssociationDataError("Duplicate or empty covariate sample IDs.")
+                model = CovariateModel.from_frame(pd.read_csv(path, sep="\t", index_col=0).T)
+            self._covariates[key] = model
+            while len(self._covariates) > 8:
+                self._covariates.popitem(last=False)
+            return model
+
+    def nominal_associations(self, tissue, modality, phenotypes, genotypes):
+        """Infer with released modality-specific covariates, never plot-scale TPM."""
+        model = self.covariate_model(tissue, modality)
+        if (not phenotypes.columns.is_unique or set(phenotypes.columns) != set(model.samples)
+                or not set(model.samples).issubset(genotypes.index)):
+            raise AssociationDataError("Phenotype, covariate and VCF samples do not match.")
+        results = model.test(phenotypes.loc[:, list(model.samples)].to_numpy(),
+                             genotypes.reindex(model.samples).to_numpy(dtype=float))
+        # v4's PLINK mapping inputs use --maf 0.01 --mac 2, before tensorQTL's
+        # mean imputation. Check the tissue cohort, not a genotype plot group.
+        cohort_path = self.root / "rat_ids" / f"rat_ids.{tissue}.v4.txt"
+        cohort = cohort_path.read_text().split() if cohort_path.is_file() else model.samples
+        if not set(cohort).issubset(genotypes.index):
+            raise AssociationDataError("Mapping cohort samples are absent from the VCF.")
+        called = genotypes.reindex(cohort).to_numpy(dtype=float)
+        called = called[np.isfinite(called)]
+        mac = min(called.sum(), 2 * len(called) - called.sum()) if len(called) else 0
+        if len(called) and (mac < 2 or mac / (2 * len(called)) < .01):
+            results = [{**result, "pValue": None, "slope": None, "slopeSE": None,
+                        "associationStatus": "variant_below_mapping_filter"} for result in results]
+        return results
+
+    def phenotypes(self, tissue, modality, gene):
+        """Fetch only this gene's normalized vectors, loci and group threshold.
+
+        Multimodal queries require prepared indexes: never fall back to loading
+        a full modality matrix into a web worker.
+        """
+        path = phenotype_index_path(self.root, tissue, modality)
+        if not path.is_file():
+            raise AssociationDataError("Build normalized phenotype indexes with api.prepare_phenotypes.")
+        source = self.root / "phenos" / f"phenos.{tissue}.{modality}.norm.v4_rn8.bed.gz"
+        thresholds = self.root / "xqtl" / f"top_assoc.{modality}.v4_rn8.tsv"
+        with closing(sqlite3.connect(path.as_uri() + "?mode=ro", uri=True)) as conn:
+            meta = dict(conn.execute("SELECT key, value FROM metadata"))
+            if (meta.get("phenotype_format") != "phenotypes-v1"
+                    or meta.get("modality") != modality
+                    or meta.get("tissue") != tissue
+                    or meta.get("scale") != "normalized"
+                    or json.loads(meta["source"]) != source_signature(source)
+                    or json.loads(meta["threshold_source"]) != source_signature(thresholds)):
+                raise AssociationDataError("Missing or stale phenotype index; run api.prepare_phenotypes.")
+            samples = json.loads(meta["samples"])
+            rows = conn.execute("SELECT phenotype_id, chromosome, start, end, data "
+                                "FROM phenotype WHERE gene_id = ? ORDER BY phenotype_id", (gene,)).fetchall()
+            threshold = conn.execute("SELECT value FROM threshold WHERE gene_id = ?", (gene,)).fetchone()
+        vectors, loci = {}, {}
+        for phenotype, chrom, start, end, blob in rows:
+            vectors[phenotype] = np.frombuffer(zlib.decompress(blob), dtype="<f8").copy()
+            # tensorQTL converts BED start to 1-based coordinates.
+            loci[phenotype] = (chrom, start + 1, end)
+        return pd.DataFrame.from_dict(vectors, orient="index", columns=samples), loci, threshold[0] if threshold else None
+
     def _archive(self, path):
         # Called only while holding _lock. Bound open handles and ZIP directories.
         if path in self._archives:
@@ -176,20 +254,6 @@ class DataStore:
             _, old = self._archives.popitem(last=False)
             old.close()
         return archive
-
-    def cis_pvalue(self, tissue, gene, variant):
-        with self._lock:
-            archive = self._archive(self.root / "cis_pvals" / f"{tissue}.v4.zip")
-            try:
-                with archive.open(f"{tissue}.v4/{gene}.txt") as member:
-                    next(member, None)
-                    for line in member:
-                        variant_id, value = line.decode().rstrip().split("\t")
-                        if variant_id == variant:
-                            return float(value)
-            except KeyError:
-                pass
-        return None
 
     def significant_associations(self, gene):
         with self._lock:
@@ -211,3 +275,4 @@ class DataStore:
             self._archives.clear()
             self._expression.clear()
             self._expression_bytes = 0
+            self._covariates.clear()
