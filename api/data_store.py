@@ -19,8 +19,10 @@ import pandas as pd
 
 try:
     from .association import AssociationDataError, CovariateModel
+    from .catalog import query_catalog, source_signature
 except ImportError:  # gunicorn --chdir api app:api
     from association import AssociationDataError, CovariateModel
+    from catalog import query_catalog, source_signature
 
 
 SCALES = ("tpm", "normalized")
@@ -29,15 +31,6 @@ MODALITIES = ("expression", "isoforms", "splicing", "alt_TSS", "alt_polyA", "sta
 
 def phenotype_index_path(root, tissue, modality, scale="normalized"):
     return root / "api/phenotypes" / tissue / f"{modality}.{scale}.sqlite3"
-ASSOCIATION_COLUMNS = {
-    "tissue": "tissueSiteDetailId", "gene_id": "geneId",
-    "phenotype_id": "phenotypeId", "variant_id": "variantId",
-    "pval_beta": "pValueBeta", "log2_aFC": "log2aFC", "chrom": "chromosome",
-    "pos": "pos", "af": "altAlleleFrequency", "tss_distance": "tssDistance",
-    "pval_nominal": "pValue", "slope": "slope", "slope_se": "slopeSE",
-    "qval": "qValue", "rank": "rank", "modality": "modality",
-    "ref": "ref", "alt": "alt",
-}
 
 
 def expression_path(root, tissue, scale):
@@ -49,11 +42,6 @@ def expression_path(root, tissue, scale):
             return path
     normalization = "unnorm" if scale == "tpm" else "norm"
     return root / "phenos" / f"phenos.{tissue}.expression.{normalization}.v4_rn8.bed.gz"
-
-
-def source_signature(path):
-    stat = path.stat()
-    return {"size": stat.st_size, "mtime_ns": stat.st_mtime_ns}
 
 
 class locked_cached_property(cached_property):
@@ -115,27 +103,8 @@ class DataStore:
     def top_expression(self):
         return pd.read_csv(self.root / "expr/topExpressedGene.v4.tsv", sep="\t")
 
-    @locked_cached_property
-    def exons(self):
-        return pd.read_csv(self.root / "exon.v4.tsv", sep="\t", dtype={"chromosome": str}).set_index("geneId", drop=False)
-
-    def _associations(self, filename):
-        frame = pd.read_csv(self.root / filename, sep="\t",
-                            usecols=lambda col: col in ASSOCIATION_COLUMNS,
-                            dtype={"chrom": str})
-        return frame.rename(columns=ASSOCIATION_COLUMNS).set_index("geneId", drop=False)
-
-    @locked_cached_property
-    def eqtls(self):
-        return self._associations("eqtl/eqtls_indep.v4_rn8.tsv")
-
-    @locked_cached_property
-    def xqtls(self):
-        return self._associations("xqtl/xqtls_indep.cross_modality.v4_rn8.tsv")
-
-    @staticmethod
-    def by_gene(frame, gene):
-        return frame.loc[[gene]] if gene in frame.index else frame.iloc[:0]
+    def catalog_records(self, collection, gene, tissues=None, modality=None, limit=None, offset=0):
+        return query_catalog(self.root, collection, gene, tissues, modality, limit, offset)
 
     def expression(self, tissue, gene, scale="tpm"):
         """Return an independent Series; never expose a mutable cached frame."""

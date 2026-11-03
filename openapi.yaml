@@ -54,7 +54,10 @@ paths:
       tags:
         - xQTL
       summary: Conditionally independent cis-eQTLs by gene
-      description: Fetch conditionally independent cis-eQTLs in any tissue for a gene
+      description: >-
+        Fetch conditionally independent cis-eQTLs for a gene. Tissue filtering,
+        counts and pagination use the prepared API catalog. Results follow source
+        order. A missing or stale catalog returns 503.
       parameters:
         - name: geneId
           in: query
@@ -181,7 +184,9 @@ paths:
       tags:
         - reference
       summary: Exon annotations for a gene
-      description: Fetch a gene's exons
+      description: >-
+        Fetch a gene's exons from the prepared API catalog, with source ordering
+        and SQL pagination. A missing or stale catalog returns 503.
       parameters:
         - name: geneId
           in: query
@@ -820,7 +825,10 @@ paths:
       tags:
         - xQTL
       summary: Conditionally independent cis-xQTLs by gene
-      description: Fetch conditionally independent cis-xQTLs in any tissue for a gene
+      description: >-
+        Fetch conditionally independent cis-xQTLs for a gene. Tissue and modality
+        filtering, counts and pagination use the prepared API catalog. Results
+        follow source order. A missing or stale catalog returns 503.
       parameters:
         - name: geneId
           in: query

@@ -14,6 +14,7 @@ import pysam
 from api.app import create_app, genotype
 from api.data_store import DataStore, phenotype_index_path
 from api.prepare_phenotypes import build_index
+from api.prepare_catalog import build_catalog
 
 
 class APITest(unittest.TestCase):
@@ -67,6 +68,7 @@ class APITest(unittest.TestCase):
         build_index(self.root / "phenos/phenos.Brain.expression.norm.v4_rn8.bed.gz",
                     phenotype_index_path(self.root, "Brain", "expression"), "expression",
                     self.root / "xqtl/top_assoc.expression.v4_rn8.tsv", "Brain")
+        build_catalog(self.root)
         self.store = DataStore(self.root)
         self.app = create_app({"TESTING": True, "RESPONSE_CACHE_BYTES": 0}, self.store)
         self.client = self.app.test_client()
@@ -137,6 +139,82 @@ class APITest(unittest.TestCase):
                 self.assertEqual(response.status_code, 400, response.json)
                 self.assertIn("error", response.json)
                 self.assertIn("no-store", response.headers["Cache-Control"])
+
+    def test_catalog_filters_counts_order_and_numeric_values(self):
+        import sqlite3
+        rows = [
+            {"tissue": tissue, "gene_id": gene, "variant_id": variant, "modality": modality,
+             "phenotype_id": gene + "__p", "pval_nominal": pvalue, "slope": slope,
+             "rank": rank, "chrom": "chr1", "pos": pos}
+            for tissue, gene, variant, modality, pvalue, slope, rank, pos in [
+                ("Brain", "GeneA", "chr1:30", "splicing", 1.234567890123456e-30, -.25, 2, 30),
+                ("Brain", "GeneB", "chr1:20", "expression", .2, .4, 1, 20),
+                ("Liver", "GeneA", "chr1:10", "splicing", .1, .3, 1, 10),
+                ("Brain", "GeneA", "chr1:40", "expression", .3, None, 1, 40),
+                ("Brain", "GeneA", "chr1:50", "splicing", .4, .7, 3, 50),
+            ]]
+        self.write("xqtl/xqtls_indep.cross_modality.v4_rn8.tsv", rows)
+        self.write("eqtl/eqtls_indep.v4_rn8.tsv", [{k: v for k, v in row.items() if k not in {"modality", "phenotype_id"}} for row in rows])
+        self.write("exon.v4.tsv", [{"geneId": gene, "chromosome": "chr1", "start": start, "end": start + 1}
+                                    for gene, start in [("GeneA", 30), ("GeneB", 20), ("GeneA", 10)]])
+        build_catalog(self.root)
+        self.store.genes
+        self.store.tissues
+        traces = []
+        connect = sqlite3.connect
+        def traced(*args, **kwargs):
+            conn = connect(*args, **kwargs)
+            conn.set_trace_callback(traces.append)
+            return conn
+        with patch("api.data_store.pd.read_csv", side_effect=AssertionError("Catalog must avoid loading source tables")), patch("api.catalog.sqlite3.connect", side_effect=traced):
+            result = self.get("xqtl?geneId=GeneA&tissueId=Brain&modality=splicing&limit=1&offset=1")
+            self.assertEqual(result["pagination"], {"total": 2, "limit": 1, "offset": 1})
+            self.assertEqual(result["xqtl"][0]["variantId"], "chr1:50")
+            self.assertEqual(self.get("eqtl?geneId=GeneA&tissueId=Brain&limit=1")["pagination"]["total"], 3)
+            self.assertEqual(self.get("exon?geneId=GeneA&limit=1&offset=1")["exon"][0]["start"], 10)
+            unpaged = self.get("xqtl?geneId=GeneA")
+            self.assertEqual([r["pos"] for r in unpaged["xqtl"]], [30, 10, 40, 50])
+            self.assertEqual(unpaged["xqtl"][0]["pValue"], 1.234567890123456e-30)
+            self.assertIsNone(unpaged["xqtl"][2]["slope"])
+            self.assertNotIn("pagination", unpaged)
+            self.assertEqual(self.get("xqtl?geneId=Empty&limit=1")["pagination"]["total"], 0)
+            self.assertEqual(self.get("xqtl?geneId=GeneA&modality=isoforms")["xqtl"], [])
+            self.assertEqual(self.get("xqtl?geneId=GeneA&limit=1&offset=100")["xqtl"], [])
+        self.assertTrue(any("LIMIT 1 OFFSET 1" in sql for sql in traces))
+        self.assertTrue(any("count(*)" in sql for sql in traces))
+        for name in ["exons", "eqtls", "xqtls"]:
+            self.assertNotIn(name, self.store.__dict__)
+        self.assertEqual(self.store.catalog_records("exon", "GeneA' OR 1=1 --")[0], [])
+
+    def test_catalog_missing_stale_and_invalid_are_service_errors(self):
+        import os
+        import sqlite3
+        catalog = self.root / "api/catalog.sqlite3"
+        catalog.unlink()
+        with self.assertLogs(self.app.logger, level="ERROR"):
+            self.assertEqual(self.client.get("/api/v4/exon?geneId=GeneA").status_code, 503)
+        build_catalog(self.root)
+        source = self.root / "exon.v4.tsv"
+        os.utime(source, ns=(source.stat().st_atime_ns, source.stat().st_mtime_ns + 1000000000))
+        with self.assertLogs(self.app.logger, level="ERROR"):
+            self.assertEqual(self.client.get("/api/v4/exon?geneId=GeneA").status_code, 503)
+        # Unrelated catalog collections remain usable.
+        self.assertEqual(len(self.get("eqtl?geneId=GeneA")["eqtl"]), 1)
+        build_catalog(self.root)
+        with sqlite3.connect(catalog) as conn:
+            conn.execute("UPDATE metadata SET value = 'unknown-format' WHERE key = 'format'")
+        with self.assertLogs(self.app.logger, level="ERROR"):
+            self.assertEqual(self.client.get("/api/v4/eqtl?geneId=GeneA").status_code, 503)
+
+    def test_failed_catalog_preparation_preserves_published_database(self):
+        catalog = self.root / "api/catalog.sqlite3"
+        previous = catalog.read_bytes()
+        with (self.root / "exon.v4.tsv").open("a") as handle:
+            handle.write("bad\trow\n")
+        with self.assertRaises(ValueError):
+            build_catalog(self.root)
+        self.assertEqual(catalog.read_bytes(), previous)
+        self.assertEqual(list(catalog.parent.glob("tmp*.sqlite3")), [])
 
     def test_expression_scales_samples_and_missing_genes(self):
         row = self.get("geneExpression?geneId=GENEA&tissueId=Brain&includeSampleIds=true")["geneExpression"][0]

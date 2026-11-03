@@ -36,7 +36,7 @@ Responses include `pValueSource=computed`, `covariateScope=modality`, associatio
 
 ## Index preparation and memory
 
-Every SQLite index follows the same path and schema:
+Phenotype SQLite indexes follow the same path and schema across modalities:
 
 ```text
 data/v4/api/phenotypes/{tissue}/{modality}.{scale}.sqlite3
@@ -56,11 +56,18 @@ python -m api.prepare_phenotypes --data-dir /path/to/data/v4 --modalities expres
 # Targeted preparation
 python -m api.prepare_phenotypes --data-dir /path/to/data/v4 --tissues IL --modalities splicing isoforms
 
+# Exon and independent-association catalog
+python -m api.prepare_catalog --data-dir /path/to/data/v4
+
 # Compare computed tests against strong, weak and fixed random released leads
 python -m api.validate_associations --data-dir /path/to/data/v4 --report nominal-validation.json
 ```
 
 Inputs are normalized phenotype BEDs, indexed cohort VCFs, tissue rat IDs, modality-specific covariates, modality-specific `xqtl/top_assoc.*` summaries and the reference/tissue tables. TPM indexes use `expr/expr.tpm.*` when present, with `phenos/*.expression.unnorm.*` as an alternative source. No all-pairs nominal p-value export is required. The API does not read `cis_pvals/*.zip`; archive retention for public downloads is a separate deployment decision.
+
+The exon/association catalog is `data/v4/api/catalog.sqlite3`, prepared from `exon.v4.tsv`, `eqtl/eqtls_indep.v4_rn8.tsv` and `xqtl/xqtls_indep.cross_modality.v4_rn8.tsv`. Its typed tables are indexed by gene, tissue and modality. `/exon`, `/eqtl` and `/xqtl` filter, count and paginate inside SQLite, retrieving only the selected records. Results retain source-file order, and numeric values are stored without additional rounding. Source TSVs remain suitable for downloads.
+
+The catalog builder streams the three inputs, records their sizes/mtimes and schema version, and atomically publishes the complete database. It requires no new scientific exports. Add `api.prepare_catalog` after the three input tables are produced in the HPC release workflow; transfer the database with those matching sources. The three catalog endpoints require a current database and return `503` for missing, invalid or stale catalogs, with no full-table pandas fallback. Source validation is specific to the requested collection. Significant cis associations remain in their per-gene ZIP archive.
 
 Build indexes on the HPC after `ratgtex-server-data` finishes, using the same API code version that will serve them. Keep the builder in this repository and invoke its pinned version from the HPC workflow. Index creation streams one source matrix at a time, checks identifiers and coordinates, and replaces each database atomically. Reserve space for the largest temporary index as well as the final databases. On-server building is also available for repairs.
 
@@ -77,14 +84,14 @@ Transfer indexes and matching source files together with mtimes preserved (`rsyn
 | `RATGTEX_RESPONSE_CACHE_MB` | `32` | Serialized response cache budget per worker, in MiB; `0` disables it |
 | `RATGTEX_REFERENCE_DATASET` | `ratgtex_v4_round11_2` when available, otherwise the first cohort | Default cohort for variant metadata |
 
-Successful JSON responses are cached for five minutes within a byte budget and a 256-entry limit. Responses support weak ETags, conditional GET/HEAD and negotiated gzip. Errors are not cached. Reference tables load lazily under a lock. VCF handles and SQLite connections are request-local and closed after use. ZIP handles used for significant-association lookups are bounded and closed on eviction. Workers have independent caches that assume immutable release files; restart them after data updates. Measure memory before increasing worker count.
+Successful JSON responses are cached for five minutes within a byte budget and a 256-entry limit. Responses support weak ETags, conditional GET/HEAD and negotiated gzip. Errors are not cached. Gene and tissue reference tables load lazily under a lock; exon and independent-association records are queried from the catalog. Each catalog connection uses a 2 MiB SQLite page-cache budget. VCF handles and SQLite connections are request-local and closed after use. ZIP handles used for significant-association lookups are bounded and closed on eviction. Workers have independent caches that assume immutable release files; restart them after data updates. Measure memory before increasing worker count.
 
 ## Query conventions
 
 - Gene IDs are rat gene symbols or annotation IDs, matched exactly or unambiguously without regard to case. `/genes?query=Cd300&limit=100&offset=0` searches the gene directory.
 - Variant IDs use `chromosome:position`, with 1-based positions. `/variant` accepts `genotypeDatasetId`; genotype/phenotype queries select the cohort from the tissue. Ambiguous positions and multiallelic records cannot identify a supported biallelic variant.
 - Use `tissueId` or `tissueSiteDetailId` for tissue filtering, supplying only one. Responses use `tissueSiteDetailId`. List parameters are comma-separated and deduplicated; repeated parameters and empty identifiers return `400`.
-- `/eqtl`, `/xqtl`, `/significantCisEqtls` and `/exon` accept `limit` (1–1000) and `offset`. Omitting both returns the full collection. Pagination bounds transfer size; a significant-association ZIP member is decoded before pagination.
+- `/eqtl`, `/xqtl`, `/significantCisEqtls` and `/exon` accept `limit` (1–1000) and `offset`. Omitting both returns the full collection. Catalog endpoints apply pagination before records enter Python memory. A significant-association ZIP member is decoded before its pagination.
 - `/medianGeneExpression` supports up to 500 genes with `cluster=false`; clustering supports up to 200 genes and uses raw-TPM average-linkage clustering. Unavailable clusters have the value `"Not enough data"`.
 - `pValue` is nominal; `pValueBeta` is a beta-approximated permutation p-value; `qValue` is a q-value. `slope` (also exposed as `nes` in expression associations) refers to normalized-phenotype regression, while `log2aFC` is log2 allelic fold change.
 - Empty collection lookups return empty arrays. Endpoints requiring one existing resource return `404` when it is absent. Invalid parameters return `400`, unsupported variants `422`, and unavailable release data or indexes `503`. Missing/nonfinite numbers are JSON null.

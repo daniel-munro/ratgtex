@@ -23,9 +23,11 @@ from werkzeug.exceptions import HTTPException
 if __package__:
     from .data_store import DataStore, SCALES, MODALITIES
     from .association import AssociationDataError
+    from .catalog import CatalogUnavailableError
 else:  # Existing gunicorn --chdir api app:api and python api/app.py commands.
     from data_store import DataStore, SCALES, MODALITIES
     from association import AssociationDataError
+    from catalog import CatalogUnavailableError
 
 
 class APIError(Exception):
@@ -232,8 +234,9 @@ def create_app(config=None, store=None):
         return jsonify(error="Required release data are unavailable on this server.", status=503), 503
 
     @app.errorhandler(AssociationDataError)
-    def association_unavailable(error):
-        app.logger.error("Association inputs unavailable: %s", error)
+    @app.errorhandler(CatalogUnavailableError)
+    def prepared_data_unavailable(error):
+        app.logger.error("API inputs unavailable: %s", error)
         return jsonify(error=str(error), status=503), 503
 
     @app.errorhandler(HTTPException)
@@ -293,6 +296,16 @@ def create_app(config=None, store=None):
         return jsonify({key: records(frame.iloc[offset:offset + limit]),
                         "pagination": {"total": len(frame), "limit": limit, "offset": offset}})
 
+    def catalog_page(collection, gene, tissues=None, modality=None):
+        paginated = "limit" in request.args or "offset" in request.args
+        limit = integer("limit", 100, 1, 1000) if paginated else None
+        offset = integer("offset", 0, 0, 10**9) if paginated else 0
+        rows, total = store.catalog_records(collection, gene, tissues, modality, limit, offset)
+        result = {collection: rows}
+        if paginated:
+            result["pagination"] = {"total": total, "limit": limit, "offset": offset}
+        return jsonify(result)
+
     @app.get("/api/v4/metadata")
     def metadata():
         return jsonify(
@@ -347,29 +360,23 @@ def create_app(config=None, store=None):
 
     @app.get("/api/v4/exon")
     def exon():
-        gene = one_gene()
-        return page(store.by_gene(store.exons, gene), "exon")
+        return catalog_page("exon", one_gene())
 
     @app.get("/api/v4/eqtl")
     def eqtl():
         gene = one_gene()
-        frame = store.by_gene(store.eqtls, gene)
-        if "tissueId" in request.args or "tissueSiteDetailId" in request.args:
-            frame = frame.loc[frame.tissueSiteDetailId.isin(selected_tissues())]
-        return page(frame, "eqtl")
+        tissues = selected_tissues() if "tissueId" in request.args or "tissueSiteDetailId" in request.args else None
+        return catalog_page("eqtl", gene, tissues)
 
     @app.get("/api/v4/xqtl")
     def xqtl():
         gene = one_gene()
-        frame = store.by_gene(store.xqtls, gene)
-        if "tissueId" in request.args or "tissueSiteDetailId" in request.args:
-            frame = frame.loc[frame.tissueSiteDetailId.isin(selected_tissues())]
+        tissues = selected_tissues() if "tissueId" in request.args or "tissueSiteDetailId" in request.args else None
         modality = parameter("modality")
         if modality is not None:
-            if modality not in set(store.xqtls.modality):
+            if modality not in MODALITIES:
                 raise APIError("Unknown modality: " + modality)
-            frame = frame.loc[frame.modality == modality]
-        return page(frame, "xqtl")
+        return catalog_page("xqtl", gene, tissues, modality)
 
     @app.get("/api/v4/significantCisEqtls")
     def single_tissue_eqtl():
