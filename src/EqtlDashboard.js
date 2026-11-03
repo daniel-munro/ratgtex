@@ -4,17 +4,17 @@
  */
 import { json } from "d3-fetch";
 import { select } from "d3-selection";
-import GroupedViolin from "./modules/GroupedViolin";
+import GroupedViolin from "./modules/GroupedViolin.js";
 import {
   getGtexUrls,
   parseTissueSites,
   parseDynEqtl,
-} from "./modules/DataParser";
+} from "./modules/DataParser.js";
 
 import {
   createTissueGroupMenu,
   parseTissueGroupMenu,
-} from "./modules/MenuBuilder";
+} from "./modules/MenuBuilder.js";
 
 /**
  * Build the eQTL Dashboard

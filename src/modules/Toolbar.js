@@ -8,7 +8,7 @@
  */
 
 import { select } from "d3-selection";
-import { parseCssStyles } from "./utils";
+import { downloadSvg } from "./utils.js";
 
 export default class Toolbar {
   constructor(domId, tooltip = undefined, vertical = false) {
@@ -38,28 +38,28 @@ export default class Toolbar {
     cloneId,
     icon = "fa-download"
   ) {
-    const $button = this.createButton(id, icon);
+    this.createButton(id, icon);
     select(`#${id}`)
       .on("click", () => {
         this.downloadSvg(svgId, outfileName, cloneId);
       })
-      .on("mouseover", () => {
-        this.tooltip.show("Download");
+      .on("mouseover", (event) => {
+        this.tooltip?.show("Download", event);
       })
       .on("mouseout", () => {
-        this.tooltip.hide();
+        this.tooltip?.hide();
       });
   }
 
   createResetButton(id, callback, icon = "fa-expand-arrows-alt") {
-    const $button = this.createButton(id, icon);
+    this.createButton(id, icon);
     select(`#${id}`)
       .on("click", callback)
-      .on("mouseover", () => {
-        this.tooltip.show("Reset the scales");
+      .on("mouseover", (event) => {
+        this.tooltip?.show("Reset the scales", event);
       })
       .on("mouseout", () => {
-        this.tooltip.hide();
+        this.tooltip?.hide();
       });
   }
 
@@ -95,26 +95,6 @@ export default class Toolbar {
    * Dependencies: FileSaver
    */
   downloadSvg(svgId, fileName, cloneId) {
-    // let svgObj = $($($(`${"#" +svgId} svg`))[0]); // complicated jQuery to get to the SVG object
-    let svgObj = $($($(`${"#" + svgId}`))[0]);
-    let $svgCopy = svgObj
-      .clone()
-      .attr("version", "1.1")
-      .attr("xmlns", "http://www.w3.org/2000/svg");
-
-    // parse and add all the CSS styling used by the SVG
-    let styles = parseCssStyles(svgObj.get());
-    $svgCopy.prepend(styles);
-
-    $("#" + cloneId)
-      .html("")
-      .hide(); // make sure the copyID is invisible
-    let svgHtml = $(`#${cloneId}`).append($svgCopy).html();
-
-    let svgBlob = new Blob([svgHtml], { type: "image/svg+xml" });
-    saveAs(svgBlob, fileName); // this is a FileSaver function....
-
-    // clear the temp download div
-    $(`#${cloneId}`).html("").hide();
+    downloadSvg($(`#${svgId}`), fileName, cloneId);
   }
 }

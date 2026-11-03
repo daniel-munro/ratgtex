@@ -100,7 +100,7 @@ More info on the [ratgenes.org eQTL page](https://ratgenes.org/research-projects
 ##### <a id="R01EY021200" href="https://reporter.nih.gov/project-details/10361394">R01EY021200</a>: Genetic Modulators of Glaucoma
 
 - Publication: [Genome-wide association study finds multiple loci associated with intraocular pressure in HS rats](https://doi.org/10.3389/fgene.2022.1029058)
-- Investigator: Monica Jablonsky, UTHSC
+- Investigator: Monica Jablonski, UTHSC
 - Prior experience/treatment: Behavioral testing including brief nicotine exposure
 - Sex ratio: 29 Female, 24 Male
 - Tissues: Eye

@@ -10,8 +10,8 @@ import { select } from "d3-selection";
 import { scaleBand, scaleSqrt } from "d3-scale";
 import { brushX } from "d3-brush";
 
-import Tooltip from "./Tooltip";
-import { setColorScale, drawColorLegend } from "./colors";
+import Tooltip from "./Tooltip.js";
+import { setColorScale, drawColorLegend } from "./colors.js";
 
 export default class BubbleMap {
   constructor(data, useLog = true, logBase = 10, colorScheme = "Reds") {
@@ -252,7 +252,8 @@ export default class BubbleMap {
         let displayX = d.displayX === undefined ? d.x : d.displayX;
         let displayY = d.displayY === undefined ? d.y : d.displayY;
         tooltip.show(
-          `Column: ${displayX} <br/> Row: ${displayY}<br/> Value: ${displayValue}<br/> Size: ${displaySize}`
+          `Column: ${displayX} <br/> Row: ${displayY}<br/> Value: ${displayValue}<br/> Size: ${displaySize}`,
+          event
         );
       })
       .on("mouseout", function () {

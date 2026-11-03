@@ -37,11 +37,12 @@
 
 // TODO: eliminate hard-coded values
 
+import { select } from "d3-selection";
 import { hierarchy } from "d3-hierarchy";
 import { ascending } from "d3-array";
 import { axisBottom, axisLeft } from "d3-axis";
 import { scaleLinear, scaleBand } from "d3-scale";
-import { parseNewick } from "./newick";
+import { parseNewick } from "./newick.js";
 const verbose = false;
 export default class Dendrogram {
   constructor(newick, orientation = "h") {
@@ -138,12 +139,11 @@ export default class Dendrogram {
       .attr("fill", "#333")
       .attr("opacity", 0.5)
       .attr("class", "dendrogram-node")
-      .on("mouseover", function (d) {
-        d3.select(this).attr("r", 3);
-        console.log(d.leaves());
+      .on("mouseover", function () {
+        select(this).attr("r", 3);
       })
-      .on("mouseout", function (d) {
-        d3.select(this).attr("r", 2);
+      .on("mouseout", function () {
+        select(this).attr("r", 2);
       });
 
     // axis
@@ -230,12 +230,11 @@ export default class Dendrogram {
       .attr("fill", "#333")
       .attr("opacity", 0.5)
       .attr("class", "dendrogram-node")
-      .on("mouseover", function (d) {
-        d3.select(this).attr("r", 3);
-        console.log(d.leaves());
+      .on("mouseover", function () {
+        select(this).attr("r", 3);
       })
-      .on("mouseout", function (d) {
-        d3.select(this).attr("r", 2);
+      .on("mouseout", function () {
+        select(this).attr("r", 2);
       });
 
     // axis

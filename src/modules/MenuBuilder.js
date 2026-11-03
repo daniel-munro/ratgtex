@@ -6,7 +6,7 @@
 import { json } from "d3-fetch";
 import { select } from "d3-selection";
 import { range } from "d3-array";
-import { getGtexUrls, parseTissues } from "./DataParser";
+import { getGtexUrls, parseTissues } from "./DataParser.js";
 
 /**
  * Create the tissue (dataset) dropdown menu using select2

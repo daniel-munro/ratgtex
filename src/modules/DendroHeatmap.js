@@ -2,14 +2,14 @@
  * Copyright © 2015 - 2018 The Broad Institute, Inc. All rights reserved.
  * Licensed under the BSD 3-clause license (https://github.com/broadinstitute/gtex-viz/blob/master/LICENSE.md)
  */
-import { createSvg } from "./utils";
+import { createSvg } from "./utils.js";
 import { select } from "d3-selection";
 
-import DendroHeatmapConfig from "./DendroHeatmapConfig";
-import Dendrogram from "./Dendrogram";
-import Heatmap from "./Heatmap";
-import Tooltip from "./Tooltip";
-import Toolbar from "./Toolbar";
+import DendroHeatmapConfig from "./DendroHeatmapConfig.js";
+import Dendrogram from "./Dendrogram.js";
+import Heatmap from "./Heatmap.js";
+import Tooltip from "./Tooltip.js";
+import Toolbar from "./Toolbar.js";
 
 export default class DendroHeatmap {
   /**
@@ -174,7 +174,7 @@ export default class DendroHeatmap {
       svg.selectAll(".leaf-color").classed("highlighted", false);
     };
 
-    const mouseover = function (d) {
+    const mouseover = function (event, d) {
       select(this).attr("r", 6).attr("fill", "red");
       let ids = d.leaves().map((node) => node.data.name);
       svg

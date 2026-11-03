@@ -2,13 +2,13 @@
  * Copyright © 2015 - 2018 The Broad Institute, Inc. All rights reserved.
  * Licensed under the BSD 3-clause license (https://github.com/broadinstitute/gtex-viz/blob/master/LICENSE.md)
  */
-import { select, selectAll } from "d3-selection";
+import { select } from "d3-selection";
 import { scaleBand } from "d3-scale";
 import { nest } from "d3-collection";
 
-import { setColorScale, drawColorLegend } from "./colors";
-import Toolbar from "./Toolbar";
-import Tooltip from "./Tooltip";
+import { setColorScale, drawColorLegend } from "./colors.js";
+import Toolbar from "./Toolbar.js";
+import Tooltip from "./Tooltip.js";
 
 export default class Heatmap {
   /**
@@ -150,50 +150,33 @@ export default class Heatmap {
     // exit -- removes old elements as needed
     xLabels.exit().remove();
 
-    const yLabels = dom
+    dom
       .selectAll(".exp-map-ylabel")
-      .data(this.yList)
-      .enter()
-      .append("text")
+      .data(this.yList, (d) => d)
+      .join("text")
       .text((d) => d)
       .attr("x", this.xScale.range()[1] + 5)
       .attr("y", (d) => this.yScale(d) + 10)
       .attr("class", (d, i) => `exp-map-ylabel y${i}`)
       .attr("text-anchor", "start")
       .style("cursor", "default")
-      .on("click", (d) => {
-        alert(`${d} is clicked. To be implemented`);
-      })
-      .on("mouseover", function (d) {
+      .on("mouseover", function () {
         select(this).classed("normal", false).classed("highlighted", true);
       })
-      .on("mouseout", function (d) {
+      .on("mouseout", function () {
         select(this).classed("normal", true).classed("highlighted", false);
       });
 
-    // renders the heatmap cells
-
-    // data join
+    // Identify cells by coordinates: values can repeat or change on redraw.
     const cells = dom
       .selectAll(".exp-map-cell")
-      .data(this.data, (d) => d.value);
-
-    // update old elements
-    cells
-      .attr("x", (d) => this.xScale(d.x))
-      .attr("y", (d) => this.yScale(d.y))
-      .attr("row", (d) => `x${this.xList.indexOf(d.x)}`) // TODO: row should be y, column should be x...
-      .attr("col", (d) => `y${this.yList.indexOf(d.y)}`);
-
-    // enter new elements
+      .data(this.data, (d) => JSON.stringify([d.x, d.y]))
+      .join("rect");
     const nullColor = "#DDDDDD";
     const self = this;
     cells
-      .enter()
-      .append("rect")
-      .attr("row", (d) => `x${this.xList.indexOf(d.x)}`)
+      .attr("row", (d) => `x${this.xList.indexOf(d.x)}`) // TODO: row should be y, column should be x...
       .attr("col", (d) => `y${this.yList.indexOf(d.y)}`)
-
       .attr("x", (d) => this.xScale(d.x))
       .attr("y", (d) => this.yScale(d.y))
       .attr("rx", this.r)
@@ -204,15 +187,11 @@ export default class Heatmap {
       .style("fill", "#eeeeee")
       .on("mouseover", function (event, d) {
         const selected = select(this); // Note: "this" here refers to the dom element not the object
-        self.cellMouseover(d, dom, selected);
+        self.cellMouseover(d, dom, selected, event);
       })
       .on("mouseout", function () {
-        const selected = select(this); // Note: "this" here refers to the dom element not the object
-        self.cellMouseout();
+        self.cellMouseout(dom);
       })
-      .merge(cells)
-      // .transition()
-      // .duration(2000)
       .style("fill", (d) => {
         return useNullColor && d.value == 0
           ? nullColor
@@ -220,17 +199,14 @@ export default class Heatmap {
           ? this.colorScale(this._log(d.value))
           : this.colorScale(d.value);
       }); // TODO: what if null value isn't 0?
-
-    // exit and remove
-    cells.exit().remove();
   }
 
-  cellMouseout(d) {
-    selectAll("*").classed("highlighted", false);
+  cellMouseout(dom) {
+    dom.selectAll("*").classed("highlighted", false);
     this.tooltip.hide();
   }
 
-  cellMouseover(d, dom, selected) {
+  cellMouseover(d, dom, selected, event) {
     const rowClass = selected.attr("row");
     const colClass = selected.attr("col");
     dom
@@ -247,7 +223,8 @@ export default class Heatmap {
         ? parseFloat(d.value.toExponential()).toPrecision(4)
         : d.displayValue;
     this.tooltip.show(
-      `Column: ${d.x} <br/> Row: ${d.y}<br/> Value: ${displayValue}`
+      `Column: ${d.x} <br/> Row: ${d.y}<br/> Value: ${displayValue}`,
+      event
     );
   }
 

@@ -55,3 +55,4 @@ exclude:
   - data/
   - src/
   - test.sh
+  - tests/

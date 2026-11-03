@@ -7,8 +7,8 @@
 import { json } from "d3-fetch";
 import { median, ascending } from "d3-array";
 import { select, selectAll } from "d3-selection";
-import { getGtexUrls, parseTissues } from "./modules/DataParser";
-import GroupedViolin from "./modules/GroupedViolin";
+import { getGtexUrls, parseTissues } from "./modules/DataParser.js";
+import GroupedViolin from "./modules/GroupedViolin.js";
 
 export function launch(
   rootId,
@@ -26,7 +26,7 @@ export function launch(
 
   const ids = {
     root: rootId,
-    spinner: "spinner",
+    spinner: `${rootId}-spinner`,
     svg: `${rootId}-svg`,
     tooltip: tooltipRootId,
     toolbar: `${rootId}-toolbar`,
@@ -72,7 +72,7 @@ export function launch(
       .attr("id", ids.toolbar)
       .appendTo($(`#${ids.root}`));
   if ($(`#${ids.root} #${ids.spinner}`).length == 0)
-    $(`<span><i id="spinner" class="fas fa-sync fa-spin"></i></span>`).appendTo(
+    $(`<span><i id="${ids.spinner}" class="fas fa-sync fa-spin"></i></span>`).appendTo(
       $(`#${ids.root}`)
     );
   else $(`#${ids.root} #${ids.spinner}`).show();
@@ -81,7 +81,7 @@ export function launch(
       .attr("id", ids.clone)
       .appendTo($(`#${ids.root}`));
 
-  Promise.all(promises).then(function (args) {
+  return Promise.all(promises).then(function (args) {
     const tissues = parseTissues(args[0]);
     const tissueDict = {};
     const tissueIdNameMap = {};
@@ -426,12 +426,12 @@ function _addViolinTissueColorBand(plot, dom, tissueDict, loc = "top") {
  * @param vplot {GroupedViolin}
  * @private
  */
-function _customizeTooltip(vplot) {
-  let violinGs = selectAll(".violin-g");
-  violinGs.on("mouseover", (d, i, nodes) => {
+function _customizeTooltip(vplot, dom) {
+  const violinGs = dom.selectAll(".violin-g");
+  violinGs.on("mouseover", function (event, d) {
     let med =
       vplot.gpConfig.scale == "log" ? Math.pow(10, d.median) - 1 : d.median;
-    let vPath = select(nodes[i]).select("path");
+    let vPath = select(this).select("path");
     vPath.classed("highlighted", true);
     if (!vplot.gpConfig.subset) {
       vplot.tooltip.show(
@@ -440,7 +440,8 @@ function _customizeTooltip(vplot) {
           `n = ${d.values.length}` +
           "<br/>" +
           `Median${vplot.unit}: ${med.toPrecision(4)}` +
-          "<br/>"
+          "<br/>",
+        event
       );
     } else {
       vplot.tooltip.show(
@@ -450,7 +451,8 @@ function _customizeTooltip(vplot) {
           ` (n = ${d.values.length})` +
           "<br/>" +
           `Median${vplot.unit}: ${med.toPrecision(4)}` +
-          "<br/>"
+          "<br/>",
+        event
       );
     }
   });
@@ -530,7 +532,7 @@ function _customizePlot(vplot, ids) {
   } else {
     _addViolinTissueColorBand(vplot, svg, vplot.tissueDict, "bottom");
   }
-  _customizeTooltip(vplot);
+  _customizeTooltip(vplot, svg);
 }
 
 /**

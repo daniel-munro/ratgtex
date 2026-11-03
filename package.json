@@ -5,15 +5,17 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "rollup --config src/rollup/rollup.config.js",
+    "test": "node --test tests/*.test.js"
   },
   "author": "Katherine Huang",
   "license": "BSD-3-Clause",
   "devDependencies": {
     "@rollup/plugin-terser": "^1.0.0",
-    "rollup-plugin-copy": "^0.2.3",
-    "rollup-plugin-node-resolve": "^3.3.0",
-    "rollup-plugin-replace": "^2.0.0"
+    "jquery": "^3.7.1",
+    "jsdom": "^26.1.0",
+    "rollup": "^4.67.4",
+    "rollup-plugin-node-resolve": "^3.3.0"
   },
   "dependencies": {
     "d3": "^7.8.5",

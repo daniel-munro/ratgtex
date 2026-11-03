@@ -3,6 +3,7 @@
  * Licensed under the BSD 3-clause license (https://github.com/broadinstitute/gtex-viz/blob/master/LICENSE.md)
  */
 import { select } from "d3-selection";
+import "d3-transition";
 
 export default class Tooltip {
   constructor(
@@ -19,11 +20,12 @@ export default class Tooltip {
     this.duration = duration;
   }
 
-  show(info) {
+  show(info, event) {
     if (this.verbose) console.log(info);
     this.edit(info);
-    this.move();
+    this.move(event?.pageX, event?.pageY);
     select("#" + this.id)
+      .interrupt()
       .style("display", "inline")
       .transition()
       .duration(this.duration)
@@ -32,33 +34,31 @@ export default class Tooltip {
 
   hide() {
     select("#" + this.id)
+      .interrupt()
       .transition()
       .duration(this.duration)
-      .style("opacity", 0.0);
+      .style("opacity", 0.0)
+      .on("end", function () {
+        select(this).style("display", "none");
+      });
     this.edit("");
   }
 
   move(x, y) {
-    // If no coordinates provided, try to get them from the current event
-    if (x === undefined || y === undefined) {
-      // Try to get coordinates from the current mouse position
-      if (typeof window !== "undefined" && window.event) {
-        x = window.event.pageX;
-        y = window.event.pageY;
-      } else {
-        // Fallback to default positioning
-        x = 100;
-        y = 100;
-      }
-    }
+    // Callers pass coordinates from the D3 event; retain the last position
+    // when showing a tooltip programmatically.
+    x = x ?? this.x ?? 100;
+    y = y ?? this.y ?? 100;
+    this.x = x;
+    this.y = y;
 
     if (this.verbose) {
       console.log(x);
       console.log(y);
     }
-    x = x + this.offsetX; // TODO: get rid of the hard-coded adjustment
+    x = x + this.offsetX;
     y = y + this.offsetY < 0 ? 10 : y + this.offsetY;
-    const t = select("#" + this.id)
+    select("#" + this.id)
       .style("left", `${x}px`)
       .style("top", `${y}px`);
   }

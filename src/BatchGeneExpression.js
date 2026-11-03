@@ -14,18 +14,18 @@ import {
   parseMedianExpression,
   parseGeneExpressionForViolin,
   parseTissueSites,
-} from "./modules/DataParser";
+} from "./modules/DataParser.js";
 
 import {
   createTissueGroupMenu,
   parseTissueGroupMenu,
-} from "./modules/MenuBuilder";
+} from "./modules/MenuBuilder.js";
 
-import { createTissueMenu } from "./modules/MenuBuilder";
-import { colorChart } from "./modules/colors";
-import DendroHeatmapConfig from "./modules/DendroHeatmapConfig";
-import DendroHeatmap from "./modules/DendroHeatmap";
-import GroupedViolin from "./modules/GroupedViolin";
+import { createTissueMenu } from "./modules/MenuBuilder.js";
+import { colorChart } from "./modules/colors.js";
+import DendroHeatmapConfig from "./modules/DendroHeatmapConfig.js";
+import DendroHeatmap from "./modules/DendroHeatmap.js";
+import GroupedViolin from "./modules/GroupedViolin.js";
 
 /**
  * Create the tissue (dataset) dropdown menu using select2
@@ -454,7 +454,7 @@ function _customizeMouseEvents(
   dmap.data.external = [];
   const cellMouseover = function (event, d) {
     const selected = select(this);
-    dmap.objects.heatmap.cellMouseover(d, svg, selected); // call the default heatmap mouse over event first
+    dmap.objects.heatmap.cellMouseover(d, svg, selected, event); // call the default heatmap mouse over event first
     let tissue =
       tissueDict[d.x] === undefined ? d.x : tissueDict[d.x].tissueSiteDetail;
     // let gene = geneDict[d.y]===undefined?d.y:geneDict[d.y].geneSymbol;
@@ -463,7 +463,8 @@ function _customizeMouseEvents(
     tooltip.show(
       `Tissue: ${tissue}<br/> Gene: ${gene}<br/> Median TPM: ${parseFloat(
         d.displayValue.toExponential()
-      ).toPrecision(4)}`
+      ).toPrecision(4)}`,
+      event
     );
   };
 
@@ -768,9 +769,9 @@ function _addToolBar(
         // toggle the applied filter
         launchTopExpressed(qTissue, ids.root, ids.violin, urls, !filterGenes);
       })
-      .on("mouseover", function () {
-        if (filterGenes) toolbar.tooltip.show("Include Mitochondrial Genes");
-        else toolbar.tooltip.show("Exclude Mitochondrial Genes");
+      .on("mouseover", function (event) {
+        if (filterGenes) toolbar.tooltip.show("Include Mitochondrial Genes", event);
+        else toolbar.tooltip.show("Exclude Mitochondrial Genes", event);
       })
       .on("mouseout", function () {
         toolbar.tooltip.hide();
@@ -788,8 +789,8 @@ function _addToolBar(
         let xlist = dmap.objects.heatmap.xList.sort();
         _sortTissues(xlist, dmap, tissueDict);
       })
-      .on("mouseover", function () {
-        toolbar.tooltip.show("Sort Tissues Alphabetically");
+      .on("mouseover", function (event) {
+        toolbar.tooltip.show("Sort Tissues Alphabetically", event);
       })
       .on("mouseout", function () {
         toolbar.tooltip.hide();
@@ -805,8 +806,8 @@ function _addToolBar(
         let xlist = dmap.objects.columnTree.xScale.domain();
         _sortTissues(xlist, dmap, tissueDict);
       })
-      .on("mouseover", function () {
-        toolbar.tooltip.show("Cluster Tissues");
+      .on("mouseover", function (event) {
+        toolbar.tooltip.show("Cluster Tissues", event);
       })
       .on("mouseout", function () {
         toolbar.tooltip.hide();

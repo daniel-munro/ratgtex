@@ -12,19 +12,39 @@ This site uses [Jekyll](https://jekyllrb.com/) to build the pages for each genom
 
 ### Using Rollup to bundle the visualization scripts
 
-#### Rollup installation
-
-To install Rollup and required libraries, you may run `npm install` in this directory. This will install the libraries under a subdirectory: `node_modules`.
-
-#### Rollup configuration
-
-The rollup configuration files for each visualization is located in the directory [src/rollup](/src/rollup). To recompile the code for a particular visualization, run the following command in this directory:
+Use Node.js 18 or later. Install the locked dependencies, then build all four bundles:
 
 ```shell
-rollup -c src/rollup/rollup.expression-map.config.js
+npm ci
+npm run build
 ```
 
-This will recompile and generate a new bundled visualization script in the directory `assets/js/`.
+The generated scripts live in `assets/js/` and are ignored by Git. Rebuild them after editing `src/` and before building or deploying the Jekyll site.
+
+To build just one visualization:
+
+```shell
+npx rollup -c src/rollup/rollup.expression-map.config.js
+```
+
+The individual configurations share `src/rollup/shared.js`. Their entry points are:
+
+| Entry point | Used for |
+| --- | --- |
+| `GeneExpressionViolinPlot.js` | Gene page expression plots |
+| `BatchGeneExpression.js` | Expression heatmaps and top expressed genes |
+| `EqtlDashboard.js` | eQTL dashboard |
+| `GeneEqtlVisualizer.js` | Gene eQTL bubble map and genotype plots |
+
+Reusable chart classes, parsers, tooltips, and SVG export helpers live in `src/modules/`. The page templates initialize the bundles and provide jQuery, Bootstrap, and FileSaver where needed. Keep chart selections scoped to their own SVG, and use D3's `(event, datum)` event handler signature.
+
+Run the visualization regression checks with:
+
+```shell
+npm test
+```
+
+These tests exercise rendering and interactions with representative data in jsdom. They cover tooltip isolation, cluster hover, heatmap redraws, small sample groups, sample counts, empty eQTL results, and SVG downloads. jsdom does not perform browser layout, so use the local site to review responsive layout and appearance when changing styles or dimensions.
 
 ### API docs
 

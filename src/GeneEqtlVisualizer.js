@@ -10,7 +10,7 @@ import { max, min } from "d3-array";
 import { nest } from "d3-collection";
 import { scaleThreshold } from "d3-scale";
 
-import { checkDomId } from "./modules/utils";
+import { checkDomId } from "./modules/utils.js";
 import {
   getGtexUrls,
   parseGenes,
@@ -18,9 +18,9 @@ import {
   parseExonsToList,
   parseTissueSampleCounts,
   parseTissueDict,
-} from "./modules/DataParser";
-import BubbleMap from "./modules/BubbleMap";
-import { render as eqtlViolinPlotRender } from "./EqtlViolinPlot";
+} from "./modules/DataParser.js";
+import BubbleMap from "./modules/BubbleMap.js";
+import { render as eqtlViolinPlotRender } from "./EqtlViolinPlot.js";
 
 export function render(par, geneId, urls = getGtexUrls()) {
   $(`#${par.divSpinner}`).show();
@@ -287,7 +287,8 @@ function renderBubbleMap(
     let displayX = d.displayX === undefined ? d.x : d.displayX;
     let displayY = d.displayY === undefined ? d.y : d.displayY;
     bmap.tooltip.show(
-      `Column: ${displayX} <br/> Row: ${displayY}<br/> NES: ${displayValue}<br/> p-value: ${displaySize}`
+      `Column: ${displayX} <br/> Row: ${displayY}<br/> NES: ${displayValue}<br/> p-value: ${displaySize}`,
+      event
     );
   });
 
@@ -677,7 +678,7 @@ function renderTssDistanceTrack(gene, bmap, bmapSvg) {
       ttContent = bmap.variantsInExons[d]
         ? ttContent + "Exon Region"
         : ttContent;
-      bmap.tooltip.show(ttContent);
+      bmap.tooltip.show(ttContent, event);
       select(this).classed("highlighted", true);
     })
     .on("mouseout", function (d) {

@@ -29,12 +29,11 @@ import { scaleBand, scaleLinear } from "d3-scale";
 import { area } from "d3-shape";
 import { axisBottom, axisLeft } from "d3-axis";
 import { select } from "d3-selection";
-import { brush } from "d3-brush";
 import { randomNormal } from "d3-random";
 
-import { kernelDensityEstimator, kernel, kernelBandwidth } from "./kde";
-import Tooltip from "./Tooltip";
-import Toolbar from "./Toolbar";
+import { kernelDensityEstimator, kernel, kernelBandwidth } from "./kde.js";
+import Tooltip from "./Tooltip.js";
+import Toolbar from "./Toolbar.js";
 
 export default class GroupedViolin {
   /**
@@ -111,7 +110,8 @@ export default class GroupedViolin {
         showLegend,
         showSize,
         sortSubX,
-        showOutliers
+        showOutliers,
+        numPoints
       );
     };
 
@@ -124,7 +124,7 @@ export default class GroupedViolin {
         height,
         xPadding,
         xDomain,
-        [],
+        yScale,
         yLabel,
         showX,
         xAngle,
@@ -135,7 +135,8 @@ export default class GroupedViolin {
         showLegend,
         showSize,
         sortSubX,
-        showOutliers
+        showOutliers,
+        numPoints
       );
     };
 
@@ -160,7 +161,8 @@ export default class GroupedViolin {
         showLegend,
         showSize,
         sortSubX,
-        showOutliers
+        showOutliers,
+        numPoints
       );
     };
 
@@ -265,11 +267,7 @@ export default class GroupedViolin {
           return d.size == undefined ? "(0)" : `(${d.size || 0})`;
         });
         const sizeScale = scaleBand()
-          // Bug: domain() uses unique values, so any matching counts are shown only once.
-          // .domain(entries.map((d) => {return d.size==undefined?'(0)':`(${d.size||0})`}))
-          // .domain(Array(entries.length).keys()) // integer range
-          // Hack: add invisible space to make labels unique:
-          .domain([labels[0], " " + labels[1] + " ", "  " + labels[2] + "  "])
+          .domain(entries.map((d, i) => i))
           .rangeRound([
             this.scale.x(group),
             this.scale.x(group) + this.scale.x.bandwidth(),
@@ -278,7 +276,7 @@ export default class GroupedViolin {
           .append("g")
           .attr("class", "violin-size-axis")
           .attr("transform", `translate(0, ${height + buffer})`)
-          .call(axisBottom(sizeScale));
+          .call(axisBottom(sizeScale).tickFormat((i) => labels[i]));
       }
 
       if (showSubX) {
@@ -329,7 +327,7 @@ export default class GroupedViolin {
       .attr(
         "transform",
         `translate(-${
-          buffer * 2 + select(".violin-y-axis").node().getBBox().width
+          buffer * 2 + dom.select(".violin-y-axis").node().getBBox().width
         }, ${
           this.scale.y.range()[0] +
           (this.scale.y.range()[1] - this.scale.y.range()[0]) / 2
@@ -419,108 +417,6 @@ export default class GroupedViolin {
     // if (tooltip === undefined) tooltip = this.createTooltip(domId);
     this.toolbar = new Toolbar(domId, tooltip);
     return this.toolbar;
-  }
-
-  /**
-   * Add a brush to the plot
-   * @param dom {D3} Dom element
-   */
-  addBrush(dom) {
-    const theBrush = brush();
-    theBrush.on("end", (event) => {
-      this.zoom(dom, theBrush, event);
-    });
-    dom.append("g").attr("class", "brush").call(theBrush);
-  }
-
-  zoom(dom, theBrush, event) {
-    let s = event.selection,
-      idelTimeout,
-      idelDelay = 350;
-    if (theBrush === undefined) {
-      this.reset();
-    } else if (!s) {
-      if (!idelTimeout)
-        return (idelTimeout = setTimeout(function () {
-          idelTimeout = null;
-        }, idelDelay));
-      this.reset();
-    } else {
-      // reset the current scales' domains based on the brushed window
-      this.scale.x.domain(
-        this.scale.x.domain().filter((d, i) => {
-          const lowBound = Math.floor(s[0][0] / this.scale.x.bandwidth());
-          const upperBound = Math.floor(s[1][0] / this.scale.x.bandwidth());
-          return i >= lowBound && i <= upperBound;
-        })
-      ); // TODO: add comments
-
-      const min = Math.floor(this.scale.y.invert(s[1][1]));
-      const max = Math.floor(this.scale.y.invert(s[0][1]));
-      this.scale.y.domain([min, max]); // todo: debug
-
-      dom.select(".brush").call(theBrush.move, null);
-    }
-
-    // zoom
-    let t = dom.transition().duration(750);
-    dom.select(".axis--x").transition(t).call(this.xAxis);
-    dom.select(".axis--y").transition(t).call(this.yAxis);
-
-    this.groups.forEach((gg, i) => {
-      let group = gg.key;
-      let entries = gg.values;
-
-      // re-define the subx's range
-      this.scale.subx.rangeRound([
-        this.scale.x(group),
-        this.scale.x(group) + this.scale.x.bandwidth(),
-      ]);
-
-      entries.forEach((entry) => {
-        if (0 == entry.values.length) return; // no further rendering if this group has no entries
-        const gIndex = this.scale.x.domain().indexOf(group);
-
-        // re-define the scale.z's range
-        this.scale.z.range([
-          this.scale.subx(entry.label),
-          this.scale.subx(entry.label) + this.scale.subx.bandwidth(),
-        ]);
-
-        // re-render the violin
-        const g = dom.select(`#violin${gg.index}-${entry.label}`);
-        g.select(".violin")
-          .transition(t)
-          .attr(
-            "d",
-            area()
-              .x0((d) => this.scale.z(d[1]))
-              .x1((d) => this.scale.z(-d[1]))
-              .y((d) => this.scale.y(d[0]))
-          );
-
-        // re-render the box plot
-        // interquartile range
-        const q1 = quantile(entry.values, 0.25);
-        const q3 = quantile(entry.values, 0.75);
-        const z = 0.1;
-        g.select(".violin-ir")
-          .transition(t)
-          .attr("x", this.scale.z(-z))
-          .attr("y", this.scale.y(q3))
-          .attr("width", Math.abs(this.scale.z(-z) - this.scale.z(z)))
-          .attr("height", Math.abs(this.scale.y(q3) - this.scale.y(q1)));
-
-        // the median line
-        const med = median(entry.values);
-        g.select(".violin-median")
-          .transition(t)
-          .attr("x1", this.scale.z(-z))
-          .attr("x2", this.scale.z(z))
-          .attr("y1", this.scale.y(med))
-          .attr("y2", this.scale.y(med));
-      });
-    });
   }
 
   /**
@@ -644,9 +540,8 @@ export default class GroupedViolin {
       }
 
       // mouse events
-      violinG.on("mouseover", () => {
+      violinG.on("mouseover", (event) => {
         vPath.classed("highlighted", true);
-        // console.log(entry);
         if (this.tooltip === undefined)
           console.warn("GroupViolin Warning: tooltip not defined");
         else {
@@ -657,7 +552,8 @@ export default class GroupedViolin {
               "<br/>" +
               "Median: " +
               med.toPrecision(4) +
-              "<br/>"
+              "<br/>",
+            event
           );
         }
       });
@@ -732,9 +628,6 @@ export default class GroupedViolin {
   }
 
   _validVertices(vertices) {
-    let vals = vertices.reduce((a, b) => a.concat(b), []);
-    let invalidVertices = vals.filter((d) => isNaN(d));
-
-    return !invalidVertices.length;
+    return vertices.length > 0 && vertices.every(([x, y]) => Number.isFinite(x) && Number.isFinite(y));
   }
 }

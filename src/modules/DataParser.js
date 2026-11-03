@@ -76,12 +76,12 @@ export function parseSingleTissueEqtls(data, tissueSiteTable = undefined) {
   const attr = "singleTissueEqtl";
   if (!data.hasOwnProperty(attr))
     throw "Parsing Error: required attribute is not found: " + attr;
-  ["variantId", "tissueSiteDetailId", "nes", "pValue"].forEach((k) => {
-    if (!data[attr][0].hasOwnProperty(k))
-      throw "Parsing Error: required attribute is missing: " + attr;
-  });
-
   return data[attr].map((d) => {
+    ["variantId", "tissueSiteDetailId", "nes", "pValue"].forEach((key) => {
+      if (!Object.hasOwn(d, key)) {
+        throw new Error("Parsing Error: required attribute is missing: " + key);
+      }
+    });
     d.x = d.variantId;
     d.displayX = d.variantId;
     d.y = d.tissueSiteDetailId;
@@ -122,7 +122,6 @@ export function parseGenes(data, single = false, geneId = null) {
       if (filtered.length > 1) {
         alert("Fatal Error: input gene ID is not unique.");
         throw "Fatal Error: input gene ID is not unique.";
-        return;
       } else if (filtered.length == 0) {
         alert("No gene is found with " + geneId);
         throw "Fatal Error: gene not found";
@@ -267,7 +266,6 @@ export function parseMedianExpression(data) {
   const attr = "medianGeneExpression";
   if (!data.hasOwnProperty(attr))
     throw "Parsing Error: required json attribute is missing: " + attr;
-  const adjust = 1;
   // parse GTEx median gene expression
   // error-checking the required attributes:
   if (data[attr].length == 0) throw "parseMedianExpression finds no data.";
@@ -318,37 +316,5 @@ export function parseGeneExpressionForViolin(
     d.label = d.geneSymbol;
     d.color = colors === undefined ? "#90c1c1" : colors[d.geneId];
   });
-  return data[attr];
-}
-
-/* parse the expression data of a gene for boxplot
- * @param data {JSON} from GTEx gene expression web service
- * @param tissues {Object} mapping of tissue ids to labels (tissue name)
- * @param colors {Object} mapping of tissue ids to boxplot colors
- */
-export function parseGeneExpressionForBoxplot(
-  data,
-  tissues = undefined,
-  colors = undefined
-) {
-  const attr = "geneExpression";
-
-  if (!data.hasOwnProperty(attr))
-    throw `Parsing error: required JSON attribute ${attr} missing.`;
-
-  data[attr].forEach((d) => {
-    ["data", "geneId", "geneSymbol", "tissueSiteDetailId"].forEach((k) => {
-      if (!d.hasOwnProperty(k)) {
-        console.error(d);
-        throw `Parsing error: required JSON attribute ${k} is missing from a record.`;
-      }
-    });
-    d.label =
-      tissues === undefined
-        ? d.tissueSiteDetailId
-        : tissues[d.tissueSiteDetailId];
-    d.color = colors === undefined ? "#4682b4" : colors[d.tissueSiteDetailId];
-  });
-
   return data[attr];
 }
