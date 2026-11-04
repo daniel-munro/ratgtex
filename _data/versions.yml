@@ -81,22 +81,6 @@ v3:
     - id: RMTg
       name: Rostromedial tegmental nucleus
 
-v3-unmerged:
-  genome: rn7
-  tissues:
-    - id: NAcc1
-      name: Nucleus accumbens core (P50DA037844 Y1-5)
-    - id: NAcc2
-      name: Nucleus accumbens core (U01DA046077)
-    - id: NAcc3
-      name: Nucleus accumbens core (P50DA037844 Y5-10)
-    - id: PL1
-      name: Prelimbic cortex (P50DA037844 Y1-5)
-    - id: PL2
-      name: Prelimbic cortex (U01DA046077)
-    - id: PL3
-      name: Prelimbic cortex (P50DA037844 Y5-10)
-
 v4:
   genome: rn8
   tissues:
