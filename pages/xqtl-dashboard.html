@@ -1,0 +1,83 @@
+---
+permalink: /xqtl-dashboard/
+title: xQTL Dashboard
+layout: base
+full_width: true
+---
+
+<link rel="stylesheet" href="/assets/css/violin.css" />
+<link rel="stylesheet" href="/assets/css/xqtlDashboard.css" />
+
+<main class="xqtl-dashboard">
+  <h3>xQTL Dashboard</h3>
+  <p class="xqtl-intro">Explore how one variant relates to a gene’s RNA phenotypes across tissues.</p>
+
+  <details class="xqtl-query" open>
+    <summary>Choose a gene, variant and filters</summary>
+    <form id="xqtlQuery">
+      <div class="xqtl-inputs">
+        <div>
+          <label class="form-label" for="xqtlGene">Gene</label>
+          <input class="form-control" id="xqtlGene" name="gene" placeholder="Ifnlr1" required spellcheck="false" />
+        </div>
+        <div>
+          <label class="form-label" for="xqtlVariant">Variant</label>
+          <input class="form-control" id="xqtlVariant" name="variant" placeholder="chr5:153176222" required spellcheck="false" aria-describedby="xqtlVariantHelp" />
+          <small id="xqtlVariantHelp">Chromosome:position on GRCr8</small>
+        </div>
+        <button type="submit" class="btn btn-primary" disabled>Show phenotypes</button>
+        <button type="button" id="xqtlExample" class="btn btn-link" disabled>Use example</button>
+      </div>
+      <fieldset>
+        <legend>RNA modalities</legend>
+        {% for modality in site.data.modalities %}
+        <label class="form-check form-check-inline">
+          <input class="form-check-input" type="checkbox" name="modality" value="{{ modality.id }}" data-label="{{ modality.name }}" checked />
+          <span class="form-check-label">{{ modality.name }}</span>
+        </label>
+        {% endfor %}
+      </fieldset>
+      <fieldset>
+        <legend>Tissues</legend>
+        <div id="xqtlTissues">Loading tissues…</div>
+      </fieldset>
+    </form>
+  </details>
+
+  <div id="xqtlMessage" class="xqtl-message" role="alert"></div>
+  <h4 id="xqtlSummary" class="xqtl-summary"></h4>
+  <p id="xqtlProgress" class="xqtl-progress" role="status" aria-live="polite"></p>
+  <div class="xqtl-key" aria-label="Plot legend">
+    <span><i class="xqtl-swatch xqtl-ref" aria-hidden="true"></i>Homozygous reference</span>
+    <span><i class="xqtl-swatch xqtl-het" aria-hidden="true"></i>Heterozygous</span>
+    <span><i class="xqtl-swatch xqtl-alt" aria-hidden="true"></i>Homozygous alternate</span>
+    <span class="xqtl-significant">* Below the modality-specific gene/group threshold (5% FDR)</span>
+  </div>
+  <p class="xqtl-help">Rows are phenotypes, grouped by modality; columns are tissues. All plots share a normalized scale. Scroll the grid to load more plots.</p>
+  <div id="xqtlResults"></div>
+
+  <details class="xqtl-reading">
+    <summary>Reading these plots</summary>
+    <ul>
+      <li>Values are the released quantile-normalized, inverse-normal transformed phenotypes. Their shared scale does not imply equal biological effect sizes across modalities.</li>
+      <li>Distributions are grouped by reference/alternate genotype, with sample counts below each group. Groups with fewer than 10 observations show individual points; pink lines indicate medians.</li>
+      <li>Nominal p-values use normalized phenotypes and modality-specific covariates. The displayed distributions do not have covariate effects removed, so their medians may differ from the adjusted regression effects.</li>
+      <li>All measured phenotypes are included, regardless of significance. “Not measured” indicates that a phenotype is absent in that tissue; “Dataset unavailable” and failed requests are shown separately.</li>
+      <li>Splicing cluster IDs are tissue-specific. Rows preserve the released IDs because the same intron can belong to different clusters, with different excision-ratio denominators.</li>
+      <li>Genotypes and sample sizes can differ across cohorts. A non-significant association alone does not establish that an effect is absent in a tissue.</li>
+    </ul>
+  </details>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/file-saver@1.3.3/FileSaver.min.js"></script>
+<script src="/assets/js/xqtl-dashboard.bundle.min.js"></script>
+<script>
+  XqtlDashboard.build().then(function () {
+    document.getElementById("xqtlExample").disabled = document.querySelector('#xqtlQuery button[type="submit"]').disabled;
+  });
+  document.getElementById("xqtlExample").addEventListener("click", function () {
+    document.getElementById("xqtlGene").value = "Ifnlr1";
+    document.getElementById("xqtlVariant").value = "chr5:153176222";
+    document.getElementById("xqtlQuery").requestSubmit();
+  });
+</script>

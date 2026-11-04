@@ -8,6 +8,7 @@ export function getGtexUrls() {
   return {
     significantCisEqtls: host + "significantCisEqtls?geneId=",
     genotypePhenotypes: host + "genotypePhenotypes?",
+    phenotypes: host + "phenotypes?",
     variantId: host + "variant?variantId=",
     exon: host + "exon?geneId=",
     geneExp: host + "geneExpression?expressionScale=tpm&geneId=",

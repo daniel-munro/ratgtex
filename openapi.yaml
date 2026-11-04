@@ -1253,6 +1253,76 @@ paths:
           $ref: "#/components/responses/400"
         "503":
           $ref: "#/components/responses/503"
+  /phenotypes:
+    get:
+      tags: [xQTL]
+      summary: Inventory of measured RNA phenotypes for a gene
+      description: >-
+        Lists phenotype IDs, modality, tissue, coordinates, sample counts and
+        significance thresholds without loading individual phenotype values or
+        genotypes. Includes non-significant phenotypes. Omitted tissues and
+        modality select all. Each tissue/modality dataset has a ready or
+        unavailable status; ready datasets with zero phenotypes are distinct
+        from unavailable datasets. Coordinates are 1-based inclusive.
+      operationId: phenotypes
+      parameters:
+        - name: geneId
+          in: query
+          required: true
+          schema: {type: string}
+        - name: tissueId
+          in: query
+          description: Comma-separated tissue IDs; omitted means all tissues.
+          schema: {type: string}
+        - name: tissueSiteDetailId
+          in: query
+          description: Accepted alias of tissueId; do not supply both.
+          schema: {type: string}
+        - name: modality
+          in: query
+          schema:
+            type: string
+            enum: [expression, isoforms, splicing, alt_TSS, alt_polyA, stability]
+      responses:
+        "200":
+          description: Phenotype inventory, with availability reported per tissue and modality.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  geneId: {type: string}
+                  phenotypes:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        phenotypeId: {type: string}
+                        geneId: {type: string}
+                        modality: {type: string}
+                        tissueSiteDetailId: {type: string}
+                        chromosome: {type: string}
+                        start: {type: integer}
+                        end: {type: integer}
+                        sampleCount: {type: integer}
+                        pValueThreshold: {type: number, nullable: true}
+                  datasets:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        modality: {type: string}
+                        tissueSiteDetailId: {type: string}
+                        status: {type: string, enum: [ready, unavailable]}
+                        phenotypeCount: {type: integer, nullable: true}
+        "304":
+          description: Unchanged representation.
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "503":
+          $ref: "#/components/responses/503"
   /genotypePhenotypes:
     get:
       tags: [xQTL]

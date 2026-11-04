@@ -123,7 +123,7 @@ More info on the [ratgenes.org eQTL page](https://ratgenes.org/research-projects
 
 - [Expression Heatmap for top expressed genes](/top-expressed/)
 - [Expression Heatmap for a query gene list](/query-gene-expression/)
-- [eQTL Dashboard](/eqtl-dashboard/)
+- [xQTL Dashboard](/xqtl-dashboard/)
 - [Gene-eQTL Visualizer](/gene-eqtl-visualizer/)
 
 Also try searching for a gene in the toolbar to view its expression and eQTLs.

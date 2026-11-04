@@ -306,6 +306,27 @@ class APITest(unittest.TestCase):
         with self.assertLogs(self.app.logger, level="ERROR"):
             self.assertEqual(self.client.get("/api/v4/" + query).status_code, 503)
 
+    def test_phenotype_inventory_does_not_read_sample_vectors(self):
+        with patch("api.data_store.zlib.decompress", side_effect=AssertionError("Inventory must not decompress values")):
+            result = self.get("phenotypes?geneId=GeneA&tissueId=Brain")
+        self.assertEqual(len(result["phenotypes"]), 1)
+        phenotype = result["phenotypes"][0]
+        self.assertEqual(phenotype["phenotypeId"], "GeneA")
+        self.assertEqual(phenotype["sampleCount"], 5)
+        self.assertEqual(phenotype["pValueThreshold"], .001)
+        self.assertNotIn("data", phenotype)
+        self.assertEqual(result["datasets"][0], {"modality": "expression", "tissueSiteDetailId": "Brain", "status": "ready", "phenotypeCount": 1})
+        self.assertTrue(all(d["status"] == "unavailable" for d in result["datasets"][1:]))
+        partial = self.client.get("/api/v4/phenotypes?geneId=GeneA&tissueId=Brain")
+        self.assertIn("no-store", partial.headers["Cache-Control"])
+        available = self.client.get("/api/v4/phenotypes?geneId=GeneA&tissueId=Brain&modality=expression")
+        self.assertNotIn("no-store", available.headers["Cache-Control"])
+        empty = self.get("phenotypes?geneId=Empty&tissueId=Brain&modality=expression")
+        self.assertEqual(empty["phenotypes"], [])
+        self.assertEqual(empty["datasets"][0]["status"], "ready")
+        self.assertEqual(empty["datasets"][0]["phenotypeCount"], 0)
+        self.assertEqual(self.client.get("/api/v4/phenotypes?geneId=GeneA&modality=bad").status_code, 400)
+
     def test_missing_and_stale_indexes_fail_without_matrix_fallback(self):
         query = "/api/v4/genotypePhenotypes?geneId=GeneA&tissueId=Brain&variantId=chr1:50"
         index = phenotype_index_path(self.root, "Brain", "expression")

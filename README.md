@@ -33,7 +33,7 @@ The individual configurations share `src/rollup/shared.js`. Their entry points a
 | --- | --- |
 | `GeneExpressionViolinPlot.js` | Gene page expression plots |
 | `BatchGeneExpression.js` | Expression heatmaps and top expressed genes |
-| `EqtlDashboard.js` | eQTL dashboard |
+| `XqtlDashboard.js` | Multimodal xQTL dashboard |
 | `GeneEqtlVisualizer.js` | Gene eQTL bubble map and genotype plots |
 
 Reusable chart classes, parsers, tooltips, and SVG export helpers live in `src/modules/`. The page templates initialize the bundles and provide jQuery, Bootstrap, and FileSaver where needed. Keep chart selections scoped to their own SVG, and use D3's `(event, datum)` event handler signature.

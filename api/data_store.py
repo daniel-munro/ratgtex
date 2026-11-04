@@ -181,7 +181,7 @@ class DataStore:
                         "associationStatus": "variant_below_mapping_filter"} for result in results]
         return results
 
-    def phenotypes(self, tissue, modality, gene):
+    def _phenotype_rows(self, tissue, modality, gene, with_data=True):
         """Fetch only this gene's normalized vectors, loci and group threshold.
 
         Multimodal queries require prepared indexes: never fall back to loading
@@ -202,15 +202,27 @@ class DataStore:
                     or json.loads(meta["threshold_source"]) != source_signature(thresholds)):
                 raise AssociationDataError("Missing or stale phenotype index; run api.prepare_phenotypes.")
             samples = json.loads(meta["samples"])
-            rows = conn.execute("SELECT phenotype_id, chromosome, start, end, data "
-                                "FROM phenotype WHERE gene_id = ? ORDER BY phenotype_id", (gene,)).fetchall()
+            columns = "phenotype_id, chromosome, start, end" + (", data" if with_data else "")
+            rows = conn.execute(f"SELECT {columns} FROM phenotype WHERE gene_id = ? ORDER BY phenotype_id", (gene,)).fetchall()
             threshold = conn.execute("SELECT value FROM threshold WHERE gene_id = ?", (gene,)).fetchone()
+        return rows, samples, threshold[0] if threshold else None
+
+    def phenotype_metadata(self, tissue, modality, gene):
+        """List measured phenotypes without reading or decompressing sample blobs."""
+        rows, samples, threshold = self._phenotype_rows(tissue, modality, gene, with_data=False)
+        return [{"phenotypeId": phenotype, "geneId": gene, "modality": modality,
+                 "tissueSiteDetailId": tissue, "chromosome": chrom,
+                 "start": start + 1, "end": end, "sampleCount": len(samples),
+                 "pValueThreshold": threshold} for phenotype, chrom, start, end in rows]
+
+    def phenotypes(self, tissue, modality, gene):
+        rows, samples, threshold = self._phenotype_rows(tissue, modality, gene)
         vectors, loci = {}, {}
         for phenotype, chrom, start, end, blob in rows:
             vectors[phenotype] = np.frombuffer(zlib.decompress(blob), dtype="<f8").copy()
             # tensorQTL converts BED start to 1-based coordinates.
             loci[phenotype] = (chrom, start + 1, end)
-        return pd.DataFrame.from_dict(vectors, orient="index", columns=samples), loci, threshold[0] if threshold else None
+        return pd.DataFrame.from_dict(vectors, orient="index", columns=samples), loci, threshold
 
     def _archive(self, path):
         # Called only while holding _lock. Bound open handles and ZIP directories.

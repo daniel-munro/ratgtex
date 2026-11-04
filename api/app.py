@@ -7,6 +7,7 @@ import gzip
 import hashlib
 import math
 import os
+import sqlite3
 from pathlib import Path
 from threading import RLock
 from time import monotonic
@@ -197,7 +198,7 @@ def create_app(config=None, store=None):
     @app.after_request
     def cache_and_compress(response):
         nonlocal response_bytes
-        if response.status_code != 200 or not response.is_json or request.method not in ("GET", "HEAD"):
+        if response.status_code != 200 or not response.is_json or request.method not in ("GET", "HEAD") or response.cache_control.no_store:
             response.cache_control.no_store = True
             return response
         body = response.get_data()
@@ -490,6 +491,31 @@ def create_app(config=None, store=None):
         if not is_cis:
             stats = {**stats, "pValue": None, "slope": None, "slopeSE": None, "associationStatus": "outside_cis_window"}
         return {**stats, "isCis": is_cis}
+
+    @app.get("/api/v4/phenotypes")
+    def phenotype_inventory():
+        gene = one_gene()
+        tissues = selected_tissues()
+        modality = parameter("modality")
+        if modality is not None and modality not in MODALITIES:
+            raise APIError("Unknown modality: " + modality)
+        phenotypes, datasets = [], []
+        for mode in [modality] if modality else MODALITIES:
+            for tissue in tissues:
+                dataset = {"modality": mode, "tissueSiteDetailId": tissue}
+                try:
+                    rows = store.phenotype_metadata(tissue, mode, gene)
+                except (AssociationDataError, FileNotFoundError, sqlite3.Error):
+                    # One unavailable tissue/modality must not hide the others.
+                    dataset.update(status="unavailable", phenotypeCount=None)
+                else:
+                    phenotypes.extend(rows)
+                    dataset.update(status="ready", phenotypeCount=len(rows))
+                datasets.append(dataset)
+        response = jsonify(geneId=gene, phenotypes=phenotypes, datasets=datasets)
+        if any(dataset["status"] == "unavailable" for dataset in datasets):
+            response.cache_control.no_store = True
+        return response
 
     @app.get("/api/v4/genotypePhenotypes")
     def genotype_phenotypes():
