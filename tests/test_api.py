@@ -15,6 +15,8 @@ from api.app import create_app, genotype
 from api.data_store import DataStore, phenotype_index_path
 from api.prepare_phenotypes import build_index
 from api.prepare_catalog import build_catalog
+from api.prepare_predictions import build_index as build_prediction_index
+from api.predictions import archive_path
 
 
 class APITest(unittest.TestCase):
@@ -126,6 +128,41 @@ class APITest(unittest.TestCase):
         self.assertNotIn("endpointAliases", meta)
         for path in ["dyneqtl", "genotypeExpression", "singleTissueEqtl"]:
             self.assertEqual(self.client.get("/api/v4/" + path).status_code, 404)
+
+    def test_predictions_preserve_scores_and_align_rfids_across_modalities(self):
+        output = self.root / "blockstorage"
+        self.app.config["PREDICTION_DIR"] = output
+        source = self.root / "source.tsv.gz"
+        for modality, contents in [
+            ("expression", "phenotype_id\t002\t001\nGeneA\t0.012345678\t-0.30000000\n"),
+            ("stability", "phenotype_id\t001\t003\nGeneA\t1.00e-08\t2.3\n"),
+            ("isoforms", "phenotype_id\t003\t002\nGeneA__1\t1.0\t2.0\nGeneB__1\t3.0\t4.0\nGeneA__2\t5.0\t6.0\n"),
+        ]:
+            with gzip.open(source, "wt") as handle:
+                handle.write(contents)
+            build_prediction_index(source, archive_path(output, "Brain", modality))
+
+        response = self.client.get("/api/v4/predictions?geneId=genea,Empty,unknown&rfid=001,002,003,999")
+        self.assertEqual(response.status_code, 200, response.json)
+        self.assertIn("no-store", response.headers["Cache-Control"])
+        result = response.json
+        self.assertEqual(result["rfids"], ["001", "002", "003", "999"])
+        self.assertEqual(result["unmatchedRfids"], ["999"])
+        self.assertEqual(result["unknownGenes"], ["unknown"])
+        self.assertEqual(result["genesWithoutPredictions"], ["Empty"])
+        self.assertEqual(len(result["unavailableDatasets"]), 3)
+        self.assertEqual(
+            [(row["modality"], row["phenotypeId"], row["values"]) for row in result["predictions"]],
+            [
+                ("expression", "GeneA", ["-0.30000000", "0.012345678", None, None]),
+                ("isoforms", "GeneA__1", [None, "2.0", "1.0", None]),
+                ("isoforms", "GeneA__2", [None, "6.0", "5.0", None]),
+                ("stability", "GeneA", ["1.00e-08", None, "2.3", None]),
+            ],
+        )
+        self.assertEqual(
+            self.client.get("/api/v4/predictions?geneId=GeneA&rfid=001&modality=splicing").status_code, 503
+        )
 
     def test_parameter_errors_are_json_and_not_cached(self):
         cases = ["gene", "gene?geneId=", "gene?geneId=GeneA,,GeneB", "gene?geneId=GeneA&geneId=GeneB",

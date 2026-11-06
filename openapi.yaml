@@ -29,8 +29,9 @@ info:
     variants 422, and unavailable release data or indexes 503.
 
 
-    Successful responses support ETag/If-None-Match, gzip and a five-minute
-    public cache. Use release downloads for bulk data. Publish matching source
+    Successful JSON responses support ETag/If-None-Match, gzip and a five-minute
+    public cache, except for prediction subsets, which use no-store.
+    Use release downloads for bulk data. Publish matching source
     files and indexes together and restart API workers after a release update.
   contact:
     name: Daniel Munro
@@ -49,6 +50,122 @@ tags:
   - name: xQTL
     description: Data on RNA phenotype-variant associations
 paths:
+  /predictions:
+    get:
+      tags: [expression]
+      summary: Published Round 11.2 RNA phenotype predictions for selected rats
+      description: >-
+        Select up to five genes and 100 rat RFIDs. Scores are returned as text
+        to preserve their published precision. The result may contain up to
+        2,000 phenotype rows. Partial indexes return available results and
+        list unavailable tissue and modality combinations.
+      parameters:
+        - name: geneId
+          in: query
+          required: true
+          schema:
+            type: array
+            maxItems: 5
+            items:
+              type: string
+          style: form
+          explode: false
+        - name: rfid
+          in: query
+          required: true
+          description: Rat RFIDs. Column order follows request order.
+          schema:
+            type: array
+            maxItems: 100
+            items:
+              type: string
+          style: form
+          explode: false
+        - name: tissueId
+          in: query
+          description: Select tissues. Omit for all tissues.
+          schema:
+            type: array
+            items:
+              type: string
+          style: form
+          explode: false
+        - name: tissueSiteDetailId
+          in: query
+          description: Alias of tissueId. Supply only one of these parameters.
+          schema:
+            type: array
+            items:
+              type: string
+          style: form
+          explode: false
+        - name: modality
+          in: query
+          description: Select one modality. Omit for all modalities.
+          schema:
+            type: string
+            enum: [expression, isoforms, splicing, alt_TSS, alt_polyA, stability]
+      responses:
+        "200":
+          description: Published predictions and coverage of the requested IDs and datasets
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cohort:
+                    type: string
+                    example: round11_2
+                  rfids:
+                    type: array
+                    items:
+                      type: string
+                  unmatchedRfids:
+                    type: array
+                    description: RFIDs absent from every indexed dataset selected in this request.
+                    items:
+                      type: string
+                  unknownGenes:
+                    type: array
+                    items:
+                      type: string
+                  genesWithoutPredictions:
+                    type: array
+                    description: Recognized genes without predictions in the selected, indexed datasets.
+                    items:
+                      type: string
+                  unavailableDatasets:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        tissue:
+                          type: string
+                        modality:
+                          type: string
+                  predictions:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        geneId:
+                          type: string
+                        tissue:
+                          type: string
+                        modality:
+                          type: string
+                        phenotypeId:
+                          type: string
+                        values:
+                          type: array
+                          description: Aligned to rfids. Null means the RFID is absent from this dataset.
+                          items:
+                            type: string
+                            nullable: true
+        "400":
+          description: Invalid parameters or result exceeds the row limit
+        "503":
+          description: No selected prediction index is available, or an index could not be read
   /eqtl:
     get:
       tags:

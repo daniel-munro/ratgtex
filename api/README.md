@@ -79,9 +79,52 @@ Transfer indexes and matching source files together with mtimes preserved (`rsyn
 
 ## Serving and caching
 
+### Prediction subsets
+
+`/predictions?geneId=Ifnlr1,Dab2ip&rfid=12345,67890&tissueId=Brain&modality=expression`
+queries the published Round 11.2 scores. Omit either filter for all tissues or
+modalities. The response includes one row per gene, tissue, modality and phenotype.
+Scores are strings to preserve the released text exactly. Vectors align to
+`rfids` in request order, with nulls for RFIDs absent from that dataset. The
+response separately reports unknown genes, genes with no predictions in indexed
+datasets, unmatched RFIDs and unavailable tissue/modality combinations. It returns
+503 if none of the requested combinations is indexed. Requests are limited to
+five genes, 100 RFIDs and 2,000 output rows. Prediction responses use `no-store`.
+
+Build the indexes on the VPS or on a machine with the prediction downloads.
+Run from the repository root with the API's Python environment:
+
+```sh
+# Pilot on the laptop, using the default data/predict inputs
+python -m api.prepare_predictions --tissues Eye
+
+# Full build on the VPS. The source directory contains the 78 published TSV.gz files.
+python -m api.prepare_predictions --source-dir /path/to/prediction-downloads \
+  --output-dir /mnt/blockstorage/ratgtex-predictions
+```
+
+The default destination is `data/v4/api/predictions` (under `RATGTEX_DATA_DIR`
+when set). `--tissues` and `--modalities` select inputs for a pilot or a targeted
+rebuild. `--allow-partial` skips missing files. The builder streams and stages
+one uncompressed input at a time to collect each gene's rows, then replaces
+that tissue/modality ZIP atomically. Allow temporary space for the largest
+uncompressed matrix plus its ZIP, in addition to any existing indexes. Keep
+the source downloads for bulk access. The API opens only the selected archives
+and decompresses only matching gene members.
+
+On the VPS, give the API service read access and set
+`RATGTEX_PREDICTION_DIR=/mnt/blockstorage/ratgtex-predictions` in its environment.
+For the repository's Circus setup, add the variable under `[env:ratgtex]` in the
+deployed configuration and restart the watcher with the new configuration.
+Check an extraction on `/predict/` with known RFIDs. If the indexes are moved
+later, update the environment variable and restart the API.
+
+### API configuration
+
 | Environment variable | Default | Meaning |
 | --- | --- | --- |
 | `RATGTEX_DATA_DIR` | Repository `data/v4` | Release directory |
+| `RATGTEX_PREDICTION_DIR` | `api/predictions` under the release directory | Round 11.2 per-gene ZIP indexes |
 | `RATGTEX_EXPRESSION_CACHE_MB` | `128` | Retained expression fallback matrix budget per worker, in MiB; `0` disables retention |
 | `RATGTEX_RESPONSE_CACHE_MB` | `32` | Serialized response cache budget per worker, in MiB; `0` disables it |
 | `RATGTEX_REFERENCE_DATASET` | `ratgtex_v4_round11_2` when available, otherwise the first cohort | Default cohort for variant metadata |

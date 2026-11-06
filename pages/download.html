@@ -11,8 +11,7 @@ site.data.versions[version].tissues %}
 
 <p>
   Download pages: <a href="/download/v1/">v1</a> •
-  <a href="/download/v2/">v2</a> • <a href="/download/v3/">v3</a> •
-  v4 •
+  <a href="/download/v2/">v2</a> • <a href="/download/v3/">v3</a> • v4 •
   <a href="/download/study-data/">Study data</a>
 </p>
 
@@ -26,7 +25,9 @@ site.data.versions[version].tissues %}
   version.
 </p>
 
-<p><a href="/data/{{ version }}/gene.{{ version }}.tsv">Gene info</a></p>
+<p><a href="/predict/">Download RNA phenotype predictions</a></p>
+
+<p><a href="https://twas.ratgtex.org/traits/">Download TWAS results</a></p>
 
 <h2>Gene expression</h2>
 
@@ -160,8 +161,8 @@ site.data.versions[version].tissues %}
   shrinkage (mash), which shares information across tissues. Includes original
   effect estimates and standard errors, nominal p-values, posterior effect
   estimates and standard deviations, local false sign rates (lfsr), and local
-  false discovery rates (lfdr). Lead variants are selected by lowest lfsr;
-  the significant column indicates lfsr &le; 0.05.
+  false discovery rates (lfdr). Lead variants are selected by lowest lfsr; the
+  significant column indicates lfsr &le; 0.05.
 </p>
 
 <strong>trans-eQTLs</strong>
@@ -254,6 +255,8 @@ arbitrary cutoff of p &lt; 1e-5. No significance testing was performed.
 <br />
 
 <h2>Other info</h2>
+
+<p><a href="/data/{{ version }}/gene.{{ version }}.tsv">Gene info</a></p>
 
 <p>
   <a href="/data/{{ version }}/geno/ratgtex_v4_round11_2.{{ genome }}.vcf.gz">

@@ -25,10 +25,12 @@ if __package__:
     from .data_store import DataStore, SCALES, MODALITIES
     from .association import AssociationDataError
     from .catalog import CatalogUnavailableError
+    from .predictions import MAX_GENES, MAX_RFIDS, MAX_ROWS, PredictionLimitError, PredictionsUnavailableError, extract_predictions
 else:  # Existing gunicorn --chdir api app:api and python api/app.py commands.
     from data_store import DataStore, SCALES, MODALITIES
     from association import AssociationDataError
     from catalog import CatalogUnavailableError
+    from predictions import MAX_GENES, MAX_RFIDS, MAX_ROWS, PredictionLimitError, PredictionsUnavailableError, extract_predictions
 
 
 class APIError(Exception):
@@ -162,6 +164,7 @@ def create_app(config=None, store=None):
         RESPONSE_CACHE_BYTES=int(os.environ.get("RATGTEX_RESPONSE_CACHE_MB", "32")) * 1024**2,
         CACHE_SECONDS=300,
         REFERENCE_DATASET=os.environ.get("RATGTEX_REFERENCE_DATASET"),
+        PREDICTION_DIR=os.environ.get("RATGTEX_PREDICTION_DIR"),
     )
     if config:
         app.config.update(config)
@@ -236,6 +239,7 @@ def create_app(config=None, store=None):
 
     @app.errorhandler(AssociationDataError)
     @app.errorhandler(CatalogUnavailableError)
+    @app.errorhandler(PredictionsUnavailableError)
     def prepared_data_unavailable(error):
         app.logger.error("API inputs unavailable: %s", error)
         return jsonify(error=str(error), status=503), 503
@@ -329,7 +333,8 @@ def create_app(config=None, store=None):
                          "altAlleleFrequency": "Alternate allele frequency, which may exceed 0.5",
                          "nes": "Nominal regression slope on the normalized phenotype scale",
                          "pValueBeta": "Beta-approximated permutation p-value from the compiled pipeline output"},
-            limits={"geneIds": 500, "expressionGeneIds": 10, "variantIds": 100, "clusterGenes": 200, "pageSize": 1000},
+            limits={"geneIds": 500, "expressionGeneIds": 10, "variantIds": 100, "clusterGenes": 200, "pageSize": 1000,
+                    "predictionGeneIds": MAX_GENES, "predictionRfids": MAX_RFIDS, "predictionRows": MAX_ROWS},
             endpoints=sorted(rule.rule for rule in app.url_map.iter_rules() if rule.rule.startswith("/api/")),
             documentation="/about/api/", openapi="/openapi.yaml",
         )
@@ -337,6 +342,23 @@ def create_app(config=None, store=None):
     @app.get("/api/v4/tissueInfo")
     def tissue_info():
         return jsonify(tissueInfo=store.tissue_info)
+
+    @app.get("/api/v4/predictions")
+    def predictions():
+        genes, missing = selected_genes(MAX_GENES)
+        rfids = identifiers("rfid", MAX_RFIDS)
+        tissues = selected_tissues()
+        modality = parameter("modality")
+        if modality is not None and modality not in MODALITIES:
+            raise APIError("Unknown modality: " + modality)
+        root = app.config["PREDICTION_DIR"] or store.root / "api/predictions"
+        try:
+            result = extract_predictions(root, genes, rfids, tissues, [modality] if modality else MODALITIES)
+        except PredictionLimitError as error:
+            raise APIError(str(error)) from error
+        response = jsonify({**result, "unknownGenes": missing})
+        response.cache_control.no_store = True
+        return response
 
     @app.get("/api/v4/gene")
     def gene():

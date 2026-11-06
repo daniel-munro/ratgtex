@@ -45,7 +45,7 @@ Data from previous versions are still available from the [Download](/download/) 
 
 ### Data Use
 
-For the tissues above whose originating study has been published (see below), you may use the data in your studies by citing the originating study. For the other tissues, contact us about whether, when, and how you may use them.
+For the datasets above whose originating study has been published (see below), you may use the data in your studies by citing the originating study and the [RatGTEx preprint](https://www.biorxiv.org/content/10.64898/2026.11.05.764420v1). For the other datasets, contact us about whether, when, and how you may use them.
 
 ### Associated Studies
 

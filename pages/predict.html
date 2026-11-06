@@ -45,7 +45,75 @@ version: v4
   in the indicated tissue.
 </p>
 
-<h3>Download predictions</h3>
+<h3>Download predictions for selected rats</h3>
+<p>
+  Choose genes and paste the RFIDs of rats in Round 11.2. The TSV has one row
+  per tissue, modality, and phenotype, and one column per requested RFID.
+</p>
+<form id="prediction-extract" class="mb-4">
+  <div class="row g-3 mb-3">
+    <div class="col-sm-6">
+      <label for="prediction-genes" class="form-label"
+        >Gene symbols (up to 5)</label
+      >
+      <input
+        id="prediction-genes"
+        name="geneId"
+        class="form-control"
+        type="text"
+        placeholder="Ifnlr1, Dab2ip"
+        required
+      />
+    </div>
+    <div class="col-sm-3">
+      <label for="prediction-tissue" class="form-label">Tissue</label>
+      <select id="prediction-tissue" name="tissueId" class="form-select">
+        <option value="">All tissues</option>
+        {% for tissue in site.data.versions[page.version].tissues %}
+        <option value="{{ tissue.id }}">{{ tissue.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-sm-3">
+      <label for="prediction-modality" class="form-label">Modality</label>
+      <select id="prediction-modality" name="modality" class="form-select">
+        <option value="">All modalities</option>
+        {% for modality in site.data.modalities %}
+        <option value="{{ modality.id }}">{{ modality.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+  <div class="mb-3">
+    <label for="prediction-rfids" class="form-label"
+      >Rat RFIDs (up to 100)</label
+    >
+    <textarea
+      id="prediction-rfids"
+      name="rfid"
+      class="form-control"
+      rows="4"
+      aria-describedby="prediction-rfid-help"
+      required
+    ></textarea>
+    <div id="prediction-rfid-help" class="form-text">
+      Separate IDs with commas, spaces, or new lines.
+    </div>
+  </div>
+  <button type="submit" class="btn btn-primary">Download subset TSV</button>
+  <div id="prediction-extract-status" class="mt-2" role="status"></div>
+</form>
+<script
+  src="{{ '/assets/js/prediction-extract.js' | relative_url }}"
+  defer
+></script>
+
+<h3>Download bulk predictions</h3>
+
+<p>
+  Each file includes predictions for all heritable RNA phenotypes of the
+  indicated modality, in the indicated tissue, for all rats.
+</p>
 
 <table class="download-matrix">
   <tbody>
@@ -70,6 +138,8 @@ version: v4
 </table>
 
 <br />
+
+<h3>Prediction stats</h3>
 
 <p>
   The table below shows per-phenotype heritability estimates (h<sup>2</sup>) and
